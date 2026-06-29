@@ -1,0 +1,292 @@
+\section{Current Status}
+
+At the qualification stage, the doctoral project has already produced three
+main outputs. The first is an initial empirical study on source code minimaps,
+Local Binary Patterns, and traditional classifiers \cite{gebara2025iwssip}. The
+second is a large-scale study with 685,906 minimaps from 100 open-source
+projects and 10 programming languages \cite{gebara2025ciarp}. The third is the
+MinimapSignatures tool ecosystem, which validates the feasibility of bringing
+minimap analysis into IDE workflows \cite{gebara2026minimapsignatures}.
+
+These outputs establish a solid foundation, but the thesis is not complete. The
+remaining work must deepen the methodology, broaden the task set, strengthen
+evaluation, and connect the tool to developer-facing scenarios. This chapter
+defines the planned research activities and the main risks.
+
+\section{Expected Deliverables}
+
+The final doctoral work is expected to produce a set of deliverables rather than
+a single isolated experiment. The main deliverables are:
+
+\begin{enumerate}
+    \item a finalized methodology for source code minimap generation,
+    anonymization, cataloging, and evaluation;
+    \item a curated and documented minimap dataset or dataset-generation package;
+    \item benchmark results comparing handcrafted descriptors and deep visual
+    models under controlled splits;
+    \item an anonymization study measuring the trade-off between information
+    suppression and predictive performance;
+    \item an explainability study showing which visual regions support model
+    decisions;
+    \item an extended MinimapSignatures prototype with multi-file or
+    explanation-oriented feedback;
+    \item at least one evaluation of developer-facing use, even if exploratory;
+    \item the final thesis text and associated reproducibility package.
+\end{enumerate}
+
+These deliverables are designed to make the thesis coherent. The dataset and
+methodology support the models. The models support the explanations. The
+explanations support tool feedback. The tool feedback motivates developer
+evaluation. Each part therefore contributes to the same research arc.
+
+\section{Remaining Research Activities}
+
+The remaining doctoral work is organized into six activities.
+
+\subsection{A1: Refined Dataset Curation}
+
+The large-scale dataset must be refined for additional experiments. This
+includes improving label hygiene, identifying generated files, separating bot and
+human contributors when possible, recording repository metadata, and creating
+balanced or task-specific subsets. The catalog should support reproducible
+filtering decisions.
+
+This activity is necessary because the current dataset is large but imbalanced.
+Head classes dominate some objectives, and Author labels may contain bots,
+organizations, or aliases. Better curation will make later experiments more
+trustworthy.
+
+\subsection{A2: Anonymization Evaluation}
+
+The project needs a deeper evaluation of anonymization. The current strategy
+suppresses letters and digits while preserving structural symbols and layout.
+Future experiments should compare different anonymization strengths, including
+comment removal, identifier masking, literal masking, punctuation preservation,
+and symbol abstraction.
+
+The objective is to measure the trade-off between predictive performance and
+information exposure. Stronger anonymization may reduce leakage but also remove
+useful signals. We need to understand where this trade-off is acceptable for
+software-analysis tasks.
+
+\subsection{A3: Imbalance-Aware Modeling}
+
+The next modeling phase will evaluate techniques designed for imbalanced
+multi-class datasets. Candidate strategies include class weighting, balanced
+sampling, focal loss, logit adjustment, mixup or cutmix variants, and deferred
+reweighting schedules. Evaluation will prioritize macro-F1, per-class recall,
+calibration, and confusion analysis, not only accuracy.
+
+This activity responds directly to limitations observed in the large-scale
+study. The goal is to improve minority-class behavior and to avoid drawing
+conclusions from head-class performance alone.
+
+\subsection{A4: Multi-Scale and Region-Aware Minimap Analysis}
+
+Fixed 128 by 128 minimaps are compact and convenient, but they may discard
+information from long files. Future experiments should compare multiple
+resolutions, patch-based inputs, pyramidal representations, and region-aware
+models. Explainability results can guide this process by showing which regions
+are repeatedly salient.
+
+This activity will help answer whether minimap performance is limited by input
+resolution and whether region-level analysis can support more detailed tasks,
+such as identifying suspicious sections of a file rather than classifying the
+whole file.
+
+\subsection{A5: Quality and Architectural-Deviation Tasks}
+
+The thesis should move beyond Type, Project, and Author objectives toward tasks
+closer to software quality. Candidate targets include code-smell likelihood,
+test-file recognition, architectural role classification, generated-file
+anomaly detection, and deviation from project-specific conventions.
+
+This activity may combine minimap signals with existing static-analysis metrics
+or labels. The goal is not to claim that minimaps alone can prove quality
+problems, but to evaluate whether they can provide useful weak signals for
+prioritization and review.
+
+\subsection{A6: Tool Evaluation}
+
+MinimapSignatures has been functionally validated, but it still requires
+developer-centered evaluation. Future studies may involve controlled tasks,
+think-aloud sessions, interviews, or scenario-based inspections. The evaluation
+should measure usefulness, understandability, trust, and perceived fit with
+developer workflows.
+
+The tool should also be extended to multi-file analysis and explanation
+overlays. These features are likely to make the tool more useful than single
+file-level prediction alone.
+
+\section{Planned Experiments}
+
+Table~\ref{tab:planned-experiments} summarizes planned experiments and their
+expected outcomes.
+
+\begin{table}[ht]
+\centering
+\caption{Planned experiments for the doctoral thesis.}
+\label{tab:planned-experiments}
+\begin{tabular}{p{0.22\textwidth}p{0.35\textwidth}p{0.28\textwidth}}
+\toprule
+\textbf{Experiment} & \textbf{Description} & \textbf{Expected output} \\
+\midrule
+Anonymization ablation & Compare several anonymization modes and comment-removal strategies. & Trade-off curves between performance and information suppression. \\
+Imbalance-aware learning & Evaluate class weights, balanced sampling, focal loss, and calibration. & Improved macro-F1 and minority-class analysis. \\
+Resolution analysis & Compare 128 by 128, larger fixed sizes, and patch-based inputs. & Evidence about information loss and scalability. \\
+Model comparison & Evaluate CNNs, efficient backbones, and transformer-based variants. & Stronger benchmark of architecture choices. \\
+Quality target pilot & Use labeled or proxy quality indicators for minimap-based classification. & Evidence about feasibility for quality-related analysis. \\
+Tool study & Evaluate MinimapSignatures with developers or realistic inspection tasks. & Feedback on usefulness, trust, and workflow integration. \\
+\bottomrule
+\end{tabular}
+\fautor
+\end{table}
+
+\section{Evaluation Plan}
+
+The evaluation plan combines quantitative and qualitative evidence. Quantitative
+model evaluation will use train/validation/test splits, multiple random seeds
+when feasible, macro-F1, weighted-F1, accuracy, ROC-AUC, calibration measures,
+and confusion matrices. When objectives involve repositories or authors, splits
+must be designed to avoid leakage. For example, project-specific tasks must not
+accidentally train and test on near-duplicate artifacts.
+
+Qualitative evaluation will be used in two places. First, explainability maps
+will be inspected to verify whether visual evidence is plausible and stable.
+Second, tool evaluation will collect developer perceptions through interviews,
+questionnaires, or observational protocols. These qualitative data will not
+replace quantitative metrics; they will help interpret whether the tool's
+feedback is understandable and useful.
+
+Empirical software-engineering guidelines will inform reporting, including
+explicit threats to validity and transparent description of datasets, procedures,
+and limitations \cite{kitchenham2002preliminary,wohlin2012experimentation,runeson2012case}.
+
+\section{Threats to Validity}
+
+\subsection{Construct Validity}
+
+Construct validity concerns whether the study measures what it claims to
+measure. In this project, a major construct threat is the interpretation of
+labels. Type labels may mix file extension with semantic role. Project labels
+may capture boilerplate rather than meaningful project identity. Author labels
+may reflect bots, generated files, or organizational accounts rather than human
+style. Quality labels may be noisy if derived from static-analysis tools or
+proxies.
+
+Mitigation strategies include careful label documentation, sensitivity analysis,
+manual inspection of samples, exclusion of ambiguous labels when needed, and
+explicit discussion of what each objective actually represents.
+
+\subsection{Internal Validity}
+
+Internal validity concerns whether observed effects are caused by the method
+rather than confounding factors. In minimap experiments, potential confounders
+include duplicate files, generated artifacts, repository templates, file naming
+patterns, and data leakage across splits. If training and test sets contain
+near-identical generated files, performance may be inflated.
+
+Mitigation strategies include content hashing, duplicate removal, repository-aware
+splits, time-aware splits when possible, and ablation studies that remove
+headers, comments, or generated files.
+
+\subsection{External Validity}
+
+External validity concerns whether results generalize beyond the evaluated
+corpus. The large-scale dataset includes 100 open-source projects and 10
+languages, but it may not represent proprietary systems, safety-critical
+software, small scripts, educational code, or low-resource languages. Industrial
+code may also have conventions not present in public repositories.
+
+Mitigation strategies include expanding the corpus, reporting repository
+characteristics, evaluating additional ecosystems, and conducting industrial or
+semi-industrial case studies when access is possible.
+
+\subsection{Conclusion Validity}
+
+Conclusion validity concerns whether the statistical and analytical conclusions
+are justified. Class imbalance, multiple comparisons, and single-run results can
+lead to overconfident claims. Accuracy alone may hide poor minority-class
+performance.
+
+Mitigation strategies include reporting multiple metrics, confidence intervals
+or variation across seeds when feasible, per-class results, macro-averaged
+metrics, and clear distinction between preliminary and final evidence.
+
+\section{Ethical and Privacy Considerations}
+
+This project must be careful with privacy, confidentiality, and potential misuse.
+Even anonymized minimaps may leak structural information about a repository.
+Author-related predictions are especially sensitive. They should not be used as
+automated attribution or surveillance tools. In this thesis, Author is treated as
+a research objective for studying whether style-related visual signals remain
+after anonymization, not as a recommendation for deployment in personnel
+monitoring.
+
+For practical tools, the following safeguards are recommended:
+
+\begin{enumerate}
+    \item make data collection explicit and optional;
+    \item avoid sending raw source code to external services;
+    \item generate minimaps locally before transmission;
+    \item document what information is preserved by anonymization;
+    \item allow sensitive objectives, such as Author, to be disabled;
+    \item keep humans responsible for interpretation and decisions.
+\end{enumerate}
+
+These safeguards align with the project's position that minimap-based analysis
+should support developers, not replace judgment or create opaque surveillance.
+
+\section{Risks and Mitigation}
+
+Table~\ref{tab:risks} summarizes the main research risks and mitigation actions.
+
+\begin{table}[ht]
+\centering
+\caption{Research risks and mitigation strategies.}
+\label{tab:risks}
+\begin{tabular}{p{0.26\textwidth}p{0.33\textwidth}p{0.27\textwidth}}
+\toprule
+\textbf{Risk} & \textbf{Impact} & \textbf{Mitigation} \\
+\midrule
+Dataset imbalance dominates results & Inflated accuracy and weak minority-class performance. & Use macro metrics, reweighting, balanced subsets, and per-class analysis. \\
+Anonymization removes too much signal & Models lose predictive power. & Compare anonymization levels and combine with non-sensitive metadata. \\
+Anonymization preserves too much information & Confidentiality concerns. & Evaluate leakage, remove comments, strengthen transformations. \\
+Models learn boilerplate artifacts & Poor generalization across repositories. & Use XAI, ablations, and repository-disjoint evaluation. \\
+Tool feedback is not useful to developers & Weak practical contribution. & Conduct user-centered evaluation and refine interaction design. \\
+Quality labels are noisy & Invalid quality-related conclusions. & Use multiple label sources and manual validation samples. \\
+\bottomrule
+\end{tabular}
+\fautor
+\end{table}
+
+\section{Tentative Timeline}
+
+Table~\ref{tab:timeline} presents a tentative schedule after the qualification
+deposit. The schedule should be refined with the advisor and co-advisors after
+the qualification exam.
+
+\begin{table}[ht]
+\centering
+\caption{Tentative doctoral research timeline after qualification.}
+\label{tab:timeline}
+\begin{tabular}{p{0.22\textwidth}p{0.62\textwidth}}
+\toprule
+\textbf{Period} & \textbf{Main activities} \\
+\midrule
+July--August 2026 & Incorporate qualification feedback; freeze revised research questions and thesis structure. \\
+September--December 2026 & Refine dataset catalog; run anonymization and imbalance-aware experiments. \\
+January--April 2027 & Evaluate additional architectures, resolutions, and explanation protocols. \\
+May--August 2027 & Design and execute quality or architectural-deviation pilot studies. \\
+September--December 2027 & Extend MinimapSignatures for multi-file analysis and explanation overlays; conduct developer-centered evaluation. \\
+January--March 2028 & Consolidate results, write thesis chapters, and prepare artifact documentation. \\
+April--June 2028 & Revise thesis, submit papers/artifacts, and prepare final defense material. \\
+\bottomrule
+\end{tabular}
+\fautor
+\end{table}
+
+The schedule is intentionally conservative. It assumes that the core
+representation and preliminary studies are already available, but that the final
+thesis still requires stronger evaluation, broader tasks, and tool-centered
+evidence.

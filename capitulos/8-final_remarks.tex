@@ -1,0 +1,56 @@
+\section{Summary}
+
+This qualification document presented a doctoral research proposal centered on
+source code minimaps as visual signatures for software analysis. The proposal
+starts from a practical problem: modern software repositories are heterogeneous,
+large, and difficult to understand at scale, while many analysis approaches
+depend on language-specific processing, expert-defined rules, or representations
+that preserve sensitive lexical content.
+
+The proposed approach transforms source files into compact, anonymized minimap
+images that preserve structural, spatial, and syntactic cues. These images can
+be analyzed with handcrafted texture descriptors, deep learning models, and
+explainable AI methods. The approach is not intended to replace traditional
+static analysis, parsers, or software visualization. Rather, it offers a
+complementary representation that can support classification, prioritization,
+interpretation, and developer-facing feedback.
+
+\section{Current Evidence}
+
+The research has already produced preliminary evidence. The first empirical
+study showed that Local Binary Patterns and traditional classifiers can detect
+software features from source code minimaps, with Random Forest reaching
+approximately 93\% performance in the evaluated setting. The second study scaled
+the representation to 685,906 minimaps from 100 open-source projects across 10
+programming languages and evaluated deep models for Type, Project, and Author
+objectives. The tool-support line, MinimapSignatures, demonstrated that minimap
+generation and inference can be integrated into Visual Studio Code and IntelliJ
+IDEA through a shared backend.
+
+These results support the central hypothesis that anonymized minimaps preserve
+useful structural information for software analysis. They also reveal the main
+remaining challenges: class imbalance, label quality, anonymization strength,
+explainability, generalization, and developer-centered evaluation.
+
+\section{Expected Thesis Contribution}
+
+The expected thesis contribution is a coherent methodology and artifact set for
+visual source code analysis with minimaps. This includes a representation, an
+anonymization strategy, dataset-generation procedures, empirical evaluation,
+explainability protocols, and IDE-integrated tooling. Scientifically, the thesis
+aims to position source code minimaps as a reproducible bridge between software
+visualization and machine learning for code. Practically, it aims to provide
+tools and datasets that can be reused for future research on software
+comprehension, quality assessment, architectural deviation, and code-review
+support.
+
+\section{Closing Statement}
+
+The qualification stage shows that the project has moved beyond an initial idea:
+it already includes empirical studies, a large dataset, explainability results,
+and working tool prototypes. The remaining doctoral work will refine the
+evidence, expand the task set, evaluate practical usefulness, and consolidate
+the approach into a thesis. If successful, the project will contribute a
+language-light and visually grounded way of analyzing software artifacts,
+opening a path for source code analysis that is compact, reproducible,
+interpretable, and closer to the environments where developers work.

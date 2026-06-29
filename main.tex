@@ -1,0 +1,127 @@
+%============== NÃO MODIFICAR ESTES COMANDOS =============
+% Opções:
+%   Qualificação          = qualificacao
+%   Curso                 = doutorado/mestrado
+%   Situação do trabalho  = pre-defesa/pos-defesa (exceto para qualificação)
+%   Versão para impressão = impressao
+%=========================================================
+
+% QUALIFICAÇÃO DE DOUTORADO:
+\documentclass[qualificacao,doutorado]{packages/icmc}
+
+\usepackage{booktabs}
+\usepackage{longtable}
+\usepackage{array}
+\usepackage{url}
+\usepackage{mdframed}
+\usepackage{enumerate}
+\usepackage[document]{ragged2e}
+\usepackage{multirow}
+\usepackage{multicol}
+\usepackage{algpseudocode}
+
+% ------------------------------------------------------------------------
+% Cover and title-page metadata
+% ------------------------------------------------------------------------
+
+\tituloPT{Minimapas de Código-Fonte: Uma Abordagem Visual para Análise de Software}
+\tituloEN{Source Code Minimaps: A Visual Approach for Software Analysis}
+
+\autor[Gebara Junior, Munif]{Munif Gebara Junior}
+\genero{M}
+
+\orientador[Costa, Yandre Maldonato e Gomes da]{Prof. Dr.}{Yandre Maldonato e Gomes da Costa}
+\iesorientador{Universidade Estadual de Maringá (DIN--UEM)}
+\generoOR{M}
+
+\coorientador[Wiese, Igor Scaliante and Cordeiro, André F. R.]{Prof. Drs.}{Igor Scaliante Wiese e André F. R. Cordeiro}
+\iescoorientador{Universidade Tecnológica Federal do Paraná (UTFPR), Campus Campo Mourão, Brasil; e Universidade Estadual de Maringá (DIN--UEM)}
+\generoCOOR{M}
+
+\curso{CCMC}
+\data{01}{07}{2026}
+\idioma{EN}
+
+% Qualification documents — approval page fields left neutral
+\dataaprovacao{July 1, 2026}
+\localdefesa{Universidade Estadual de Maringá}
+
+\bancauemnomeA{}
+\bancaueminstituicaoA{}
+\generoUEMA{M}
+
+\bancauemnomeB{}
+\bancaueminstituicaoB{}
+\generoUEMB{M}
+
+\bancaexternonomeA{}
+\bancaexternoinstituicaoA{}
+\generoExteriorA{M}
+
+\bancaexternonomeB{}
+\bancaexternoinstituicaoB{}
+\generoExteriorB{M}
+
+% ------------------------------------------------------------------------
+% Abstracts
+% ------------------------------------------------------------------------
+
+\textoresumo[english]{
+\textbf{Context:} Modern software systems continuously grow in size, heterogeneity, and complexity, making program comprehension, maintenance, and quality assessment increasingly demanding. Although traditional static analysis, software visualization, and machine learning techniques have advanced considerably, many approaches still depend on language-specific parsers, expert-defined rules, or complex textual and structural representations. \textbf{Motivation:} This doctoral project investigates source code minimaps as compact visual signatures of software artifacts. The representation transforms source files into anonymized images that preserve structural, spatial, and syntactic cues, enabling the use of texture descriptors, convolutional neural networks, transfer learning, and explainable artificial intelligence. \textbf{Hypothesis:} Anonymized source code minimaps preserve enough visual and structural information to support scalable and language-agnostic software analysis while reducing dependence on manual rules and ecosystem-specific representations. \textbf{Objective:} The objective of this doctoral project is to define, evaluate, and operationalize a minimap-based approach for visual source code analysis, including dataset generation, artifact classification, model interpretation, and tool support inside development environments. \textbf{Preliminary results:} Previous studies indicate the feasibility of the approach with traditional classifiers based on Local Binary Patterns and with deep models trained on a corpus of 685,906 minimaps extracted from 100 open-source projects across 10 programming languages. The project also produced the MinimapSignatures ecosystem, composed of Visual Studio Code and IntelliJ IDEA plugins connected to a Python backend for inference. \textbf{Expected results:} The expected outcome is a reproducible methodology, datasets, and tools for analyzing source code through anonymized visual signatures, as well as further investigation of tasks related to software quality, architectural deviations, and code-review support.
+}{Source code minimaps, Software visualization, Machine learning, Software analysis, Explainable artificial intelligence}
+
+% ------------------------------------------------------------------------
+% Pre-textual elements
+% ------------------------------------------------------------------------
+
+\textodedicatoria*{tex/pre-textual/dedicatoria}
+\textoagradecimentos*{tex/pre-textual/agradecimentos}
+\textoepigrafe*{tex/pre-textual/epigrafe}
+
+\incluilistadefiguras
+\incluilistadetabelas
+\incluilistadealgoritmos
+
+\begin{document}
+
+\textual
+
+\chapter{Introduction}
+\label{chapter:introduction}
+\input{capitulos/1-Introducao.tex}
+
+\chapter{Theoretical Foundations}
+\label{chapter:foundations}
+\input{capitulos/2-fundamentacao.tex}
+
+\chapter{Related Work and Literature Mapping}
+\label{chapter:related-work}
+\input{capitulos/3-related_work.tex}
+
+\chapter{Source Code Minimaps: Proposed Methodology}
+\label{chapter:methodology}
+\input{capitulos/4-methodology.tex}
+
+\chapter{Preliminary Studies and Results}
+\label{chapter:preliminary-results}
+\input{capitulos/5-preliminary_results.tex}
+
+\chapter{MinimapSignatures: Tool Support}
+\label{chapter:tool-support}
+\input{capitulos/6-tool_support.tex}
+
+\chapter{Research Plan, Risks, and Threats to Validity}
+\label{chapter:research-plan}
+\input{capitulos/7-research_plan.tex}
+
+\chapter{Final Remarks}
+\label{chapter:final-remarks}
+\input{capitulos/8-final_remarks.tex}
+
+\bookmarksetup{startatroot}
+
+\postextual
+
+\bibliography{referencias}
+
+\end{document}

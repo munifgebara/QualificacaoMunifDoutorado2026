@@ -1,0 +1,346 @@
+\section{Literature Mapping Strategy}
+
+The related-work analysis in this qualification document is guided by the
+reference material stored in the local folder \texttt{artigos\_referencia}. The
+folder contains papers organized into thematic groups, CSV files with article
+classifications, keyword matrices, and automatically generated group
+descriptions. These automatic groupings were produced from an
+article-by-controlled-expression matrix weighted with TF-IDF and clustered with
+AGNES. Therefore, they are useful as a navigation instrument, but they are not
+treated as final scientific interpretation.
+
+The literature was organized around seven analytical dimensions:
+
+\begin{enumerate}
+    \item the software-engineering problem addressed by each work;
+    \item the representation used for source code or software artifacts;
+    \item the degree of language dependence;
+    \item the learning or visualization method adopted;
+    \item the dataset or empirical basis;
+    \item the evaluation strategy;
+    \item the limitations that motivate the minimap-based proposal.
+\end{enumerate}
+
+This organization is intentionally problem-oriented rather than chronological.
+The goal is not only to list existing tools or models, but to identify where
+source code minimaps can contribute. The following sections synthesize the main
+families of work.
+
+\section{Interpretation of the Local Article Groups}
+
+The local article groups provide an initial map of the literature. The largest
+group concentrates on software visualization, source code analysis, static
+analysis, software quality, maintenance, and evolution. This group is important
+because it establishes the software-engineering context in which minimaps should
+be positioned. It includes works that visualize dependencies, architecture,
+tests, source-code relations, microservice boundaries, fault localization, and
+quality indicators. These works show that visual and structural abstractions are
+useful, but they usually remain tied to specific analysis goals or human-facing
+views.
+
+A smaller but central group is directly related to minimaps, Local Binary
+Patterns, feature detection, and visual signatures. This group contains the
+initial minimap study and therefore functions as the seed of the doctoral
+proposal. Its role in the literature review is not only to cite previous work
+by the candidate, but to identify what remains open after that first study:
+larger datasets, deep models, explainability, stronger anonymization analysis,
+and tool integration.
+
+Another group emphasizes computer vision, Vision Transformers, ResNet,
+Transformer-based models, and source-code representations such as CV4Code. This
+group helps connect minimap analysis to modern visual learning. It also
+supports the methodological move from handcrafted texture descriptors to
+end-to-end learning. The relevance of this group is not that source code
+minimaps are natural images, but that computer vision methods can process
+spatial patterns and learn hierarchical representations.
+
+The final group contains works related to large language models, conversational
+data analysis, human-AI interaction, code verification, and visual programming.
+This group is more peripheral to the current qualification proposal, but it is
+useful for future positioning. As software-engineering tools increasingly adopt
+AI assistants, minimap-based analysis may become one component of a multimodal
+toolchain that combines visual, textual, structural, and conversational feedback.
+
+This interpretation of the groups leads to a practical decision for the thesis:
+the related-work chapter should not be organized by the automatic group numbers.
+Instead, it should translate those groups into conceptual families. The families
+used in this chapter are software visualization, machine learning for code,
+visual code representations, software quality, explainability, and tool support.
+
+\section{Software Visualization and Visual Code Inspection}
+
+Software visualization is the most direct conceptual predecessor of this
+project. It assumes that visual abstractions can help developers and researchers
+reason about software systems in ways that raw text alone cannot support. In
+early and classical work, visualization often focused on dependencies,
+architectural structures, metrics, or evolution. Pinzger et al.
+\cite{pinzger2008tool} proposed visual support for understanding source code
+dependencies, while SourceMiner Evolution supported feature evolution
+comprehension through coordinated views \cite{novais2013sourceminer}. SArF Map
+used map metaphors to visualize software architecture from feature and layer
+viewpoints \cite{kobayashi2013sarf}.
+
+These works are important because they show that visual representations can
+externalize structural information that is difficult to grasp from files alone.
+However, their main output is designed for human inspection. A developer or
+architect examines the visualization and draws conclusions. In contrast, this
+doctoral project treats minimaps as visual signatures that can be processed by
+models. The human may still inspect the image or the explanation, but the first
+analytical step is computational.
+
+Recent visualization tools reinforce the relevance of this area. FineCodeAnalyzer
+provides multi-perspective visualization for fine-grained source code analysis
+\cite{qayum2022finecodeanalyzer}. SFLVis supports visual analysis of software
+fault localization results \cite{sun2024sflvis}. Code-smell detection and
+visualization have also been reviewed systematically, showing that visual support
+remains useful for quality-related tasks \cite{reis2022code}. ScaMaha parses,
+analyzes, and visualizes object-oriented systems \cite{almsiedeen2025scamaha},
+and CodeSketch explores real-time multi-language visualization with UML and
+animation support \cite{shrivastava2025codesketch}.
+
+CodePanorama is particularly close to this project because it explores
+language-agnostic visual code inspection \cite{etter2022codepanorama}. It
+supports the intuition that zoomed-out visual representations can expose
+patterns across source artifacts. Nevertheless, CodePanorama remains primarily a
+visual inspection tool. The minimap approach proposed here extends this line by
+turning compact visual representations into data for supervised learning,
+explainability, and IDE-integrated inference.
+
+\section{Machine Learning Representations for Source Code}
+
+A second body of work studies how source code can be represented for machine
+learning. Allamanis et al. \cite{allamanis2018survey} review the broader field
+of machine learning for big code and identify several recurring tasks and
+representations. Token-based and sequence-based models treat code as a language,
+while tree-based and graph-based models capture syntactic and semantic structure.
+Code2vec, for example, represents code snippets using paths in abstract syntax
+trees \cite{alon2019code2vec}. CodeBERT and GraphCodeBERT use transformer-based
+pretraining for code and natural language, with GraphCodeBERT incorporating data
+flow information \cite{feng2020codebert,guo2021graphcodebert}.
+
+These approaches have strong semantic and syntactic advantages. They can capture
+identifier use, API calls, syntactic roles, data flow, and natural-language
+comments. However, this expressiveness often comes with preprocessing
+requirements. Models may depend on tokenizers, parsers, language-specific
+grammars, valid syntax, or large pretraining corpora. Such requirements are
+reasonable for many tasks, but they can complicate analysis across repositories
+containing many languages and non-code artifacts.
+
+Graph-based methods provide another important representation family. Nadim et
+al. \cite{nadim2022sourcecodegraphs} use structural properties of source code
+graphs for just-in-time bug prediction. Graphs are highly informative when the
+task depends on dependencies, calls, control flow, or structural relations. Yet
+graphs require extraction procedures and normalization decisions that may vary
+across languages and tools. SparseCoder represents a more recent effort to make
+source code analysis more efficient with sparse attention and learned token
+pruning \cite{yang2025sparsecoder}. Such advances reduce computational cost, but
+they remain within a textual or token-based modeling tradition.
+
+The minimap proposal differs in its first representation layer. Instead of
+parsing source code into language-aware structures, it transforms files into
+images. This loses explicit semantics, but it gains uniformity across many file
+types. The proposal should therefore be understood as complementary to
+token-based, tree-based, and graph-based methods. A practical pipeline may use
+minimaps to quickly classify and prioritize artifacts, then apply deeper static
+or semantic analysis only where needed.
+
+\section{Computer Vision and Visual Representations of Code}
+
+The idea of using visual representations for code has gained momentum with work
+such as CV4Code \cite{shi2023cv4code}. CV4Code investigates source code
+understanding through visual code representations, showing that image-like
+encodings can support learning tasks that are usually addressed with textual or
+syntactic models. This work is important because it validates the broader
+premise that source code contains visual signals useful for machine learning.
+
+The minimap approach shares this premise but emphasizes a different set of
+research concerns. First, minimaps are designed to be compact and editor-like,
+with fixed-size variants such as 128 by 128 pixels. Second, the approach includes
+anonymization as a central step, not only as a preprocessing option. Third, it
+examines several prediction objectives: Type, Project, and Author. Fourth, it
+uses explainability to investigate the visual regions learned by the models.
+Fifth, it integrates the representation into IDE plugins through
+MinimapSignatures.
+
+The methodological inspiration also comes from domains beyond software
+engineering. In music classification, spectrograms transform audio signals into
+visual representations that can be analyzed by texture descriptors and neural
+models \cite{costa2011music,costa2012music,costa2017cnn}. Similar strategies
+have been used for sound-image classification in other domains
+\cite{nanni2018bird,pereira2019representation}. These works suggest that a
+domain need not be inherently visual to benefit from visual machine learning.
+The key requirement is that the visual transformation preserves task-relevant
+patterns.
+
+For source code minimaps, the relevant patterns are not semantic objects but
+layout regularities, symbol distributions, indentation structures, and repeated
+regions. This makes the representation closer to texture and document-image
+analysis than to natural-object recognition. Consequently, both handcrafted
+texture descriptors and convolutional neural networks are relevant baselines.
+
+\section{Software Quality, Code Smells, and Architecture-Specific Patterns}
+
+One of the long-term goals of this doctoral project is to extend minimap-based
+analysis toward software quality indicators, code smells, and architectural
+deviations. The literature on code smells is therefore relevant. Aniche et al.
+\cite{aniche2018code} show that Model--View--Controller architectures have
+specific code smells, highlighting that quality problems often depend on
+architectural roles and framework conventions. A generic rule may miss problems
+that become visible only when the expected role of an artifact is known.
+
+This observation is important for minimap research. If files with different
+roles produce different visual signatures, then minimaps may help identify
+artifacts whose structure deviates from project or architecture expectations.
+For example, a controller, repository, entity, test file, or configuration file
+may have visual regularities that are not sufficient to prove correctness but
+are useful as weak signals. A minimap-based model could flag unusual files for
+human review or for deeper static analysis.
+
+However, quality assessment is more demanding than Type classification. A file
+can visually resemble a valid controller and still be poorly designed. A
+minimap can reveal structure, density, repetition, and layout, but it cannot
+directly infer all semantic properties. Therefore, quality-related extensions
+must be designed carefully, possibly combining minimap signals with metrics,
+static-analysis outputs, or repository metadata.
+
+\section{Explainability for Visual and Software Models}
+
+Explainability is relevant in two ways. First, deep learning models applied to
+minimaps must be inspected to determine whether they use plausible evidence.
+Second, if minimap-based tools are to provide developer-facing feedback, the
+feedback should not be limited to opaque labels and confidence scores.
+
+Integrated Gradients provides one method for attributing predictions to input
+features \cite{integratedgradients2017}. Broader XAI surveys discuss the
+strengths and limitations of attribution, surrogate models, and local
+explanations \cite{adadi2018xai}. In minimap analysis, attribution maps can
+show whether predictions are influenced by indentation zones, headers,
+boilerplate, dense generated regions, or file endings. This is valuable for
+interpretation, but it must not be overstated. Attribution maps are not proofs
+that a model understands source code; they are evidence about sensitivity and
+salient visual regions.
+
+The large-scale minimap study uses Integrated Gradients to compare explanations
+across Type, Project, and Author objectives \cite{gebara2025ciarp}. Early
+findings suggest that Type predictions often rely on structural bands,
+Project predictions may emphasize repository conventions or boilerplate, and
+Author predictions can be more diffuse. These results support the idea that
+different objectives depend on different visual cues, but they also raise
+important methodological questions about leakage, convention, and over-reliance
+on non-semantic artifacts.
+
+\section{Tool Support and IDE Integration}
+
+A recurring limitation of research prototypes in software engineering is that
+they remain detached from everyday development environments. Developers do not
+usually analyze code through separate experimental pipelines; they work in IDEs,
+version-control platforms, code-review systems, and continuous-integration
+tools. For a minimap-based approach to be practically relevant, it must be
+operationalized in such environments.
+
+The tool literature includes many examples of visualization and analysis tools,
+but fewer works connect compact visual representations, trained models, and
+multi-IDE workflows. MinimapSignatures addresses this gap by using Visual Studio
+Code and IntelliJ IDEA plugins to generate anonymized minimaps locally and send
+them to a backend for prediction \cite{gebara2026minimapsignatures}. This design
+separates IDE-specific interaction from model inference, allowing models to
+evolve independently from the plugins.
+
+The preliminary evaluation of MinimapSignatures is functional. It validates that
+the complete workflow can be executed: source capture, minimap generation,
+anonymization, HTTP communication, backend inference, and IDE feedback. This is
+an important first step, but it is not yet a user study. Future work must
+evaluate usefulness, trust, cognitive effort, and impact on development tasks.
+
+\section{Synthesis of Gaps}
+
+Table~\ref{tab:related-synthesis} summarizes how the main related-work families
+connect to this project and which gaps remain.
+
+\begin{table}[ht]
+\centering
+\caption{Synthesis of related-work families and research gaps.}
+\label{tab:related-synthesis}
+\begin{tabular}{p{0.22\textwidth}p{0.33\textwidth}p{0.32\textwidth}}
+\toprule
+\textbf{Family} & \textbf{Typical contribution} & \textbf{Gap addressed by this project} \\
+\midrule
+Software visualization & Human-facing views for dependencies, architecture, evolution, or faults. & Use compact visual artifacts as machine-readable signatures. \\
+Machine learning for code & Token, tree, graph, or transformer representations. & Provide a language-light visual representation that can include non-code artifacts. \\
+Visual code representations & Treat code as image-like data. & Add anonymization, scale, explainability, and IDE integration around minimaps. \\
+Quality and smells & Detect or visualize maintainability problems. & Investigate minimap signals as weak evidence for quality and architectural deviation. \\
+Explainable AI & Attribute model predictions to inputs. & Interpret what visual regions of minimaps support software-analysis predictions. \\
+IDE tool support & Bring analysis closer to developers. & Operationalize minimap generation and inference in multi-IDE workflows. \\
+\bottomrule
+\end{tabular}
+\fautor
+\end{table}
+
+From this synthesis, the core research opportunity becomes clear. Source code
+minimaps may provide a compact bridge between software visualization and
+machine learning for code. They are visual enough to capture spatial and
+structural patterns, simple enough to generate across heterogeneous repositories,
+and compatible with both handcrafted descriptors and deep visual models. The
+remaining challenge is to evaluate them rigorously, interpret their behavior,
+understand their limitations, and integrate them into practical workflows.
+
+\section{Positioning of the Proposed Research}
+
+The proposed research can be positioned through three contrasts.
+
+First, compared with traditional software visualization, minimap-based analysis
+changes the primary consumer of the representation. A dependency graph, treemap,
+or architecture map is usually designed so that a human can inspect it directly.
+A source code minimap may be inspected by a human, but its first role is to
+serve as data for a model. This distinction affects the design criteria. A human
+visualization should be expressive, readable, and interactive. A minimap
+signature should be compact, reproducible, and discriminative.
+
+Second, compared with token, tree, graph, and transformer-based code models,
+minimap-based analysis changes the first abstraction layer. Instead of
+constructing a language-aware representation, it renders source artifacts into a
+visual space. This makes the representation weaker semantically but broader
+operationally. It can include code, markup, configuration, scripts, templates,
+and generated artifacts under the same rendering procedure. This is particularly
+useful for repositories whose maintenance problems span many kinds of files.
+
+Third, compared with standalone machine learning pipelines, MinimapSignatures
+connects the representation to developer environments. This is important because
+software-engineering research often stops at the point where a model reports a
+metric. The tool line asks what happens next: how a developer obtains the
+prediction, how the result is shown, which files can be analyzed, and how a
+backend can evolve independently from IDE clients.
+
+These contrasts define the distinctive contribution of the thesis. It is not
+only a new classifier, a new visualization, or a new plugin. It is a pipeline
+that links visual representation, anonymization, empirical evaluation,
+explainability, and tool support.
+
+\section{Open Problems Derived from the Literature}
+
+The literature also reveals open problems that the thesis must address.
+
+The first open problem is representation fidelity. Visual representations may
+discard important semantics. A minimap can preserve layout and symbols, but it
+does not explicitly encode type hierarchies, API usage, or data flow. The thesis
+must therefore identify which tasks are appropriate for minimaps and which tasks
+require complementary representations.
+
+The second open problem is privacy and leakage. Anonymization suppresses lexical
+content, but visual structure can still reveal information. A generated file, a
+framework template, or a distinctive repository convention may be identifiable.
+The thesis must discuss this honestly and evaluate stronger anonymization modes.
+
+The third open problem is generalization. Strong performance inside one corpus
+does not guarantee generalization to other ecosystems. Public open-source
+projects may not represent proprietary systems. Large projects may dominate
+training. Generated files may inflate results. The thesis must use careful
+splits, ablations, and per-class analysis.
+
+The fourth open problem is developer interpretation. A classifier that reports
+``Project A, 92\% confidence'' may not help a developer if the meaning of the
+prediction is unclear. Explanations, uncertainty, and actionable framing are
+necessary. Tool evaluation must therefore include not only whether the system
+runs, but whether its feedback can be understood and used responsibly.
+
+These problems shape the research plan presented later in this document.

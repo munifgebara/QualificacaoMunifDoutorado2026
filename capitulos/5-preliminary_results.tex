@@ -1,0 +1,450 @@
+\section{Role of Preliminary Studies}
+
+This chapter consolidates the empirical evidence already produced during the
+doctoral research. The goal is not to present the final thesis results, but to
+show that the proposed direction is viable and that the remaining work is built
+on concrete artifacts. Two studies are central. The first evaluates source code
+minimaps with Local Binary Patterns and traditional machine learning
+\cite{gebara2025iwssip}. The second scales the approach to hundreds of thousands
+of minimaps and evaluates deep learning models with explainability
+\cite{gebara2025ciarp}.
+
+Together, these studies support three claims. First, source code minimaps encode
+discriminative information about software artifacts. Second, both handcrafted
+texture descriptors and learned visual representations can exploit this
+information. Third, explainability methods can reveal which visual regions
+models use when making predictions.
+
+\section{Study 1: Feature Detection with Texture Descriptors}
+
+The first study introduced source code minimaps as visual signatures for
+software feature detection \cite{gebara2025iwssip}. The methodology generated
+minimap images from source files, applied anonymization, extracted Local Binary
+Pattern histograms, and trained traditional classifiers. The evaluated models
+included K-Nearest Neighbors, Random Forest, and Support Vector Machines.
+
+The study was motivated by the observation that software artifacts often have
+visual texture. Some classes contain repeated fields and annotations, some test
+files contain repeated assertions and setup methods, some front-end files contain
+dense markup, and some configuration files contain short nested structures.
+Instead of manually defining rules for each stereotype, the study asked whether
+these visual patterns could be learned from minimap images.
+
+Figure~\ref{fig:lbp} illustrates the Local Binary Pattern operator used as the
+texture descriptor.
+
+\begin{figure}[ht]
+    \centering
+    \caption{Local Binary Pattern operator used for texture extraction.}
+    \label{fig:lbp}
+    \includegraphics[width=0.70\textwidth]{figuras/lbp.png}
+    \fadaptada{martins2013database}
+\end{figure}
+
+The study generated two dataset variants. The first used variable-size minimaps,
+where image dimensions reflected source file dimensions. The second used
+fixed-size minimaps, especially 128 by 128 pixels, to support later comparison
+with neural image models. This distinction is important because variable-size
+minimaps preserve more original layout information, while fixed-size minimaps
+simplify modeling.
+
+\section{Study 1 Dataset and Classes}
+
+The initial dataset was generated from real software projects and organized into
+classes representing file types and Java-related stereotypes. Examples include
+Java entities, repositories, services, unit tests, JavaScript files, JSON files,
+SVG files, XML files, properties files, shell scripts, and SQL files. The
+complete raw class distribution was imbalanced, with some classes containing
+only a few instances and others containing thousands.
+
+For the first controlled evaluation, the study selected classes with sufficient
+support and limited the number of samples per class to reduce imbalance. The
+resulting setting focused on seven representative classes. This design provided
+a balanced enough scenario to test whether the representation itself contained
+useful visual signals.
+
+Figure~\ref{fig:lbp-histograms} presents average LBP histograms for selected
+classes. The figure shows that some classes produce clearly different texture
+profiles, while others are more similar and therefore more difficult to
+distinguish.
+
+\begin{figure}[ht]
+    \centering
+    \caption{Average LBP histograms for selected minimap classes.}
+    \label{fig:lbp-histograms}
+    \includegraphics[width=0.92\textwidth]{figuras/lbp-histograms.png}
+    \fautor
+\end{figure}
+
+\section{Study 1 Results}
+
+Table~\ref{tab:study1-results} summarizes the main performance results reported
+for the three traditional classifiers. The values should be interpreted as
+preliminary evidence because the dataset was still limited when compared with
+the later large-scale corpus.
+
+\begin{table}[ht]
+\centering
+\caption{Summary of preliminary results with LBP features.}
+\label{tab:study1-results}
+\begin{tabular}{p{0.28\textwidth}ccc}
+\toprule
+\textbf{Classifier and dataset} & \textbf{Precision} & \textbf{Recall} & \textbf{F1-score} \\
+\midrule
+KNN, variable-size minimaps & 0.79 & 0.79 & 0.79 \\
+KNN, fixed-size minimaps & 0.78 & 0.78 & 0.78 \\
+Random Forest, variable-size minimaps & 0.93 & 0.93 & 0.93 \\
+Random Forest, fixed-size minimaps & 0.93 & 0.93 & 0.93 \\
+SVM, variable-size minimaps & 0.89 & 0.89 & 0.89 \\
+SVM, fixed-size minimaps & 0.88 & 0.88 & 0.88 \\
+\bottomrule
+\end{tabular}
+\fautor
+\end{table}
+
+Random Forest achieved the best overall results, reaching approximately 93\%
+accuracy/F1-score in both fixed-size and variable-size settings. This result is
+important because it indicates that minimap texture contains discriminative
+signals even before using deep learning. SVM also performed strongly, while KNN
+was less effective, suggesting that the feature space benefits from models that
+can learn more complex decision boundaries or ensemble combinations.
+
+Figure~\ref{fig:confusion-rf} shows the confusion matrices for Random Forest in
+the fixed-size and variable-size settings. The matrices indicate strong
+performance for visually distinctive classes such as JSON and SVG, while some
+Java-related classes exhibit more confusion because they share structural
+similarities.
+
+\begin{figure}[ht]
+    \centering
+    \caption{Random Forest confusion matrices for fixed-size and variable-size minimaps.}
+    \label{fig:confusion-rf}
+    \includegraphics[width=0.92\textwidth]{figuras/confusion-rf.png}
+    \fautor
+\end{figure}
+
+\section{Lessons from Study 1}
+
+The first study produced four lessons that guide the rest of the doctorate.
+First, source code minimaps can support classification without relying on
+language-specific parsers. Second, anonymization did not prevent the models from
+learning useful visual patterns in the evaluated setting. Third, fixed-size
+minimaps remained competitive with variable-size minimaps, making them suitable
+for convolutional models. Fourth, class similarity matters: files with similar
+roles and layouts may be difficult to separate with texture descriptors alone.
+
+These lessons motivated the second study. If minimaps work with handcrafted
+features in a limited setting, the next question is whether they scale to more
+projects, languages, classes, and learning objectives.
+
+\section{Study 2: Large-Scale Deep Learning}
+
+The second study expanded the evaluation to a large-scale corpus of source code
+minimaps \cite{gebara2025ciarp}. The dataset contains 685,906 minimap images
+extracted from 100 open-source projects across 10 programming languages. The
+images are standardized to 128 by 128 pixels and accompanied by a file-level
+catalog. The study evaluates three objectives: Type, Project, and Author.
+
+The scale of the dataset changes the nature of the problem. Instead of asking
+whether a few visually distinct classes can be separated, the study asks whether
+minimaps preserve useful information across many repositories and heterogeneous
+ecosystems. It also introduces severe class imbalance, especially because some
+projects and file types are much more frequent than others.
+
+Figure~\ref{fig:dist-type} presents the distribution of the top Type classes,
+while Figures~\ref{fig:dist-project} and \ref{fig:dist-author} present the top
+Project and Author classes.
+
+\begin{figure}[ht]
+    \centering
+    \caption{Top Type classes in the large-scale minimap dataset.}
+    \label{fig:dist-type}
+    \includegraphics[width=0.82\textwidth]{figuras/dist-type-top20.pdf}
+    \fautor
+\end{figure}
+
+\begin{figure}[ht]
+    \centering
+    \caption{Top Project classes in the large-scale minimap dataset.}
+    \label{fig:dist-project}
+    \includegraphics[width=0.82\textwidth]{figuras/dist-project-top20.pdf}
+    \fautor
+\end{figure}
+
+\begin{figure}[ht]
+    \centering
+    \caption{Top Author classes in the large-scale minimap dataset.}
+    \label{fig:dist-author}
+    \includegraphics[width=0.82\textwidth]{figuras/dist-author-top20.pdf}
+    \fautor
+\end{figure}
+
+\section{Study 2 Dataset Summary}
+
+Table~\ref{tab:study2-dataset} summarizes the main dataset statistics. The
+numbers show that the corpus is large enough to train deep models, but also
+imbalanced enough to require careful evaluation.
+
+\begin{table}[ht]
+\centering
+\caption{Summary of the large-scale minimap dataset.}
+\label{tab:study2-dataset}
+\begin{tabular}{lr}
+\toprule
+\textbf{Property} & \textbf{Value} \\
+\midrule
+Number of minimap images & 685,906 \\
+Number of open-source projects & 100 \\
+Number of programming languages & 10 \\
+Type classes & 63 \\
+Project classes & 99 \\
+Author classes & 97 \\
+Default image size & 128 by 128 pixels \\
+Default color mode & Grayscale \\
+\bottomrule
+\end{tabular}
+\fautor
+\end{table}
+
+The Type objective contains file-role categories such as programming-language
+files, headers, configuration formats, markup, scripts, and other artifacts. The
+Project objective reflects repository identity. The Author objective reflects
+last-committer or author labels as recorded by the dataset-generation process.
+Because this objective may conflate humans, bots, and organizational accounts,
+it is interpreted cautiously.
+
+\section{Study 2 Training Protocol}
+
+The large-scale study evaluates convolutional backbones under a unified
+protocol. Inputs are fixed-size grayscale minimaps. Models are trained with
+early stopping and evaluated using accuracy and ROC-AUC, with macro-F1 and
+weighted-F1 used to interpret class imbalance. Architectures include
+from-scratch and pretrained convolutional models such as ResNet-18 and
+EfficientNet-B0 \cite{he2016resnet,tan2019efficientnet}.
+
+The rationale for transfer learning is pragmatic. Although source code minimaps
+are not natural images, pretrained models may still provide useful low-level
+features. The results suggest that pretraining provides consistent but modest
+benefits for some objectives \cite{gebara2025ciarp}.
+
+\section{Study 2 Results}
+
+Table~\ref{tab:study2-results} presents the main validation results emphasized
+in the large-scale study. EfficientNet-B0 with ImageNet pretraining reached the
+best reported validation accuracies among the evaluated configurations.
+
+\begin{table}[ht]
+\centering
+\caption{Representative validation results from the large-scale minimap study.}
+\label{tab:study2-results}
+\begin{tabular}{p{0.20\textwidth}p{0.33\textwidth}ccc}
+\toprule
+\textbf{Objective} & \textbf{Representative best model} & \textbf{Accuracy} & \textbf{ROC-AUC macro} & \textbf{ROC-AUC micro} \\
+\midrule
+Type & EfficientNet-B0 pretrained & 0.9333 & near 0.995 or above & near 0.995 or above \\
+Project & EfficientNet-B0 pretrained & 0.8604 & near 0.995 or above & near 0.995 or above \\
+Author & EfficientNet-B0 pretrained & 0.8705 & near 0.995 or above & near 0.995 or above \\
+\bottomrule
+\end{tabular}
+\fautor
+\end{table}
+
+The Type objective achieved the highest accuracy, which is consistent with the
+research hypothesis. File types and roles often produce visually distinctive
+structures. Project and Author objectives were more difficult but still reached
+strong results, indicating that minimaps encode repository conventions and
+style-related patterns even after anonymization.
+
+However, accuracy must be interpreted together with imbalance-aware metrics.
+Large head classes may dominate global performance. Macro-F1 is therefore
+important for understanding whether minority classes are being learned. This is
+one of the reasons why the remaining doctoral work includes imbalance-aware
+training, balanced subsets, and more detailed per-class analysis.
+
+\section{Explainability Findings}
+
+The large-scale study uses Integrated Gradients to interpret model predictions.
+Figure~\ref{fig:xai} presents attribution maps for the three objectives. The
+figure suggests that models rely on different visual evidence depending on the
+task.
+
+\begin{figure}[ht]
+    \centering
+    \caption{Integrated Gradients attribution maps for minimap classification objectives.}
+    \label{fig:xai}
+    \includegraphics[width=0.92\textwidth]{figuras/xai.png}
+    \fautor
+\end{figure}
+
+For Type classification, attributions often concentrate on structural bands,
+indentation regions, and delimiter patterns. This is consistent with the idea
+that file roles have visual structure. For Project classification, attributions
+may highlight repository-specific conventions, headers, generated sections, or
+boilerplate. For Author classification, attributions are more diffuse, suggesting
+that stylistic signals are distributed and harder to localize.
+
+These findings are valuable but also cautionary. If a Project classifier relies
+heavily on boilerplate, it may not generalize to repositories with different
+templates. If an Author classifier learns bot-generated patterns, it may not
+represent human style. Therefore, explainability is used not only to support the
+method but also to expose its risks.
+
+\section{Artifact and Tool Results}
+
+In addition to the two empirical studies, the project produced
+MinimapSignatures, a multi-IDE tool ecosystem \cite{gebara2026minimapsignatures}.
+The tool line validates that minimap generation and analysis can move from
+offline experiments into practical development environments. The functional
+evaluation confirms that the backend receives base64-encoded minimaps, invokes
+models, returns prediction groups, and that both IntelliJ IDEA and Visual Studio
+Code clients can display the results.
+
+This result matters because it changes the research trajectory. The thesis is
+not limited to a dataset and model comparison. It also investigates how minimap
+analysis can become usable infrastructure for software-engineering workflows.
+
+\section{Consolidated Evidence}
+
+Table~\ref{tab:preliminary-evidence} summarizes the evidence produced so far and
+how it supports the research questions.
+
+\begin{table}[ht]
+\centering
+\caption{Preliminary evidence and relation to research questions.}
+\label{tab:preliminary-evidence}
+\begin{tabular}{p{0.24\textwidth}p{0.43\textwidth}p{0.18\textwidth}}
+\toprule
+\textbf{Evidence} & \textbf{Main finding} & \textbf{Related RQs} \\
+\midrule
+LBP study & Minimap texture supports software-feature classification with Random Forest near 93\%. & RQ1, RQ2 \\
+Fixed-size comparison & 128 by 128 minimaps remain competitive with variable-size minimaps. & RQ1, RQ2 \\
+Large-scale dataset & Minimap learning scales to 685,906 images from 100 projects and 10 languages. & RQ1 \\
+Deep learning results & EfficientNet-B0 pretrained reaches strong validation results for Type, Project, and Author. & RQ1, RQ2 \\
+Integrated Gradients & Different objectives rely on different visual regions and patterns. & RQ3 \\
+MinimapSignatures & IDE plugins and backend validate an end-to-end tool workflow. & RQ5 \\
+\bottomrule
+\end{tabular}
+\fautor
+\end{table}
+
+The evidence supports continuing the doctoral research, but it also defines the
+remaining challenges. The next phase must deepen the evaluation of
+anonymization, improve imbalance-aware learning, refine dataset splits, extend
+the task set toward quality and architectural analysis, and evaluate the tool
+with developers or realistic development scenarios.
+
+\section{Interpretation by Research Question}
+
+The preliminary studies already provide partial answers to the research
+questions stated in the Introduction.
+
+\subsection{RQ1: Discriminative Structural Cues}
+
+The LBP study and the large-scale deep learning study both support the idea that
+minimaps preserve discriminative structural cues. In the first study, the
+success of Random Forest over LBP histograms indicates that texture-level
+information is meaningful. In the second study, the strong Type classification
+results indicate that fixed-size minimaps preserve enough information to
+distinguish many artifact categories across a much larger corpus.
+
+However, RQ1 is not fully answered. The current evidence is strongest for the
+datasets already used. Future work must evaluate additional repositories,
+stronger splits, and quality-related tasks. It must also examine which classes
+are consistently difficult and whether failures are due to representation loss,
+label ambiguity, or insufficient samples.
+
+\subsection{RQ2: Handcrafted and Learned Representations}
+
+The first study shows that handcrafted texture descriptors are a viable
+baseline. The second study shows that deep models can operate directly on
+minimap images at scale. The comparison suggests that handcrafted descriptors
+are useful for simpler settings, while learned representations become important
+when the dataset is larger, more imbalanced, and more heterogeneous.
+
+The remaining work should compare these pipelines under the same dataset
+conditions. For example, LBP histograms can be computed for the large-scale
+dataset and compared with deep models under identical splits. This would make
+the answer to RQ2 more precise.
+
+\subsection{RQ3: Visual Evidence and Explainability}
+
+Integrated Gradients provides an initial answer to RQ3. The attribution maps
+suggest that models use structural bands, boilerplate regions, and diffuse style
+patterns depending on the objective. This supports the claim that predictions
+are not arbitrary, but it also reveals risks. If a model depends too strongly on
+headers or generated sections, then its performance may reflect dataset
+artifacts rather than robust software structure.
+
+Future work must make this analysis more systematic. Instead of inspecting only
+representative examples, the thesis should aggregate attribution statistics,
+compare attribution patterns across classes, and perform ablation experiments
+that remove or mask salient regions.
+
+\subsection{RQ4: Anonymization}
+
+The current results suggest that anonymization does not eliminate the predictive
+signal. Both the classical and deep-learning studies use anonymized minimaps and
+still obtain strong results. This is encouraging because it supports the idea
+that structural cues remain after lexical suppression.
+
+Nevertheless, RQ4 remains one of the most important open questions. The current
+anonymization strategy has not yet been compared systematically against stronger
+or weaker alternatives. It is also necessary to evaluate information leakage:
+what can still be inferred from a minimap, and under what assumptions? The final
+thesis should include an anonymization ablation study.
+
+\subsection{RQ5: IDE Integration}
+
+MinimapSignatures provides an initial answer to RQ5 by showing that minimap
+analysis can be integrated into Visual Studio Code and IntelliJ IDEA. The
+functional validation confirms that the technical workflow is feasible.
+
+However, developer usefulness remains open. The current prototype shows that
+predictions can be delivered inside IDEs, but it does not prove that developers
+benefit from them. Future work must evaluate whether the feedback is
+understandable, whether explanations increase trust, and whether multi-file
+analysis is more useful than single-file prediction.
+
+\section{Limitations of the Current Evidence}
+
+The current evidence has several limitations. First, the first study uses a
+limited dataset compared with the later corpus. Its results are valuable as
+proof of feasibility, but they should not be generalized beyond the evaluated
+setting without further experiments.
+
+Second, the large-scale study is affected by class imbalance. Strong accuracy
+and ROC-AUC values show that the models learn substantial signal, but they do
+not guarantee equally strong behavior for minority classes. Macro-F1, per-class
+recall, and confusion matrices must be emphasized in the thesis.
+
+Third, the Author objective is ethically and methodologically sensitive. Labels
+may reflect last committers, bots, project maintainers, or generated artifacts.
+The objective is useful for studying whether style-related signals exist in
+minimaps, but it should not be presented as a deployment-ready author
+identification tool.
+
+Fourth, the current tool evaluation is functional. It confirms that the
+architecture works, but it does not measure usability, usefulness, or impact on
+developer productivity. This distinction must be preserved in the thesis.
+
+Finally, the current studies focus mostly on classification. The most valuable
+software-engineering applications may require ranking, anomaly detection,
+clustering, explanation, or integration with other signals. These directions
+remain to be explored.
+
+\section{Implications for the Thesis}
+
+The preliminary results shape the final thesis in a concrete way. The thesis
+does not need to prove from scratch that minimaps contain information; the early
+studies already support that claim. Instead, the thesis must explain how robust,
+general, interpretable, and useful that information is.
+
+This shifts the emphasis from simple feasibility to disciplined evaluation. The
+next experiments should ask harder questions: whether the representation
+generalizes across repositories, whether minority classes are handled fairly,
+whether anonymization is strong enough, whether explanations reveal meaningful
+evidence, and whether developers can use the feedback in realistic tasks.
+
+The final thesis should therefore be organized around a progression:
+representation, evidence, interpretation, and operationalization. The current
+chapter provides the evidence base for that progression.

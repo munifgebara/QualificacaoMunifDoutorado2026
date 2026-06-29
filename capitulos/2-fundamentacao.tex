@@ -1,0 +1,327 @@
+\section{Software Analysis and Program Comprehension}
+
+Software analysis is a broad term that covers techniques used to inspect,
+summarize, evaluate, and reason about software artifacts. In the context of this
+project, the term includes static analysis, visual analysis, machine learning
+over source artifacts, and tool-supported feedback inside development
+environments. These activities are closely related to program comprehension:
+before a developer can modify, review, test, or refactor a system, the developer
+must form a working understanding of what its artifacts are, how they are
+organized, and what roles they play.
+
+Program comprehension is difficult because source code is not only text. It is
+also structure, convention, history, style, architecture, dependency, and domain
+knowledge. The same syntactic construct may have different meaning depending on
+frameworks and project conventions; conversely, visually similar files may
+perform similar roles even when they belong to different projects. This tension
+motivates the search for representations that capture useful structural signals
+without requiring a full semantic interpretation at the first step.
+
+Traditional program-comprehension support includes code navigation,
+cross-reference search, syntax highlighting, dependency views, metrics,
+architectural diagrams, and static-analysis warnings. These mechanisms are
+essential, but they tend to operate either at the textual level or through
+language-aware abstractions. A minimap-based approach adds another layer: it
+represents a source artifact as an image-like signature that can be inspected by
+models and, in some cases, by humans. It does not aim to answer every semantic
+question about a file. Instead, it supports a preliminary form of recognition:
+what type of artifact does this resemble, which project conventions does it
+share, and which visual regions explain a classification?
+
+\section{Static Analysis and Source Code Representations}
+
+Static analysis examines software artifacts without executing them. It may
+detect coding-rule violations, compute metrics, identify possible defects,
+extract dependencies, or enforce architectural constraints. Static analysis is
+particularly valuable because it can run automatically and repeatedly during
+development, testing, code review, and continuous integration. However, static
+analysis usually requires parsers, language grammars, rule definitions, or
+framework-specific knowledge.
+
+Source code can be represented in several ways for static or learning-based
+analysis. Table~\ref{tab:foundations-representations} summarizes common
+representations and their implications for this project.
+
+\begin{table}[ht]
+\centering
+\caption{Common source code representations and their implications.}
+\label{tab:foundations-representations}
+\begin{tabular}{p{0.21\textwidth}p{0.35\textwidth}p{0.31\textwidth}}
+\toprule
+\textbf{Representation} & \textbf{Strengths} & \textbf{Limitations} \\
+\midrule
+Raw text & Simple, universal, preserves full content. & Sensitive, noisy, and difficult to compare across languages. \\
+Tokens & Captures lexical structure and supports sequence models. & Requires tokenization and often preserves identifiers. \\
+Abstract syntax trees & Captures grammar and hierarchy. & Requires language-specific parsers and valid code. \\
+Graphs & Represents dependencies, flows, and structural relations. & Can be expensive to build and normalize. \\
+Metrics & Compact and interpretable. & Often loses local structure and layout. \\
+Images/minimaps & Compact, visual, language-light, compatible with computer vision. & Loses explicit semantics and may require careful interpretation. \\
+\bottomrule
+\end{tabular}
+\fautor
+\end{table}
+
+Learning-based software engineering has explored several of these
+representations. Surveys and empirical studies discuss how tokens, trees,
+graphs, and neural representations can support code classification,
+summarization, defect prediction, and related tasks
+\cite{allamanis2018survey,alon2019code2vec,feng2020codebert,guo2021graphcodebert}.
+Graph-based representations are especially useful when dependencies and program
+structure are central, as in just-in-time bug prediction using source code graphs
+\cite{nadim2022sourcecodegraphs}. Sparse and transformer-based models seek to
+handle long code sequences more efficiently \cite{yang2025sparsecoder}.
+
+The minimap representation proposed in this project is not intended to replace
+these approaches. Instead, it provides a complementary abstraction. A minimap is
+less semantically explicit than an abstract syntax tree or graph, but it is
+easier to generate for heterogeneous file types, including configuration files,
+markup, scripts, and generated artifacts. It can also be anonymized in a way that
+removes identifiers and literal values while retaining layout and structural
+symbols.
+
+\section{Software Visualization}
+
+Software visualization studies techniques for representing software artifacts,
+relationships, evolution, and runtime or static properties in visual forms.
+Visualization can support program comprehension by reducing cognitive load,
+revealing patterns, and allowing analysts to reason about large systems at
+different levels of abstraction.
+
+Several software visualization tools focus on structural understanding.
+Pinzger et al. \cite{pinzger2008tool} presented a tool for visual understanding
+of source code dependencies, emphasizing the role of visual relationships in
+program comprehension. SourceMiner Evolution supports the comprehension of
+feature evolution through coordinated views such as treemaps, polymetric views,
+and dependency graphs \cite{novais2013sourceminer}. SArF Map visualizes software
+architecture from feature and layer viewpoints, using map metaphors to help
+analysts inspect implicit structures \cite{kobayashi2013sarf}.
+
+More recent work extends this landscape. FineCodeAnalyzer provides
+multi-perspective source code analysis through fine-grained interactive
+visualization \cite{qayum2022finecodeanalyzer}. SFLVis supports visual analysis
+for software fault localization \cite{sun2024sflvis}. Code-smell detection and
+visualization have also been systematized in the literature, showing that visual
+support remains relevant for understanding quality problems \cite{reis2022code}.
+Tools such as CodePanorama further explore zoomed-out and language-agnostic code
+inspection \cite{etter2022codepanorama}.
+
+This project relates to software visualization but shifts the main audience of
+the visual artifact. Traditional visualizations are usually designed for human
+interpretation. Source code minimaps, in this project, are designed primarily as
+machine-readable visual signatures. Humans may inspect them, and explainability
+methods may expose salient regions, but the core pipeline treats minimaps as
+inputs for computational models.
+
+\section{Source Code as Visual Data}
+
+Representing non-visual phenomena as images is not new in machine learning.
+Audio signals, for example, can be transformed into spectrograms and then
+processed with image-analysis techniques. Costa et al. used spectrograms for
+music genre recognition \cite{costa2011music}, and later work showed that Local
+Binary Patterns can be effective texture descriptors for music classification
+\cite{costa2012music}. Convolutional neural networks have also been evaluated
+for music classification using spectrograms \cite{costa2017cnn}. These studies
+are methodologically relevant because they show how a domain that is not
+originally visual can become amenable to visual pattern recognition.
+
+Source code can be treated in a similar way. A code file contains characters,
+lines, indentation, punctuation, comments, delimiters, blocks, and repeated
+structures. When mapped to pixels, these elements form patterns that may reflect
+artifact roles. For example, a JSON file often appears as nested punctuation and
+short key-value lines; an SVG file may contain dense XML-like blocks; a Java
+entity may contain annotations, field declarations, and method blocks; a test
+class may have repeated setup and assertion structures. Even after letters and
+digits are anonymized, layout and symbolic density may remain informative.
+
+CV4Code explicitly explored source code understanding via visual code
+representations \cite{shi2023cv4code}. This line of work is closely related to
+the present project because both approaches challenge the assumption that source
+code must always be processed first as text, syntax trees, or graphs. The
+minimap approach adds emphasis on compact rendering, anonymization, dataset
+construction, explainability, and IDE integration.
+
+\section{Texture Descriptors and Local Binary Patterns}
+
+Before deep learning became dominant in computer vision, many image-analysis
+tasks used handcrafted descriptors. Texture descriptors are particularly
+relevant when an image is characterized by repeated local patterns rather than
+by objects with clear semantic boundaries. Local Binary Patterns (LBP) are a
+well-known texture descriptor that compares each pixel with its neighborhood and
+encodes local intensity relations as binary patterns
+\cite{maenpaa2005texture,martins2013database}.
+
+In a minimap, the discriminative signal may not be an object such as a face,
+vehicle, or organ. It may instead be a pattern of indentation, delimiter density,
+line length, repeated symbols, or blank-space distribution. This makes LBP a
+reasonable baseline for initial experiments. The first study in this doctoral
+project followed this direction by extracting LBP histograms from source code
+minimaps and using classical classifiers such as K-Nearest Neighbors, Random
+Forest, and Support Vector Machines \cite{gebara2025iwssip}.
+
+Handcrafted descriptors have advantages and limitations. They are simpler,
+faster, and more interpretable than large neural models in many contexts.
+However, they may fail to capture multi-scale or task-specific patterns that
+deep models can learn directly from data. This motivates the transition from LBP
+experiments to convolutional and transfer-learning experiments in the larger
+study.
+
+\section{Deep Learning and Transfer Learning}
+
+Deep learning models can learn hierarchical representations from images. In
+computer vision, convolutional neural networks such as ResNet
+\cite{he2016resnet} and EfficientNet \cite{tan2019efficientnet} have become
+standard backbones for image classification and feature extraction. Vision
+Transformers and hybrid architectures further expanded the range of possible
+models by adapting attention mechanisms to image patches \cite{vaswani2017attention}.
+
+Transfer learning is particularly useful when a model pretrained on a large
+dataset can be adapted to a smaller or more specialized dataset. Although
+natural-image pretraining is not designed for source code minimaps, pretrained
+filters may still provide useful low-level visual features such as edges,
+textures, contrast patterns, and spatial hierarchies. The large-scale minimap
+study evaluates both from-scratch and pretrained variants, showing that
+pretraining can provide consistent but sometimes modest gains
+\cite{gebara2025ciarp}.
+
+The use of deep learning in this project introduces methodological concerns.
+First, source code datasets are often imbalanced: some file types, projects, or
+authors dominate the corpus. Second, model performance must be interpreted with
+metrics beyond accuracy, especially when minority classes matter. Third,
+training and evaluation splits must avoid leakage, for example when files from
+the same project or author appear across partitions in ways that inflate
+performance. These concerns are addressed later in the methodology and research
+plan chapters.
+
+\section{Class Imbalance in Software Datasets}
+
+Software datasets are rarely balanced. Some file types occur frequently because
+they are part of the dominant language of a repository. Some projects are much
+larger than others. Some contributors or automated accounts touch many files,
+while others contribute only a small number of artifacts. This long-tail
+structure appears naturally in software repositories and directly affects model
+evaluation.
+
+Class imbalance can make a model appear strong while hiding weak behavior on
+minority classes. For example, if a dataset is dominated by Java, C, or
+JavaScript files, a model can achieve high accuracy by learning the largest
+classes and ignoring rare but important artifact types. This is particularly
+problematic in software engineering because rare classes may be precisely the
+ones that matter in maintenance: unusual configuration files, scripts, generated
+artifacts, migration files, security-sensitive files, or framework-specific
+components.
+
+The literature on imbalanced data recommends paying attention to both training
+strategies and evaluation metrics \cite{he2009imbalance,japkowicz2002}. Metrics
+such as macro-F1 treat all classes equally and therefore expose poor performance
+on minority classes. Weighted-F1 reflects the observed distribution and is useful
+for understanding practical behavior under the real dataset. ROC-AUC can help
+assess separability, but it should not be used alone. Ortigosa-Hernandez et al.
+\cite{ortigosa2017} also emphasize that the extent of multi-class imbalance
+should be measured rather than assumed.
+
+In minimap-based analysis, imbalance has an additional interpretive dimension.
+Head classes may contain more visual diversity simply because they have more
+examples. Tail classes may look visually coherent but still be difficult to
+learn because the model sees too few instances. Conversely, a small class may be
+easy if it has a distinctive template. For this reason, the thesis must report
+both aggregate metrics and per-class behavior. Confusion matrices, class-wise
+recall, and attribution maps are necessary to understand whether the model is
+learning useful patterns or mostly reproducing dataset frequency.
+
+\section{IDE Workflows and Developer Feedback}
+
+Integrated development environments are not passive text editors. They combine
+navigation, syntax highlighting, build integration, refactoring, testing,
+debugging, static analysis, version-control support, and extension mechanisms.
+Any tool that aims to support developers must fit into this environment without
+interrupting the flow of work.
+
+This matters for minimap-based analysis because a visual signature is useful
+only if it can be generated and interpreted at the right moment. During code
+review, a developer may want to inspect whether a new file resembles existing
+project conventions. During maintenance, a developer may want to identify
+unusual artifacts in a folder. During onboarding, a developer may want to obtain
+a quick overview of file roles in an unfamiliar repository. These scenarios
+require different interaction designs. A single-file command may be enough for
+quick inspection, while project-level analysis may require dashboards, grouping,
+filtering, and explanation overlays.
+
+Developer feedback should also be calibrated. A tool should avoid presenting a
+prediction as an unquestionable fact. Instead, it should communicate that a file
+visually resembles a class, that the confidence is limited, or that the model
+focused on particular regions. This is where explainability and interface design
+meet. Attribution maps, confidence scores, and textual summaries can help
+developers decide whether to trust, ignore, or investigate a prediction.
+
+The MinimapSignatures prototype is therefore not only an implementation detail.
+It is part of the research strategy. It allows the project to study how minimap
+analysis can be delivered in IDEs and which forms of feedback are plausible for
+future evaluation.
+
+\section{Explainable Artificial Intelligence}
+
+Explainable artificial intelligence (XAI) studies methods for making model
+behavior more transparent to humans. XAI is important when models are used in
+high-stakes or interpretive contexts, but it is also useful in research settings:
+it helps verify whether a model is learning plausible evidence or exploiting
+spurious artifacts. Surveys such as \citeonline{adadi2018xai} discuss the
+broader XAI landscape, including model-specific and model-agnostic methods.
+
+In this project, XAI is used primarily to interpret deep models trained on
+minimap images. Integrated Gradients is especially relevant because it attributes
+prediction scores to input features by integrating gradients along a path from a
+baseline input to the actual input \cite{integratedgradients2017}. When applied
+to minimaps, attribution maps can highlight whether the model is using
+indentation bands, delimiter regions, dense blocks, headers, boilerplate, or
+other visual structures.
+
+These explanations do not prove causality by themselves. A saliency map is an
+interpretive aid, not a complete explanation of a model. Nevertheless, XAI helps
+connect quantitative results to qualitative understanding. For example, if a
+model classifies file Type by focusing on structural bands and delimiter
+patterns, that behavior is more consistent with the research hypothesis than if
+the model relied exclusively on irrelevant borders or dataset artifacts.
+
+\section{Privacy, Anonymization, and Ethical Considerations}
+
+Source code often contains sensitive information. Even public repositories may
+include developer names, internal conventions, comments, secrets accidentally
+committed in the past, or organizational details. Industrial repositories are
+even more sensitive because source code may reveal intellectual property,
+business rules, security assumptions, and architectural strategy.
+
+The minimap approach includes anonymization to reduce exposure of lexical
+content. In the initial studies, letters and digits are mapped to canonical
+values while symbols, whitespace, and structural layout are preserved
+\cite{gebara2025iwssip}. This allows the model to observe patterns such as
+indentation, punctuation, nesting, and line density without directly retaining
+identifiers or literal values.
+
+However, anonymization must be discussed carefully. It is a risk-reduction
+strategy, not a formal privacy guarantee. Visual structure may still leak
+information about frameworks, generated code, project conventions, or unusual
+templates. Author-related predictions are also ethically sensitive because they
+may support misattribution or inappropriate surveillance if used without
+governance. For this reason, the Author objective in this project is treated as
+a research proxy for style and convention analysis, not as a standalone
+forensic tool. Any practical use of author-style signals must remain subordinate
+to human judgment, consent, and clear institutional policy.
+
+\section{Empirical Evaluation in Software Engineering}
+
+Because this project proposes and evaluates a software-engineering method, it
+must also follow principles from empirical software engineering. Guidelines for
+systematic literature reviews \cite{kitchenham2007slr}, controlled and empirical
+software-engineering studies \cite{wohlin2012experimentation,kitchenham2002preliminary},
+case-study research \cite{runeson2012case}, and families of experiments
+\cite{basili1999families} provide useful foundations for planning evaluation and
+reporting threats to validity.
+
+The empirical nature of the project appears in three places. First, the
+literature mapping must be transparent about search, filtering, grouping, and
+interpretation. Second, the model evaluation must describe datasets, splits,
+metrics, baselines, and class imbalance. Third, the tool-support evaluation must
+distinguish functional validation from usability, usefulness, or productivity
+claims. A plugin that successfully sends a minimap to a backend and displays a
+prediction is functionally validated; it is not yet proven to improve developer
+performance. This distinction is important for the remaining doctoral plan.
