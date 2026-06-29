@@ -9,6 +9,33 @@ article-by-controlled-expression matrix weighted with TF-IDF and clustered with
 AGNES. Therefore, they are useful as a navigation instrument, but they are not
 treated as final scientific interpretation.
 
+The search strategy was structured around four logical blocks executed across
+five major digital libraries: IEEE Xplore, ACM Digital Library, Scopus,
+SpringerLink, and Google Scholar.
+
+\begin{description}
+    \item[Block A (Source Code):] \texttt{"source code" OR "software code" OR "program code"}
+    \item[Block B (Analysis):] \texttt{"code analysis" OR "software analysis" OR "program analysis"}
+    \item[Block C (Techniques):] \texttt{"machine learning" OR "deep learning" OR "static analysis" OR "dynamic analysis"}
+    \item[Block D (Visual Representation):] \texttt{"visual representation" OR "code visualization" OR "minimap"}
+\end{description}
+
+For queries targeting visual paradigms, the blocks were combined as
+\textit{(A) AND (B) AND (C) AND (D)}. To cover broader analysis methodologies,
+Block D was omitted in complementary search runs.
+
+Reference management relied on Zotero for automated metadata harvesting. Study
+selection and blinded screening were managed through the Rayyan platform.
+The filtering followed three progressive stages: (i)~title and abstract
+screening produced an initial set of 270 candidates; (ii)~a keyword-based
+refinement guided by a control group of 7 seminal baseline papers, from which 39
+structural index terms were extracted, narrowed the pool to 155 articles;
+(iii)~negative filtering eliminated secondary studies and out-of-scope formats
+(survey, review, mapping study, tutorial, editorial, poster, and works centered
+on security or UX), reducing the active set to 96 articles. Full-text inspection
+with iterative peer validation then produced the final corpus of 56 selected
+studies.
+
 The literature was organized around seven analytical dimensions:
 
 \begin{enumerate}
@@ -153,6 +180,18 @@ encodings can support learning tasks that are usually addressed with textual or
 syntactic models. This work is important because it validates the broader
 premise that source code contains visual signals useful for machine learning.
 
+A significant finding from recent literature is the transition toward deep
+visual computing for minimap-based analysis. Early approaches relied on
+handcrafted texture descriptors such as Local Binary Patterns. More recent work
+demonstrates an increasing adoption of end-to-end computer vision architectures:
+Convolutional Neural Networks (CNNs), residual learning backbones (ResNet), and
+Vision Transformers (ViTs) are now used to process anonymized minimap images
+directly, treating structural layouts as machine-readable imagery without
+requiring lexical parsing. The adoption of ViTs is particularly relevant because
+their patch-based attention mechanism aligns naturally with the spatial
+organization of minimap regions such as indentation bands, delimiter zones, and
+block boundaries.
+
 The minimap approach shares this premise but emphasizes a different set of
 research concerns. First, minimaps are designed to be compact and editor-like,
 with fixed-size variants such as 128 by 128 pixels. Second, the approach includes
@@ -252,6 +291,34 @@ anonymization, HTTP communication, backend inference, and IDE feedback. This is
 an important first step, but it is not yet a user study. Future work must
 evaluate usefulness, trust, cognitive effort, and impact on development tasks.
 
+\section{Application Domains Identified in the Mapping}
+
+The systematic mapping reveals that source code minimaps have expanded well
+beyond their historical role as IDE navigation widgets. The surveyed studies show
+a strong concentration of minimap applications across three principal domains:
+
+\begin{description}
+    \item[Aesthetic and Structural Categorization.] Identifying functional
+    stereotypes and geometric structural rhythms within multi-language
+    repositories. Minimap classifiers can distinguish file roles based on visual
+    patterns of indentation, delimiter density, and block geometry without
+    exposing lexical content.
+
+    \item[Author and Provenance Attribution.] Utilizing stylistic visual
+    fingerprinting—such as individual indentation habits and spacing
+    patterns—to map code authorship without exposing raw lexical tokens. This
+    objective is treated as a research proxy for style and convention analysis.
+
+    \item[Project and Ecosystem Clustering.] Discerning architectural similarities
+    and matching files to specific project families or software components based
+    on layout regularities and visual conventions unique to each codebase.
+\end{description}
+
+These domains confirm that minimap representations encode information at
+multiple granularities: file type, project identity, and contributor style.
+They also motivate the three prediction objectives (Type, Project, Author)
+adopted in this doctoral project.
+
 \section{Synthesis of Gaps}
 
 Table~\ref{tab:related-synthesis} summarizes how the main related-work families
@@ -318,29 +385,49 @@ explainability, and tool support.
 
 \section{Open Problems Derived from the Literature}
 
-The literature also reveals open problems that the thesis must address.
+The literature also reveals open problems that the thesis must address. Three of
+these gaps recur consistently across the surveyed studies and can be named
+precisely:
 
-The first open problem is representation fidelity. Visual representations may
-discard important semantics. A minimap can preserve layout and symbols, but it
-does not explicitly encode type hierarchies, API usage, or data flow. The thesis
-must therefore identify which tasks are appropriate for minimaps and which tasks
-require complementary representations.
+\paragraph{Tooling Detachment.}
+Visual source code machine learning pipelines remain almost entirely
+disconnected from real-time developer workflows. There is a lack of automated
+plugin infrastructures capable of capturing, anonymizing, and transmitting active
+editing sequences directly from live modern IDEs. Offline accuracy metrics do not
+capture the operational friction of live software engineering, where code
+structures are constantly incomplete or undergoing syntax updates.
 
-The second open problem is privacy and leakage. Anonymization suppresses lexical
-content, but visual structure can still reveal information. A generated file, a
-framework template, or a distinctive repository convention may be identifiable.
-The thesis must discuss this honestly and evaluate stronger anonymization modes.
+\paragraph{Absence of User-Centered Evaluation.}
+Empirical evidence regarding usability, cognitive load, developer trust in AI
+recommendations, and practitioner interaction paradigms is exceptionally scarce.
+Almost no studies measure how real developers interact with visual AI feedback.
+The community cannot yet assess whether minimap-based tools are useful,
+interpretable, or trustworthy from a practitioner perspective.
 
-The third open problem is generalization. Strong performance inside one corpus
-does not guarantee generalization to other ecosystems. Public open-source
-projects may not represent proprietary systems. Large projects may dominate
-training. Generated files may inflate results. The thesis must use careful
-splits, ablations, and per-class analysis.
+\paragraph{The Single-File Scale Barrier.}
+Current prototypes operate almost exclusively on isolated, single-file
+representations at a fixed visual scale. Mechanisms supporting multi-file
+modules, project-level collection analysis, adaptive multi-scale architectures,
+and user-driven model retraining are virtually absent in the literature. This
+limit prevents minimap analysis from addressing tasks that inherently span
+multiple files or directory trees.
 
-The fourth open problem is developer interpretation. A classifier that reports
-``Project A, 92\% confidence'' may not help a developer if the meaning of the
-prediction is unclear. Explanations, uncertainty, and actionable framing are
-necessary. Tool evaluation must therefore include not only whether the system
-runs, but whether its feedback can be understood and used responsibly.
+Beyond these three structural gaps, the thesis must also address:
+
+\begin{itemize}
+    \item \textit{Representation fidelity}: minimaps preserve layout and symbols but
+    do not explicitly encode type hierarchies, API usage, or data flow. The thesis
+    must identify which tasks are appropriate for minimaps and which require
+    complementary representations.
+
+    \item \textit{Privacy and leakage}: anonymization reduces exposure but is not
+    a formal privacy guarantee. Generated files, framework templates, or
+    distinctive repository conventions may remain identifiable. Stronger
+    anonymization modes must be evaluated.
+
+    \item \textit{Generalization}: strong performance inside one corpus does not
+    guarantee transfer to other ecosystems. Repository-aware splits, ablations,
+    and per-class analysis are necessary.
+\end{itemize}
 
 These problems shape the research plan presented later in this document.
