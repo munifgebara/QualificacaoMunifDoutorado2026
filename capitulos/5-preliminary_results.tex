@@ -216,16 +216,20 @@ it is interpreted cautiously.
 \section{Study 2 Training Protocol}
 
 The large-scale study evaluates convolutional backbones under a unified
-protocol. Inputs are fixed-size grayscale minimaps. Models are trained with
-early stopping and evaluated using accuracy and ROC-AUC, with macro-F1 and
-weighted-F1 used to interpret class imbalance. Architectures include
-from-scratch and pretrained convolutional models such as ResNet-18 and
-EfficientNet-B0 \cite{he2016resnet,tan2019efficientnet}.
+protocol. Inputs are fixed-size 128 by 128 grayscale minimaps. Models are
+trained with early stopping and evaluated using accuracy and ROC-AUC, with
+macro-F1 and weighted-F1 used to interpret class imbalance. The evaluated
+architectures are ResNet-18 and EfficientNet-B0, tested in two
+configurations: trained from scratch on the minimap corpus, and initialized
+from ImageNet pretrained weights followed by fine-tuning
+\cite{he2016resnet,tan2019efficientnet}.
 
 The rationale for transfer learning is pragmatic. Although source code minimaps
-are not natural images, pretrained models may still provide useful low-level
-features. The results suggest that pretraining provides consistent but modest
-benefits for some objectives \cite{gebara2025ciarp}.
+are structurally different from natural images, pretrained convolutional filters
+may still provide useful low-level edge and texture detectors. Results indicate
+that ImageNet pretraining provides consistent but modest benefits across the
+three objectives, with EfficientNet-B0 pretrained reaching the strongest
+reported validation accuracy in this study \cite{gebara2025ciarp}.
 
 \section{Study 2 Results}
 
@@ -235,31 +239,36 @@ best reported validation accuracies among the evaluated configurations.
 
 \begin{table}[ht]
 \centering
-\caption{Representative validation results from the large-scale minimap study.}
+\caption{Representative validation results from the large-scale minimap study
+(EfficientNet-B0, ImageNet pretrained).}
 \label{tab:study2-results}
-\begin{tabular}{p{0.20\textwidth}p{0.33\textwidth}ccc}
+\begin{tabular}{p{0.20\textwidth}ccc}
 \toprule
-\textbf{Objective} & \textbf{Representative best model} & \textbf{Accuracy} & \textbf{ROC-AUC macro} & \textbf{ROC-AUC micro} \\
+\textbf{Objective} & \textbf{Accuracy} & \textbf{ROC-AUC macro} & \textbf{ROC-AUC micro} \\
 \midrule
-Type & EfficientNet-B0 pretrained & 0.9333 & near 0.995 or above & near 0.995 or above \\
-Project & EfficientNet-B0 pretrained & 0.8604 & near 0.995 or above & near 0.995 or above \\
-Author & EfficientNet-B0 pretrained & 0.8705 & near 0.995 or above & near 0.995 or above \\
+Type    & 0.9333 & $\geq$0.99 & $\geq$0.99 \\
+Project & 0.8604 & $\geq$0.99 & $\geq$0.99 \\
+Author  & 0.8705 & $\geq$0.99 & $\geq$0.99 \\
 \bottomrule
 \end{tabular}
 \fautor
 \end{table}
 
-The Type objective achieved the highest accuracy, which is consistent with the
-research hypothesis. File types and roles often produce visually distinctive
-structures. Project and Author objectives were more difficult but still reached
-strong results, indicating that minimaps encode repository conventions and
-style-related patterns even after anonymization.
+The Type objective achieved the highest validation accuracy, which is
+consistent with the research hypothesis: file roles often produce visually
+distinctive structures that remain separable after character anonymization.
+Project and Author classification are harder multi-class problems---with 99 and
+97 labels respectively---yet the model still reached substantial accuracy,
+suggesting that repository conventions and contributor style patterns are
+partially encoded in the visual layout of source files even after lexical
+content is suppressed.
 
-However, accuracy must be interpreted together with imbalance-aware metrics.
-Large head classes may dominate global performance. Macro-F1 is therefore
-important for understanding whether minority classes are being learned. This is
-one of the reasons why the remaining doctoral work includes imbalance-aware
-training, balanced subsets, and more detailed per-class analysis.
+These accuracy values must be read together with imbalance-aware metrics.
+Large head classes may dominate global accuracy while minority classes remain
+poorly classified. Macro-F1 scores, per-class recall, and confusion matrices
+are therefore essential for interpreting these results honestly. Improving
+minority-class behavior is one of the central open tasks for the remaining
+doctoral work.
 
 \section{Explainability Findings}
 
@@ -293,15 +302,38 @@ method but also to expose its risks.
 
 In addition to the two empirical studies, the project produced
 MinimapSignatures, a multi-IDE tool ecosystem \cite{gebara2026minimapsignatures}.
-The tool line validates that minimap generation and analysis can move from
-offline experiments into practical development environments. The functional
-evaluation confirms that the backend receives base64-encoded minimaps, invokes
-models, returns prediction groups, and that both IntelliJ IDEA and Visual Studio
-Code clients can display the results.
+MinimapSignatures consists of a Python backend (FastAPI with a PyTorch multitask
+model), a Visual Studio Code extension, and an IntelliJ IDEA plugin. The backend
+exposes a single HTTP endpoint that receives a 128 by 128 base64-encoded
+grayscale PNG and returns top-three ranked predictions for three targets: Type,
+Project, and Author. A fourth target (quality) is included in the response
+contract as a placeholder; no model has been trained for it yet, and it
+currently returns mock data. The quality target is reserved for future work.
+
+The model deployed in the backend is a custom multitask convolutional network
+with a shared backbone---four successive convolutional blocks that progressively
+reduce the spatial dimensions from 128 to 8 pixels---followed by a 256-dimensional
+embedding layer and three independent linear classification heads, one per
+target. This architecture is distinct from the ResNet-18 and EfficientNet-B0
+models evaluated in Study 2; it was designed specifically for simultaneous
+multi-target inference in the serving context.
+
+The functional evaluation confirms that the end-to-end workflow operates
+correctly: the VS Code extension and IntelliJ IDEA plugin each capture the
+active source file, generate an anonymized 128 by 128 minimap locally, encode
+it as a base64 PNG, send it to the backend, and display the returned
+predictions. The IntelliJ plugin opens a structured Markdown report in a
+split-screen editor, while the VS Code extension presents results in a WebView
+panel. It is worth noting that the IntelliJ plugin currently captures only the
+first 128 lines of the active file; files longer than 128 lines are truncated
+before minimap generation.
 
 This result matters because it changes the research trajectory. The thesis is
 not limited to a dataset and model comparison. It also investigates how minimap
 analysis can become usable infrastructure for software-engineering workflows.
+However, no user study has been conducted yet; the current evaluation is
+functional and integration-oriented, not a measure of developer usefulness or
+perceived benefit.
 
 \section{Consolidated Evidence}
 

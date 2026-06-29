@@ -47,23 +47,35 @@ plugin.
 
 \section{Backend Service}
 
-The backend is implemented in Python and exposes an HTTP interface. Its main
-endpoint receives a JSON payload containing metadata and a base64-encoded PNG
-image representing the minimap. The backend decodes the image, converts it to
-the expected grayscale format, normalizes pixel values, invokes the trained
-models, and returns prediction groups.
+The backend is implemented in Python using FastAPI and PyTorch. Its main
+endpoint receives a JSON payload containing a project identifier, an artifact
+hash, and a base64-encoded 128 by 128 grayscale PNG representing the minimap.
+The backend decodes the image, applies the training normalization
+(\((x - 0.5) / 0.5\)), performs a single forward pass through the multitask
+model, and returns structured prediction groups.
 
-The backend is designed around the prediction objectives used in the large-scale
-study: Type, Project, and Author. This does not mean that every deployment must
-use all three objectives. In practice, Type is the most immediately useful and
-least ethically sensitive target. Project can support repository-convention
-analysis. Author should be treated cautiously and may be disabled or reframed as
-style analysis in many contexts.
+The model deployed in the backend is a custom \textit{MultiTaskMinimapCNN},
+designed specifically for simultaneous multi-target inference. It consists of a
+shared convolutional backbone with four successive blocks that progressively
+reduce spatial dimensions from 128 to 8 pixels, a 256-dimensional embedding
+layer, and three independent linear classification heads for Type, Project, and
+Author. This architecture is distinct from the ResNet-18 and EfficientNet-B0
+models evaluated in Study 2; those were used for independent single-task
+classification in the large-scale offline experiment.
 
-The backend design supports model evolution. A future version may add
-quality-related models, code-smell indicators, architectural-deviation scores,
-or explanation maps. Since the clients communicate through a shared contract,
-these new results can be added as new response fields or prediction groups.
+The response contract currently includes four prediction targets: Type, Project,
+Author, and quality. The first three are produced by the trained model, returning
+the top-three ranked class-confidence pairs per target. The fourth target
+(quality) is included in the contract as a placeholder and currently returns
+mock data; no model has been trained for quality classification at this stage.
+This slot is reserved to maintain API contract compatibility when a quality model
+becomes available.
+
+In practice, Type is the most immediately useful and least ethically sensitive
+target. Project can support repository-convention analysis. Author should be
+treated cautiously because author labels may conflate humans, bots, and
+organizational accounts, and the target should not be used for individual
+attribution in production contexts.
 
 \section{Visual Studio Code Extension}
 
@@ -90,11 +102,16 @@ or project-level patterns.
 
 \section{IntelliJ IDEA Plugin}
 
-The IntelliJ IDEA plugin follows a lighter interaction model. It captures the
-active source artifact, generates the minimap, sends it to the backend, and
-displays a Markdown-based report in a split-screen editor. This approach
-integrates naturally with the IDE because the result appears as a document beside
-the source file.
+The IntelliJ IDEA plugin follows a lighter interaction model. When triggered,
+it reads the active editor document and captures up to the first 128 lines of
+the file. Files longer than 128 lines are truncated at that boundary before
+minimap generation; this is a current implementation limit, not a fundamental
+constraint of the representation. The plugin maps each character to the
+corresponding grayscale pixel value using the same encoding applied during
+dataset construction, builds a 128 by 128 image in memory, encodes it as a
+base64 PNG, and sends it to the backend via HTTP POST. The response is formatted
+as a Markdown document and opened in a split-screen editor beside the source
+file, with sections for the artifact hash and a prediction table per target.
 
 Figure~\ref{fig:intellij-plugin} shows the IntelliJ IDEA plugin interface.
 
@@ -106,9 +123,9 @@ Figure~\ref{fig:intellij-plugin} shows the IntelliJ IDEA plugin interface.
     \fautor
 \end{figure}
 
-The Markdown approach is less visually elaborate than the WebView interface, but
-it is simple, robust, and aligned with quick inspection. It also produces a
-textual artifact that can be saved, shared, or attached to later analysis.
+The Markdown approach is simpler than the WebView interface but sufficient for
+functional validation. It also produces a textual artifact that can be saved or
+attached to code-review notes.
 
 \section{Shared Client--Server Contract}
 
@@ -148,23 +165,25 @@ status.
 
 \begin{table}[ht]
 \centering
-\caption{Functional validation of MinimapSignatures.}
+\caption{Functional validation status of MinimapSignatures.}
 \label{tab:functional-validation}
-\begin{tabular}{p{0.58\textwidth}p{0.20\textwidth}}
+\begin{tabular}{p{0.60\textwidth}p{0.18\textwidth}}
 \toprule
 \textbf{Component or feature} & \textbf{Status} \\
 \midrule
 Backend receives base64 minimap payloads & Validated \\
-Backend preprocesses images for inference & Validated \\
-Backend invokes trained models & Validated \\
-Backend returns structured prediction groups & Validated \\
-Visual Studio Code extension generates and submits minimaps & Validated \\
-Visual Studio Code extension displays WebView results & Validated \\
-IntelliJ IDEA plugin generates and submits minimaps & Validated \\
-IntelliJ IDEA plugin displays Markdown results & Validated \\
-Shared client--server contract works across IDEs & Validated \\
+Backend applies training normalization and invokes multitask model & Validated \\
+Backend returns structured prediction groups (type, project, author) & Validated \\
+Quality target slot in response contract & Placeholder (mock) \\
+VS Code extension generates and submits minimaps & Validated \\
+VS Code extension displays WebView results & Validated \\
+IntelliJ IDEA plugin generates and submits minimaps (up to 128 lines) & Validated \\
+IntelliJ IDEA plugin displays Markdown results in split editor & Validated \\
+Shared client--server contract works across both IDEs & Validated \\
+Capture beyond 128 lines (IntelliJ) & Planned \\
+Explanation maps returned by backend & Planned \\
 Multi-file and project-level analysis & Planned \\
-Project-specific model update & Planned \\
+Quality classification model & Planned \\
 Developer usability evaluation & Planned \\
 \bottomrule
 \end{tabular}
@@ -218,48 +237,62 @@ expectations, while still avoiding transmission of raw source code.
 \section{Artifact Availability and Repositories}
 
 The public code organization for the project is
-\url{https://github.com/minimap-project}. At the time this document was prepared,
-the organization included repositories for the training infrastructure,
-shared assets, backend service, IntelliJ IDEA plugin, and Visual Studio Code
-extension. The artifact structure supports separation of concerns:
+\url{https://github.com/minimap-project}. The organization contains the
+following repositories:
 
 \begin{itemize}
-    \item \texttt{minimap-signatures-trainer}: training and model-related code;
-    \item \texttt{assets}: shared visual and documentation assets;
-    \item \texttt{back-end}: Python inference backend;
-    \item \texttt{intellij-plugin}: IntelliJ IDEA client;
-    \item \texttt{vscode-plugin}: Visual Studio Code client.
+    \item \texttt{minimap-signatures-trainer}: PyTorch training pipeline for
+    the multitask CNN (MultiTaskMinimapCNN), including data loading, training
+    loop, evaluation scripts, confusion matrices, and classification reports;
+    \item \texttt{back-end-pytorch}: FastAPI inference service that loads the
+    trained \texttt{best\_model.pt} checkpoint and exposes the analysis endpoint;
+    \item \texttt{intellij-plugin}: IntelliJ IDEA client (Java/Kotlin) for
+    minimap generation and result display;
+    \item \texttt{vscode-plugin}: Visual Studio Code extension (TypeScript) for
+    minimap generation and WebView results;
+    \item \texttt{assets}: shared visual and documentation assets.
 \end{itemize}
 
-This organization is useful for research reproducibility because it avoids
-mixing IDE-specific code with training scripts and backend inference logic. It
-also allows each component to evolve independently. For example, a new model can
-be added to the backend without changing the extension packaging, while a new
-IDE client can reuse the same backend contract.
+The minimap generation scripts and the initial LBP-based experiments are
+maintained in separate repositories under the author's personal account
+(\url{https://github.com/munifgebara/codeminimap} for the first study and
+\url{https://github.com/munifgebara/minimap-learner} for the large-scale deep
+learning study). The large-scale minimap dataset is archived on Zenodo
+(DOI: 10.5281/zenodo.16929672).
+
+This organization separates IDE-specific interaction code from training and
+inference logic, allowing each component to evolve independently without
+breaking the shared client--server contract.
 
 \section{Planned Extensions}
 
-The next versions of MinimapSignatures should support four extensions.
+The current MinimapSignatures prototype is a functional proof of integration.
+The following extensions are planned for the remaining doctoral period.
 
-First, the tool should move from single-file analysis to multi-file and
-project-level analysis. This would allow developers to inspect a folder, module,
-or entire repository and receive summaries of visual signatures, unusual files,
-or clusters of similar artifacts.
+\paragraph{Explanation overlays.}
+The backend should be extended to compute attribution maps server-side using
+Integrated Gradients and return them alongside prediction scores. This would
+allow the IDE plugins to display a visual overlay highlighting which regions of
+the minimap contributed most to each prediction, making the tool more
+transparent than a label-only classifier.
 
-Second, the backend should support explanation maps. Integrated Gradients or
-other attribution methods can be computed server-side and returned to the IDE so
-that developers can see which regions influenced predictions. This would make
-the tool more transparent than a label-only classifier.
+\paragraph{Full-file capture in IntelliJ.}
+The current 128-line capture limit should be extended to cover entire files,
+using scrolling or stitching strategies to preserve the full content while
+staying within the fixed 128 by 128 target size.
 
-Third, the tool should support project-specific model customization. A team may
-want to train or adapt a model using its own conventions, especially for
-architectural roles or quality indicators. The minimap catalog and backend
-architecture can support this direction.
+\paragraph{Multi-file and project-level analysis.}
+The tool should support analysis of a folder or module rather than a single
+active file. This would enable project-level summaries of visual signature
+distributions, identification of files that deviate from project conventions,
+and clustering of similar artifacts for navigation or review.
 
-Fourth, the tool should include quality-related targets. Instead of predicting
-only Type, Project, or Author, future models may identify code-smell likelihood,
-architectural deviation, generated-file anomalies, suspicious templates, or
-files that deserve priority in code review.
+\paragraph{Quality and architectural-deviation targets.}
+The quality slot in the response contract is currently a placeholder. Future
+work should design and evaluate a model for this target, using labels derived
+from static-analysis tools, code-review history, or architectural roles. This is
+the most open and exploratory planned direction.
 
-These extensions will move the tool from proof of integration toward a research
-platform for developer-facing visual source code analysis.
+These extensions depend on the empirical findings from the remaining doctoral
+experiments. They will be designed and evaluated incrementally, ensuring that
+each step is validated before the next is built.

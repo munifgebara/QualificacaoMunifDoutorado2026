@@ -267,20 +267,22 @@ it helps verify whether a model is learning plausible evidence or exploiting
 spurious artifacts. Surveys such as \citeonline{adadi2018xai} discuss the
 broader XAI landscape, including model-specific and model-agnostic methods.
 
-In this project, XAI is used primarily to interpret deep models trained on
-minimap images. Integrated Gradients is especially relevant because it attributes
-prediction scores to input features by integrating gradients along a path from a
-baseline input to the actual input \cite{integratedgradients2017}. When applied
-to minimaps, attribution maps can highlight whether the model is using
-indentation bands, delimiter regions, dense blocks, headers, boilerplate, or
-other visual structures.
+In this project, XAI is used to interpret convolutional models trained on
+minimap images in the large-scale study. Integrated Gradients is especially
+relevant because it attributes prediction scores to input pixels by integrating
+gradients along a path from a baseline (black image) to the actual minimap input
+\cite{integratedgradients2017}. When applied to minimaps, the resulting
+attribution maps highlight whether a model is relying on indentation bands,
+delimiter regions, dense blocks, headers, boilerplate, or other structural
+regularities.
 
-These explanations do not prove causality by themselves. A saliency map is an
-interpretive aid, not a complete explanation of a model. Nevertheless, XAI helps
-connect quantitative results to qualitative understanding. For example, if a
-model classifies file Type by focusing on structural bands and delimiter
-patterns, that behavior is more consistent with the research hypothesis than if
-the model relied exclusively on irrelevant borders or dataset artifacts.
+These maps are interpretive aids, not proofs of causality. A high-attribution
+region indicates that the model is sensitive to that area, but it does not
+necessarily mean that region carries the ground-truth discriminative signal for
+the task. XAI helps connect quantitative results to qualitative understanding
+and can expose risks: if Type classification relies mainly on file headers or
+boilerplate rather than structural body patterns, predictions may generalize
+poorly to repositories with different templates.
 
 \section{Privacy, Anonymization, and Ethical Considerations}
 

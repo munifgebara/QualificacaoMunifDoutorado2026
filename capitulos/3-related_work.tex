@@ -180,17 +180,23 @@ encodings can support learning tasks that are usually addressed with textual or
 syntactic models. This work is important because it validates the broader
 premise that source code contains visual signals useful for machine learning.
 
-A significant finding from recent literature is the transition toward deep
-visual computing for minimap-based analysis. Early approaches relied on
+A significant finding from the broader visual-code literature is the transition
+toward deep visual computing. Early approaches to visual code analysis relied on
 handcrafted texture descriptors such as Local Binary Patterns. More recent work
-demonstrates an increasing adoption of end-to-end computer vision architectures:
-Convolutional Neural Networks (CNNs), residual learning backbones (ResNet), and
-Vision Transformers (ViTs) are now used to process anonymized minimap images
-directly, treating structural layouts as machine-readable imagery without
-requiring lexical parsing. The adoption of ViTs is particularly relevant because
-their patch-based attention mechanism aligns naturally with the spatial
-organization of minimap regions such as indentation bands, delimiter zones, and
-block boundaries.
+demonstrates increasing adoption of end-to-end computer vision architectures:
+Convolutional Neural Networks, residual learning backbones (ResNet), and,
+more recently, Vision Transformers (ViTs) are reported in the literature for
+processing anonymized or visual code representations directly. The patch-based
+attention mechanism of ViTs aligns naturally with spatial regions of a minimap
+such as indentation bands, delimiter zones, and block boundaries, making them a
+candidate architecture for future experiments.
+
+In this doctoral project, the large-scale study (Study 2) evaluated ResNet-18
+and EfficientNet-B0. The MinimapSignatures backend uses a custom
+MultiTaskMinimapCNN with a shared convolutional backbone and independent
+classification heads per target. Transformer-based and hybrid architectures
+remain a direction for future model comparison rather than a current
+contribution.
 
 The minimap approach shares this premise but emphasizes a different set of
 research concerns. First, minimaps are designed to be compact and editor-like,

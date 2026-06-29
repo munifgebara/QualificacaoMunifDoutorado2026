@@ -149,21 +149,24 @@ after anonymization.
     \fautor
 \end{figure}
 
-Table~\ref{tab:anonymization} summarizes the initial ASCII mapping strategy.
+Table~\ref{tab:anonymization} summarizes the character-to-pixel mapping strategy
+adopted in the current implementation. Each character in the source file is
+mapped to a grayscale intensity value before the minimap image is generated.
+Pixel values range from 0 to 255.
 
 \begin{table}[ht]
 \centering
-\caption{Initial character anonymization strategy.}
+\caption{Character-to-pixel mapping strategy used in the current implementation.}
 \label{tab:anonymization}
-\begin{tabular}{p{0.25\textwidth}p{0.18\textwidth}p{0.40\textwidth}}
+\begin{tabular}{p{0.26\textwidth}p{0.12\textwidth}p{0.12\textwidth}p{0.33\textwidth}}
 \toprule
-\textbf{Input character range} & \textbf{Output} & \textbf{Preserved or suppressed information} \\
+\textbf{Character class} & \textbf{ASCII range} & \textbf{Pixel value} & \textbf{Information effect} \\
 \midrule
-Non-printable characters and whitespace & 0 or layout value & Preserves spacing and line structure. \\
-Digits & canonical digit value & Suppresses numeric literals while preserving digit regions. \\
-Uppercase letters & canonical uppercase value & Suppresses identifiers while preserving letter density. \\
-Lowercase letters & canonical lowercase value & Suppresses identifiers while preserving letter density. \\
-Symbols and punctuation & original or mapped symbol value & Preserves structural delimiters and operators. \\
+Control characters and whitespace & below 32 & 0 & Preserves blank-line and indentation structure. \\
+Digits & 48--57 & 53 & Suppresses numeric literals; marks numeric regions. \\
+Uppercase letters & 65--90 & 77 & Suppresses identifiers; marks uppercase density. \\
+Lowercase letters & 97--122 & 109 & Suppresses identifiers; marks lowercase density. \\
+All other printable characters (spaces, punctuation, symbols, operators) & remaining & raw ASCII value & Preserves structural delimiters, operators, and layout signals. \\
 \bottomrule
 \end{tabular}
 \fautor

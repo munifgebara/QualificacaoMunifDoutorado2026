@@ -231,12 +231,12 @@ their current status.
 \toprule
 \textbf{Contribution area} & \textbf{Description} & \textbf{Status} \\
 \midrule
-Representation & Source code minimaps as compact visual signatures of software artifacts. & Partially validated \\
-Anonymization & Transformations that reduce lexical exposure while preserving layout and symbols. & Partially validated \\
-Datasets & Minimap image corpora with metadata catalogs and supervised objectives. & Partially available \\
-Modeling & Classical texture-based and deep learning pipelines for minimap classification. & Partially validated \\
-Explainability & Attribution analysis to interpret visual evidence used by models. & Initial results \\
-Tool support & IDE plugins and backend services for practical minimap-based analysis. & Prototype available \\
+Representation & Source code minimaps as compact visual signatures of software artifacts. & Validated (two studies) \\
+Anonymization & Character-to-pixel mapping that suppresses lexical content while preserving layout signals. & Validated; ablation study planned \\
+Datasets & 685,906-image corpus from 100 projects across 10 languages; archived on Zenodo. & Available \\
+Modeling & LBP + shallow classifiers (Study 1); ResNet-18 and EfficientNet-B0 (Study 2); custom multitask CNN (Stage 3). & Validated \\
+Explainability & Integrated Gradients attribution maps for Type, Project, and Author objectives. & Initial results \\
+Tool support & VS Code and IntelliJ IDEA plugins connected to a FastAPI/PyTorch backend; functional prototype. & Prototype validated \\
 Quality tasks & Extension toward code smells, quality indicators, and architectural deviations. & Planned \\
 \bottomrule
 \end{tabular}
