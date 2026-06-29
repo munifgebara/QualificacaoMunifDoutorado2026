@@ -58,16 +58,30 @@ trustworthy.
 
 \subsection{A2: Anonymization Evaluation}
 
-The project needs a deeper evaluation of anonymization. The current strategy
-suppresses letters and digits while preserving structural symbols and layout.
-Future experiments should compare different anonymization strengths, including
-comment removal, identifier masking, literal masking, punctuation preservation,
-and symbol abstraction.
+A preliminary comparison between anonymized and non-anonymized minimap
+representations was conducted informally during the development of the approach.
+Results showed minimal performance degradation, confirming that structural
+signals---not lexical content---carry most of the discriminative information.
 
-The objective is to measure the trade-off between predictive performance and
-information exposure. Stronger anonymization may reduce leakage but also remove
-useful signals. We need to understand where this trade-off is acceptable for
-software-analysis tasks.
+However, this comparison was not formally documented. Activity A2 will produce
+a rigorous anonymization study by comparing several suppression levels:
+
+\begin{itemize}
+    \item baseline (current character-to-pixel mapping: letters→canonical,
+    digits→canonical, others→raw ASCII);
+    \item no anonymization (raw character codes, including identifiers and literals);
+    \item comment removal (strip comment regions before rendering);
+    \item punctuation normalization (map all operators and delimiters to a single
+    canonical value, testing whether structure beyond punctuation still carries signal);
+    \item maximum suppression (all non-whitespace characters to a single value,
+    preserving only blank lines and indentation).
+\end{itemize}
+
+Each level will be evaluated on the same splits used in Study 2, reporting
+accuracy, macro-F1, and per-class behavior. The goal is to produce a
+performance-vs-suppression trade-off curve and to characterize which suppression
+level is appropriate for contexts where intellectual property protection is the
+primary concern.
 
 \subsection{A3: Imbalance-Aware Modeling}
 
@@ -213,29 +227,45 @@ Mitigation strategies include reporting multiple metrics, confidence intervals
 or variation across seeds when feasible, per-class results, macro-averaged
 metrics, and clear distinction between preliminary and final evidence.
 
-\section{Ethical and Privacy Considerations}
+\section{Intellectual Property and Responsible Use}
 
-This project must be careful with privacy, confidentiality, and potential misuse.
-Even anonymized minimaps may leak structural information about a repository.
-Author-related predictions are especially sensitive. They should not be used as
-automated attribution or surveillance tools. In this thesis, Author is treated as
-a research objective for studying whether style-related visual signals remain
-after anonymization, not as a recommendation for deployment in personnel
-monitoring.
+The primary ethical motivation of this project is the protection of intellectual
+property. Industrial codebases often contain strategic business information
+embedded in identifiers, numeric constants, formulas, and comments. The
+minimap approach is designed to enable structural analysis of source code without
+exposing this information to external services or collaborators.
 
-For practical tools, the following safeguards are recommended:
+The character-level anonymization adopted here guarantees that identifier names,
+numeric literals, and string content are suppressed before any minimap is
+transmitted or stored externally. A preliminary experiment confirmed that this
+suppression has minimal impact on predictive performance, which means the utility
+of the analysis is preserved while the business-sensitive lexical layer remains
+local.
+
+The Author prediction objective is a methodological probe, not a surveillance
+tool. Its purpose is to demonstrate that stylistic patterns---indentation habits,
+spacing conventions, operator placement---survive anonymization. This is evidence
+that the model operates on structure rather than on lexical content. Author
+prediction is not proposed as a deployment target in personnel monitoring,
+performance evaluation, or attribution of responsibility. Any use of this
+objective outside its methodological role would be a misapplication of the
+research.
+
+For practical tool deployment, the following design principles apply:
 
 \begin{enumerate}
-    \item make data collection explicit and optional;
-    \item avoid sending raw source code to external services;
-    \item generate minimaps locally before transmission;
-    \item document what information is preserved by anonymization;
-    \item allow sensitive objectives, such as Author, to be disabled;
-    \item keep humans responsible for interpretation and decisions.
+    \item generate minimaps locally and transmit only the anonymized image, never
+    the raw source file;
+    \item make the anonymization transformation auditable and documented;
+    \item allow individual objectives to be disabled at the user's discretion;
+    \item communicate prediction results as probabilistic signals, not as facts;
+    \item keep humans responsible for all decisions based on model output.
 \end{enumerate}
 
-These safeguards align with the project's position that minimap-based analysis
-should support developers, not replace judgment or create opaque surveillance.
+The MinimapSignatures backend already implements local anonymization in the IDE
+plugins: the minimap is generated client-side and only the image is sent to the
+inference endpoint, not the source text. This design reflects the principle that
+intellectual property protection begins at the data-collection step.
 
 \section{Risks and Mitigation}
 
@@ -250,8 +280,8 @@ Table~\ref{tab:risks} summarizes the main research risks and mitigation actions.
 \textbf{Risk} & \textbf{Impact} & \textbf{Mitigation} \\
 \midrule
 Dataset imbalance dominates results & Inflated accuracy and weak minority-class performance. & Use macro metrics, reweighting, balanced subsets, and per-class analysis. \\
-Anonymization removes too much signal & Models lose predictive power. & Compare anonymization levels and combine with non-sensitive metadata. \\
-Anonymization preserves too much information & Confidentiality concerns. & Evaluate leakage, remove comments, strengthen transformations. \\
+Anonymization removes too much signal & Models lose predictive power. & Preliminary comparison shows minimal degradation; formal ablation will quantify trade-off curves. \\
+Stronger suppression needed for certain contexts & Current mapping may not satisfy all IP protection requirements. & Evaluate comment removal, punctuation normalization, and maximum suppression modes in Activity A2. \\
 Models learn boilerplate artifacts & Poor generalization across repositories. & Use XAI, ablations, and repository-disjoint evaluation. \\
 Tool feedback is not useful to developers & Weak practical contribution. & Conduct user-centered evaluation and refine interaction design. \\
 Quality labels are noisy & Invalid quality-related conclusions. & Use multiple label sources and manual validation samples. \\

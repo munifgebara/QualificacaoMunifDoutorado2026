@@ -414,16 +414,37 @@ that remove or mask salient regions.
 
 \subsection{RQ4: Anonymization}
 
-The current results suggest that anonymization does not eliminate the predictive
-signal. Both the classical and deep-learning studies use anonymized minimaps and
-still obtain strong results. This is encouraging because it supports the idea
-that structural cues remain after lexical suppression.
+A preliminary comparison between anonymized and non-anonymized minimap
+representations was conducted during the development of the approach. The
+results showed that predictive performance is largely preserved after
+anonymization, with minimal degradation across the evaluated objectives.
+This finding has two important implications.
 
-Nevertheless, RQ4 remains one of the most important open questions. The current
-anonymization strategy has not yet been compared systematically against stronger
-or weaker alternatives. It is also necessary to evaluate information leakage:
-what can still be inferred from a minimap, and under what assumptions? The final
-thesis should include an anonymization ablation study.
+First, it confirms that the discriminative signals captured by the model reside
+primarily in structural features---indentation patterns, operator density,
+punctuation layout, and block organization---rather than in identifier names or
+literal values. The model does not require lexical content to distinguish file
+types, project origins, or authorship styles.
+
+Second, it supports the core argument for the approach in industrial contexts.
+If anonymization preserves utility while suppressing identifiers, numeric
+constants, and string literals, then an organization can send anonymized minimaps
+to an external analysis service without exposing intellectual property. The model
+receives only structural signals; the business logic embedded in the lexical
+layer remains local.
+
+The Author objective plays a specific methodological role in this context. The
+fact that author style can be identified even after full lexical suppression is
+not a concern---it is evidence. It demonstrates that stylistic patterns
+(indentation habits, spacing conventions, operator placement) survive anonymization
+and that the model genuinely operates on structure. If the model required lexical
+content to identify authors, this argument would fail.
+
+A formal anonymization ablation study remains planned for the thesis. The
+preliminary comparison was not systematically documented; the thesis should
+compare multiple suppression levels, measure performance degradation curves,
+and characterize what information remains inferable from anonymized minimaps
+under each strategy.
 
 \subsection{RQ5: IDE Integration}
 
@@ -449,11 +470,13 @@ and ROC-AUC values show that the models learn substantial signal, but they do
 not guarantee equally strong behavior for minority classes. Macro-F1, per-class
 recall, and confusion matrices must be emphasized in the thesis.
 
-Third, the Author objective is ethically and methodologically sensitive. Labels
-may reflect last committers, bots, project maintainers, or generated artifacts.
-The objective is useful for studying whether style-related signals exist in
-minimaps, but it should not be presented as a deployment-ready author
-identification tool.
+Third, the Author objective must be interpreted carefully. Labels may reflect
+last committers, bots, project maintainers, or generated artifacts, which
+introduces noise. Methodologically, the objective serves as a probe: it tests
+whether style-related structural patterns survive anonymization. In this role it
+is valuable. However, the objective is not presented as a deployment-ready
+author identification tool, and the thesis should be explicit about this
+distinction.
 
 Fourth, the current tool evaluation is functional. It confirms that the
 architecture works, but it does not measure usability, usefulness, or impact on

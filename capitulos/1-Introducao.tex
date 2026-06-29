@@ -75,26 +75,31 @@ the following tension:
 \begin{quote}
 Software projects contain rich structural and stylistic signals that are useful
 for classification, comprehension, quality assessment, and tool support, but
-many existing representations either require language-specific processing or are
-not designed to be compact, anonymized, and directly reusable by visual learning
-models.
+many existing representations either require language-specific processing or
+retain lexical content that exposes business logic, proprietary constants, and
+strategic domain knowledge---making external analysis impractical for industrial
+codebases.
 \end{quote}
 
 Traditional static analysis is effective when the target language, framework,
-and rule set are known. However, such tools typically require parsers,
-language-specific rules, and expert configuration. Software visualization
-approaches expose structures to human analysts, but many of them are not
-designed as machine-readable representations for large-scale classification.
-Machine learning representations for code, in turn, commonly rely on tokens,
-abstract syntax trees, graphs, or pretrained language models; these
-representations may require significant preprocessing and may retain lexical
-content that is sensitive in industrial contexts.
+and rule set are known, but such tools typically require parsers, language-specific
+rules, and expert configuration. Software visualization approaches expose
+structures to human analysts but are not designed as machine-readable
+representations for large-scale classification. Machine learning representations
+for code---tokens, abstract syntax trees, graphs, pretrained language models---are
+powerful but retain lexical content. Sending a raw source file containing
+identifiers such as \texttt{profitMargin}, formulas such as
+\texttt{(sin(x) + cos(y)) * 23.45}, or comments describing business rules to an
+external service may expose intellectual property that industrial organizations
+cannot share. This limits the practical applicability of many analysis tools
+precisely in the contexts where they would be most valuable.
 
 The project therefore asks whether a visual representation of source files can
 serve as an intermediate abstraction: simple enough to be generated across many
 languages and file types, compact enough to support large datasets, structured
-enough to retain useful information, and anonymizable enough to reduce exposure
-of raw source code. Source code minimaps are proposed as this abstraction.
+enough to retain discriminative signals, and capable of suppressing lexical
+content so that business-sensitive information never leaves the local environment.
+Source code minimaps are proposed as this abstraction.
 
 \section{Research Gap}
 
@@ -113,10 +118,13 @@ zoomed-out representations.
 Despite these advances, four gaps remain relevant for this doctoral project.
 First, many visual tools are primarily designed for human inspection rather than
 for systematic machine learning over large corpora. Second, many learning-based
-representations depend on language-specific preprocessing or preserve lexical
-content that may be sensitive. Third, there is still limited empirical evidence
-about how much structural information compact minimap images preserve across
-many projects, languages, and prediction objectives. Fourth, minimap-based
+representations depend on language-specific preprocessing or retain lexical
+content---identifiers, constants, comments---that exposes business logic and
+intellectual property, limiting applicability in industrial settings. Third,
+there is still limited empirical evidence about how much structural information
+compact minimap images preserve across many projects, languages, and prediction
+objectives, and whether anonymization can suppress sensitive lexical content
+without substantially degrading predictive performance. Fourth, minimap-based
 analysis has rarely been operationalized in the environments where developers
 actually work, such as integrated development environments.
 
@@ -138,12 +146,18 @@ reducing dependence on language-specific parsers and expert-defined rules.
 The hypothesis has three important boundaries. First, it does not claim that
 minimaps replace semantic analysis. Source code meaning still depends on
 language constructs, dependencies, runtime behavior, and domain knowledge.
-Second, it does not claim that anonymization provides a formal privacy guarantee.
-The goal is to reduce lexical exposure while preserving structural cues; privacy
-must still be evaluated carefully. Third, it does not claim that a single visual
+Second, it does not claim that anonymization provides a formal privacy guarantee
+against all possible structural inferences. The claim is more specific and more
+useful: the character-level anonymization adopted here suppresses the lexical
+layer that carries direct intellectual property---identifiers, constants, string
+literals, and comments---while the remaining structural signals retain enough
+discriminative power for the targeted analysis tasks. A preliminary comparison
+between anonymized and non-anonymized representations confirms that performance
+degradation is minimal. Third, it does not claim that a single visual
 representation is sufficient for all software-engineering tasks. Instead, it
 claims that minimaps can provide a useful, reproducible, and extensible first
-representation for a family of analysis tasks.
+representation for a family of analysis tasks, especially in contexts where
+lexical exposure to external systems is undesirable.
 
 \section{Research Questions}
 
@@ -169,10 +183,12 @@ The project is organized around five research questions:
 \end{description}
 
 These questions connect representation, empirical evaluation, interpretation,
-privacy, and tool support. RQ1 and RQ2 address the feasibility and modeling
-capacity of minimaps. RQ3 addresses transparency. RQ4 addresses the ethical and
-practical need to reduce exposure of source code. RQ5 addresses the transition
-from offline experiments to software-engineering practice.
+intellectual property protection, and tool support. RQ1 and RQ2 address the
+feasibility and modeling capacity of minimaps. RQ3 addresses transparency and
+model interpretability. RQ4 addresses the practical need to suppress business-
+sensitive lexical content while preserving structural discriminability. RQ5
+addresses the transition from offline experiments to software-engineering
+practice.
 
 \section{Objectives}
 

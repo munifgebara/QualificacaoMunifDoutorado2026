@@ -284,30 +284,64 @@ and can expose risks: if Type classification relies mainly on file headers or
 boilerplate rather than structural body patterns, predictions may generalize
 poorly to repositories with different templates.
 
-\section{Privacy, Anonymization, and Ethical Considerations}
+\section{Anonymization as Intellectual Property Protection}
 
-Source code often contains sensitive information. Even public repositories may
-include developer names, internal conventions, comments, secrets accidentally
-committed in the past, or organizational details. Industrial repositories are
-even more sensitive because source code may reveal intellectual property,
-business rules, security assumptions, and architectural strategy.
+A key barrier to applying external analysis tools on industrial codebases is
+that source code often encodes \textit{strategic business information}: formulas
+embedded in arithmetic expressions, magic constants that encode pricing or
+margin logic, variable and function names that reveal domain concepts, and
+comments that describe business rules. Consider a hypothetical expression such
+as \texttt{(Math.sin(x) + Math.cos(y)) * 23.45}: even without knowing the
+context, a reader who sees the identifier \texttt{profitMargin} and the constant
+\texttt{23.45} together can infer something about the company's internal
+calculations. Sending such code to an external service---even for legitimate
+analysis---exposes intellectual property that the organization may not wish to
+share.
 
-The minimap approach includes anonymization to reduce exposure of lexical
-content. In the initial studies, letters and digits are mapped to canonical
-values while symbols, whitespace, and structural layout are preserved
-\cite{gebara2025iwssip}. This allows the model to observe patterns such as
-indentation, punctuation, nesting, and line density without directly retaining
-identifiers or literal values.
+The character-level anonymization strategy adopted in this project addresses
+this concern directly. By mapping all letters to one of two canonical values
+(uppercase or lowercase) and all digits to a single canonical value, the
+transformation guarantees that:
 
-However, anonymization must be discussed carefully. It is a risk-reduction
-strategy, not a formal privacy guarantee. Visual structure may still leak
-information about frameworks, generated code, project conventions, or unusual
-templates. Author-related predictions are also ethically sensitive because they
-may support misattribution or inappropriate surveillance if used without
-governance. For this reason, the Author objective in this project is treated as
-a research proxy for style and convention analysis, not as a standalone
-forensic tool. Any practical use of author-style signals must remain subordinate
-to human judgment, consent, and clear institutional policy.
+\begin{itemize}
+    \item identifier names (\texttt{profitMargin}, \texttt{lucro},
+    \texttt{calculateDiscount}) become visually indistinguishable from one
+    another;
+    \item numeric literals (\texttt{23.45}, \texttt{0.0031}, \texttt{1000000})
+    are all mapped to the same intensity and carry no magnitude information;
+    \item string literals and comments lose their lexical content entirely.
+\end{itemize}
+
+What \textit{is} preserved are structural signals: indentation depth, line
+length, punctuation density, the relative positions of operators and delimiters,
+and the block organization of the file. These signals reflect \textit{how}
+code is organized, not \textit{what} it computes or \textit{why}. This
+distinction makes it viable to send an anonymized minimap to an external backend
+for structural analysis without disclosing the business logic embedded in the
+lexical content.
+
+\paragraph{Author prediction as structural validation.}
+The Author prediction objective plays a specific methodological role in this
+context. If a model can reliably identify the stylistic patterns of a
+contributor even after all identifiers, literals, and comments are suppressed,
+this constitutes direct evidence that the information captured by the minimap
+is \textit{purely structural}: it comes from indentation habits, spacing
+conventions, punctuation placement, and code organization---not from names or
+values. Author prediction is therefore not presented as a deployment target but
+as a \textit{proof-of-concept for the anonymization argument}: if style
+survives suppression, then the model genuinely operates on structure, and
+business-sensitive content is genuinely excluded.
+
+\paragraph{Limits of anonymization.}
+Anonymization in this sense is not a formal privacy guarantee against all
+possible attacks. A highly distinctive architectural pattern or a very unusual
+structural idiom could still be recognizable. The claim is more modest and more
+useful: the approach removes the lexical layer that carries direct business
+information, making the representation appropriate for contexts where the
+concern is intellectual property exposure rather than individual privacy.
+Stronger transformations---such as removing all punctuation or imposing uniform
+indentation---can be evaluated as a trade-off between suppression strength and
+predictive performance, and this is part of the planned research.
 
 \section{Empirical Evaluation in Software Engineering}
 

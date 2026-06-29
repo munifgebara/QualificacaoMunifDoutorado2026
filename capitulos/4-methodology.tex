@@ -130,13 +130,21 @@ procedure in abstract form.
 
 \section{Anonymization Strategy}
 
-Anonymization is central to the project because the proposed representation is
-intended to support collaboration and dataset sharing while reducing exposure of
-raw source code. The initial anonymization strategy maps broad character classes
-to canonical values. Letters and digits are replaced by representative values,
-while whitespace and structural symbols are preserved. This suppresses much of
-the lexical content while retaining visual signals such as indentation, brackets,
-operators, separators, and line density.
+Anonymization is central to the project because it enables analysis of
+industrial and proprietary codebases without exposing business-sensitive
+information. A source file may embed strategic knowledge in identifiers
+(\texttt{calculateMargin}, \texttt{profitRate}), in numeric constants
+(\texttt{23.45}, \texttt{0.031}), or in comments describing business rules.
+Sending such a file to an external analysis service---even in a research
+context---can disclose intellectual property that organizations are not willing
+to share. The minimap approach addresses this by suppressing the lexical layer
+before the representation is transmitted or stored externally.
+
+The initial anonymization strategy maps broad character classes to canonical
+values. Letters and digits are replaced by representative values, while
+whitespace and structural symbols are preserved. This suppresses all identifiers,
+numeric literals, and string content while retaining visual signals such as
+indentation, brackets, operators, separators, and line density.
 
 Figure~\ref{fig:anonymization} shows an example of minimap generation before and
 after anonymization.
@@ -172,11 +180,22 @@ All other printable characters (spaces, punctuation, symbols, operators) & remai
 \fautor
 \end{table}
 
-This anonymization strategy is deliberately conservative in its claims. It
-reduces exposure, but it is not a formal privacy guarantee. Future work must
-evaluate what information remains inferable from anonymized minimaps and whether
-stronger transformations are needed for proprietary or security-sensitive
-contexts.
+A preliminary comparison between anonymized and non-anonymized minimaps was
+conducted during the development of the approach. The results showed that
+predictive performance is largely preserved after anonymization, confirming
+that the discriminative signals captured by the model reside in structural
+features---indentation, operator density, punctuation layout---rather than in
+identifier names or literal values. This finding strengthens the argument that
+anonymization can be applied without substantially sacrificing utility, and
+that the model genuinely operates on structure rather than on lexical content.
+
+This anonymization strategy is deliberately limited in its privacy claims. It
+removes the lexical layer that carries direct business information, but it does
+not guarantee unrecoverability of all organizational signals. A distinctive
+architectural pattern or a very unusual indentation idiom could remain
+recognizable. Stronger transformations---such as removing comments, normalizing
+indentation, or masking punctuation density---can be evaluated in future work
+as part of the suppression trade-off analysis (Activity A2).
 
 \section{Catalog Construction}
 
