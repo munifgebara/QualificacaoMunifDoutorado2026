@@ -8,15 +8,14 @@ depend on language-specific processing, expert-defined rules, or representations
 that preserve sensitive lexical content.
 
 The proposed approach transforms source files into compact, anonymized minimap
-images by mapping each character to a grayscale intensity value. This
-character-level anonymization suppresses all identifiers, numeric literals, and
-string content---the lexical layer that carries intellectual property such as
-proprietary formulas, business constants, and domain-specific variable names---
-while preserving structural signals: indentation, punctuation density, operator
-placement, and block organization. A preliminary comparison between anonymized
-and non-anonymized representations confirmed that predictive performance is
-largely preserved after anonymization, meaning that the business-sensitive
-lexical layer can be excluded without substantially sacrificing utility.
+images by mapping each character to a grayscale intensity value. The
+anonymization suppresses identifiers, numeric literals, and string content (the
+lexical layer that carries intellectual property such as proprietary formulas
+and business constants) while preserving structural signals: indentation,
+punctuation density, operator placement, and block organization. Informal
+evidence discussed in Chapter~\ref{chapter:preliminary-results} suggests that
+this suppression costs little predictive performance, so the analysis retains
+its utility while the business-sensitive layer stays local.
 
 The resulting images can be analyzed with handcrafted texture descriptors, deep
 learning models, and explainable AI methods. The approach is not intended to
@@ -60,10 +59,10 @@ The qualification stage shows that the project has moved beyond an initial idea:
 it already includes empirical studies, a large dataset, explainability results,
 and working tool prototypes. The remaining doctoral work will refine the
 evidence, expand the task set, evaluate practical usefulness, and consolidate
-the approach into a thesis. If successful, the project will contribute a language-light and visually
-grounded way of analyzing software artifacts---one that is compact, reproducible,
-interpretable, and applicable in contexts where lexical exposure to external
-systems is a concern. By demonstrating that structural information alone is
-sufficient for a family of software analysis tasks, the project contributes both
-a practical tool for IP-aware analysis and a scientific argument for the
-sufficiency of structure over syntax.
+the approach into a thesis. If successful, this work will contribute a language-light and visually grounded
+way of analyzing software artifacts: compact, reproducible, interpretable, and
+applicable in contexts where lexical exposure to external systems is a concern.
+By showing that structural information alone supports a family of software
+analysis tasks, it offers both a practical tool for confidentiality-aware
+analysis and a scientific argument that layout can stand in for lexical content
+in this class of problems.

@@ -54,8 +54,8 @@ analysis is applied.
 
 The project has already produced preliminary evidence in this direction. An
 initial study used source code minimaps, Local Binary Patterns, and traditional
-classifiers to detect software features, with Random Forest reaching accuracy
-near 93\% in the evaluated setting \cite{gebara2025iwssip}. A second study
+classifiers to detect software features, with Random Forest reaching an
+F1-score near 93\% in the evaluated setting \cite{gebara2025iwssip}. A second study
 scaled the approach to 685,906 minimap images extracted from 100 open-source
 projects across 10 programming languages, using deep learning models and
 Integrated Gradients for interpretation \cite{gebara2025ciarp}. A tool-support
@@ -87,12 +87,12 @@ rules, and expert configuration. Software visualization approaches expose
 structures to human analysts but are not designed as machine-readable
 representations for large-scale classification. Machine learning representations
 for code---tokens, abstract syntax trees, graphs, pretrained language models---are
-powerful but retain lexical content. Sending a raw source file containing
-identifiers such as \texttt{profitMargin}, formulas such as
-\texttt{(sin(x) + cos(y)) * 23.45}, or comments describing business rules to an
-external service may expose intellectual property that industrial organizations
-cannot share. This limits the practical applicability of many analysis tools
-precisely in the contexts where they would be most valuable.
+powerful but retain lexical content. Sending a raw source file to an external
+service exposes identifier names, numeric constants, formulas, and comments
+that may encode business rules, which is often enough for an industrial
+organization to rule the tool out. This limits the practical applicability of
+many analysis approaches precisely in the contexts where they would be most
+valuable.
 
 The project therefore asks whether a visual representation of source files can
 serve as an intermediate abstraction: simple enough to be generated across many
@@ -147,13 +147,12 @@ The hypothesis has three important boundaries. First, it does not claim that
 minimaps replace semantic analysis. Source code meaning still depends on
 language constructs, dependencies, runtime behavior, and domain knowledge.
 Second, it does not claim that anonymization provides a formal privacy guarantee
-against all possible structural inferences. The claim is more specific and more
-useful: the character-level anonymization adopted here suppresses the lexical
-layer that carries direct intellectual property---identifiers, constants, string
-literals, and comments---while the remaining structural signals retain enough
-discriminative power for the targeted analysis tasks. A preliminary comparison
-between anonymized and non-anonymized representations confirms that performance
-degradation is minimal. Third, it does not claim that a single visual
+against all possible structural inferences. The claim is narrower: the
+character-level anonymization adopted here suppresses the lexical layer that
+carries direct intellectual property (identifiers, constants, string literals,
+and comments), while the remaining structural signals retain enough
+discriminative power for the targeted analysis tasks. Preliminary evidence for
+this boundary is discussed in Chapter~\ref{chapter:preliminary-results}. Third, it does not claim that a single visual
 representation is sufficient for all software-engineering tasks. Instead, it
 claims that minimaps can provide a useful, reproducible, and extensible first
 representation for a family of analysis tasks, especially in contexts where

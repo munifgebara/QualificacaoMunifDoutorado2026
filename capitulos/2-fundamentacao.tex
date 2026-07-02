@@ -294,8 +294,8 @@ comments that describe business rules. Consider a hypothetical expression such
 as \texttt{(Math.sin(x) + Math.cos(y)) * 23.45}: even without knowing the
 context, a reader who sees the identifier \texttt{profitMargin} and the constant
 \texttt{23.45} together can infer something about the company's internal
-calculations. Sending such code to an external service---even for legitimate
-analysis---exposes intellectual property that the organization may not wish to
+calculations. Sending such code to an external service, even for legitimate
+analysis, exposes intellectual property that the organization may not wish to
 share.
 
 The character-level anonymization strategy adopted in this project addresses
@@ -321,16 +321,13 @@ for structural analysis without disclosing the business logic embedded in the
 lexical content.
 
 \paragraph{Author prediction as structural validation.}
-The Author prediction objective plays a specific methodological role in this
-context. If a model can reliably identify the stylistic patterns of a
-contributor even after all identifiers, literals, and comments are suppressed,
-this constitutes direct evidence that the information captured by the minimap
-is \textit{purely structural}: it comes from indentation habits, spacing
-conventions, punctuation placement, and code organization---not from names or
-values. Author prediction is therefore not presented as a deployment target but
-as a \textit{proof-of-concept for the anonymization argument}: if style
-survives suppression, then the model genuinely operates on structure, and
-business-sensitive content is genuinely excluded.
+Within this argument, the Author objective works as a probe. If a model can
+identify the stylistic patterns of a contributor after all identifiers,
+literals, and comments have been suppressed, then whatever the minimap captures
+comes from indentation habits, spacing conventions, punctuation placement, and
+code organization, not from names or values. Author prediction is therefore a
+test of the anonymization argument rather than a deployment target: style
+surviving suppression is what shows that the model operates on structure alone.
 
 \paragraph{Limits of anonymization.}
 Anonymization in this sense is not a formal privacy guarantee against all
@@ -339,9 +336,9 @@ structural idiom could still be recognizable. The claim is more modest and more
 useful: the approach removes the lexical layer that carries direct business
 information, making the representation appropriate for contexts where the
 concern is intellectual property exposure rather than individual privacy.
-Stronger transformations---such as removing all punctuation or imposing uniform
-indentation---can be evaluated as a trade-off between suppression strength and
-predictive performance, and this is part of the planned research.
+Stronger transformations, such as removing all punctuation or imposing uniform
+indentation, can be evaluated as a trade-off between suppression strength and
+predictive performance; this evaluation is part of the planned research.
 
 \section{Empirical Evaluation in Software Engineering}
 

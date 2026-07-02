@@ -135,8 +135,8 @@ industrial and proprietary codebases without exposing business-sensitive
 information. A source file may embed strategic knowledge in identifiers
 (\texttt{calculateMargin}, \texttt{profitRate}), in numeric constants
 (\texttt{23.45}, \texttt{0.031}), or in comments describing business rules.
-Sending such a file to an external analysis service---even in a research
-context---can disclose intellectual property that organizations are not willing
+Sending such a file to an external analysis service, even in a research
+context, can disclose intellectual property that organizations are not willing
 to share. The minimap approach addresses this by suppressing the lexical layer
 before the representation is transmitted or stored externally.
 
@@ -180,22 +180,18 @@ All other printable characters (spaces, punctuation, symbols, operators) & remai
 \fautor
 \end{table}
 
-A preliminary comparison between anonymized and non-anonymized minimaps was
-conducted during the development of the approach. The results showed that
-predictive performance is largely preserved after anonymization, confirming
-that the discriminative signals captured by the model reside in structural
-features---indentation, operator density, punctuation layout---rather than in
-identifier names or literal values. This finding strengthens the argument that
-anonymization can be applied without substantially sacrificing utility, and
-that the model genuinely operates on structure rather than on lexical content.
+An informal comparison conducted during development suggested that predictive
+performance changes little when anonymization is applied. This observation and
+its implications are discussed in Chapter~\ref{chapter:preliminary-results},
+and a documented ablation is planned as Activity A2.
 
-This anonymization strategy is deliberately limited in its privacy claims. It
-removes the lexical layer that carries direct business information, but it does
-not guarantee unrecoverability of all organizational signals. A distinctive
-architectural pattern or a very unusual indentation idiom could remain
-recognizable. Stronger transformations---such as removing comments, normalizing
-indentation, or masking punctuation density---can be evaluated in future work
-as part of the suppression trade-off analysis (Activity A2).
+The strategy is deliberately limited in its privacy claims. It removes the
+lexical layer that carries direct business information, but it does not
+guarantee that every organizational signal becomes unrecoverable: a distinctive
+architectural pattern or an unusual indentation idiom may remain recognizable.
+Stronger transformations, such as removing comments, normalizing indentation,
+or masking punctuation density, will be evaluated as part of the same
+suppression trade-off analysis.
 
 \section{Catalog Construction}
 

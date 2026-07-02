@@ -103,7 +103,7 @@ SVM, fixed-size minimaps & 0.88 & 0.88 & 0.88 \\
 \end{table}
 
 Random Forest achieved the best overall results, reaching approximately 93\%
-accuracy/F1-score in both fixed-size and variable-size settings. This result is
+F1-score in both fixed-size and variable-size settings. This result is
 important because it indicates that minimap texture contains discriminative
 signals even before using deep learning. SVM also performed strongly, while KNN
 was less effective, suggesting that the feature space benefits from models that
@@ -208,7 +208,11 @@ Default color mode & Grayscale \\
 
 The Type objective contains file-role categories such as programming-language
 files, headers, configuration formats, markup, scripts, and other artifacts. The
-Project objective reflects repository identity. The Author objective reflects
+Project objective reflects repository identity.\footnote{The corpus was
+generated from 100 repositories, while the label catalog records 99 distinct
+Project classes. Documenting the precise origin of this one-class difference is
+part of the dataset-curation activity (A1) in
+Chapter~\ref{chapter:research-plan}.} The Author objective reflects
 last-committer or author labels as recorded by the dataset-generation process.
 Because this objective may conflate humans, bots, and organizational accounts,
 it is interpreted cautiously.
@@ -300,40 +304,22 @@ method but also to expose its risks.
 
 \section{Artifact and Tool Results}
 
-In addition to the two empirical studies, the project produced
-MinimapSignatures, a multi-IDE tool ecosystem \cite{gebara2026minimapsignatures}.
-MinimapSignatures consists of a Python backend (FastAPI with a PyTorch multitask
-model), a Visual Studio Code extension, and an IntelliJ IDEA plugin. The backend
-exposes a single HTTP endpoint that receives a 128 by 128 base64-encoded
-grayscale PNG and returns top-three ranked predictions for three targets: Type,
-Project, and Author. A fourth target (quality) is included in the response
-contract as a placeholder; no model has been trained for it yet, and it
-currently returns mock data. The quality target is reserved for future work.
+In addition to the two empirical studies, this work produced MinimapSignatures,
+a multi-IDE tool ecosystem composed of a FastAPI/PyTorch inference backend, a
+Visual Studio Code extension, and an IntelliJ IDEA plugin
+\cite{gebara2026minimapsignatures}. The workflow was validated end-to-end: each
+plugin generates an anonymized 128 by 128 minimap locally, submits it to the
+backend, and displays ranked predictions for the Type, Project, and Author
+targets. A fourth response target (quality) is a placeholder and currently
+returns mock data; no model has been trained for it.
 
-The model deployed in the backend is a custom multitask convolutional network
-with a shared backbone---four successive convolutional blocks that progressively
-reduce the spatial dimensions from 128 to 8 pixels---followed by a 256-dimensional
-embedding layer and three independent linear classification heads, one per
-target. This architecture is distinct from the ResNet-18 and EfficientNet-B0
-models evaluated in Study 2; it was designed specifically for simultaneous
-multi-target inference in the serving context.
-
-The functional evaluation confirms that the end-to-end workflow operates
-correctly: the VS Code extension and IntelliJ IDEA plugin each capture the
-active source file, generate an anonymized 128 by 128 minimap locally, encode
-it as a base64 PNG, send it to the backend, and display the returned
-predictions. The IntelliJ plugin opens a structured Markdown report in a
-split-screen editor, while the VS Code extension presents results in a WebView
-panel. It is worth noting that the IntelliJ plugin currently captures only the
-first 128 lines of the active file; files longer than 128 lines are truncated
-before minimap generation.
-
-This result matters because it changes the research trajectory. The thesis is
-not limited to a dataset and model comparison. It also investigates how minimap
-analysis can become usable infrastructure for software-engineering workflows.
-However, no user study has been conducted yet; the current evaluation is
-functional and integration-oriented, not a measure of developer usefulness or
-perceived benefit.
+This result changes the research trajectory. The thesis is not limited to a
+dataset and model comparison; it also investigates how minimap analysis can
+become usable infrastructure for software-engineering workflows. No user study
+has been conducted yet, so the evaluation remains functional and
+integration-oriented. The architecture, the deployed multitask model, the
+current capture limits, and the validation status are detailed in
+Chapter~\ref{chapter:tool-support}.
 
 \section{Consolidated Evidence}
 
@@ -348,7 +334,7 @@ how it supports the research questions.
 \toprule
 \textbf{Evidence} & \textbf{Main finding} & \textbf{Related RQs} \\
 \midrule
-LBP study & Minimap texture supports software-feature classification with Random Forest near 93\%. & RQ1, RQ2 \\
+LBP study & Minimap texture supports software-feature classification with Random Forest near 93\% F1. & RQ1, RQ2 \\
 Fixed-size comparison & 128 by 128 minimaps remain competitive with variable-size minimaps. & RQ1, RQ2 \\
 Large-scale dataset & Minimap learning scales to 685,906 images from 100 projects and 10 languages. & RQ1 \\
 Deep learning results & EfficientNet-B0 pretrained reaches strong validation results for Type, Project, and Author. & RQ1, RQ2 \\
@@ -414,37 +400,36 @@ that remove or mask salient regions.
 
 \subsection{RQ4: Anonymization}
 
-A preliminary comparison between anonymized and non-anonymized minimap
-representations was conducted during the development of the approach. The
-results showed that predictive performance is largely preserved after
-anonymization, with minimal degradation across the evaluated objectives.
-This finding has two important implications.
+A comparison between anonymized and non-anonymized minimap representations was
+carried out informally while the approach was being developed. Predictive
+performance stayed close to the non-anonymized baseline across the evaluated
+objectives. The comparison was not documented under controlled conditions, so
+it is reported here as preliminary evidence rather than as a result, but it
+matters for two reasons.
 
-First, it confirms that the discriminative signals captured by the model reside
-primarily in structural features---indentation patterns, operator density,
-punctuation layout, and block organization---rather than in identifier names or
-literal values. The model does not require lexical content to distinguish file
-types, project origins, or authorship styles.
+First, it indicates that the discriminative signal resides in structural
+features such as indentation patterns, operator density, punctuation layout,
+and block organization, rather than in identifier names or literal values. The
+model does not appear to need lexical content to distinguish file types,
+project origins, or authorship styles.
 
-Second, it supports the core argument for the approach in industrial contexts.
-If anonymization preserves utility while suppressing identifiers, numeric
-constants, and string literals, then an organization can send anonymized minimaps
-to an external analysis service without exposing intellectual property. The model
-receives only structural signals; the business logic embedded in the lexical
-layer remains local.
+Second, it supports the industrial motivation of the approach. If anonymization
+preserves utility while suppressing identifiers, numeric constants, and string
+literals, an organization can submit anonymized minimaps to an external
+analysis service while the business logic embedded in the lexical layer stays
+local.
 
-The Author objective plays a specific methodological role in this context. The
-fact that author style can be identified even after full lexical suppression is
-not a concern---it is evidence. It demonstrates that stylistic patterns
-(indentation habits, spacing conventions, operator placement) survive anonymization
-and that the model genuinely operates on structure. If the model required lexical
-content to identify authors, this argument would fail.
+The Author objective has a specific role in this argument. Style remains
+identifiable after full lexical suppression, which provides evidence that the
+model operates on structural patterns such as indentation habits, spacing
+conventions, and operator placement. If author identification depended on
+lexical content, anonymization would have eliminated it.
 
-A formal anonymization ablation study remains planned for the thesis. The
-preliminary comparison was not systematically documented; the thesis should
-compare multiple suppression levels, measure performance degradation curves,
-and characterize what information remains inferable from anonymized minimaps
-under each strategy.
+A formal ablation study is still required. The thesis should repeat the
+comparison under documented conditions, cover multiple suppression levels,
+measure degradation curves, and characterize what remains inferable from
+anonymized minimaps under each strategy (Activity A2 in
+Chapter~\ref{chapter:research-plan}).
 
 \subsection{RQ5: IDE Integration}
 

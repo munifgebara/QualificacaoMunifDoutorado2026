@@ -58,13 +58,11 @@ trustworthy.
 
 \subsection{A2: Anonymization Evaluation}
 
-A preliminary comparison between anonymized and non-anonymized minimap
-representations was conducted informally during the development of the approach.
-Results showed minimal performance degradation, confirming that structural
-signals---not lexical content---carry most of the discriminative information.
-
-However, this comparison was not formally documented. Activity A2 will produce
-a rigorous anonymization study by comparing several suppression levels:
+As reported in Chapter~\ref{chapter:preliminary-results}, an informal comparison
+between anonymized and non-anonymized minimaps suggested that anonymization
+costs little predictive performance. That comparison was not documented under
+controlled conditions, so Activity A2 will produce a rigorous study comparing
+several suppression levels:
 
 \begin{itemize}
     \item baseline (the current character-to-pixel mapping: letters and digits
@@ -235,12 +233,11 @@ embedded in identifiers, numeric constants, formulas, and comments. The
 minimap approach is designed to enable structural analysis of source code without
 exposing this information to external services or collaborators.
 
-The character-level anonymization adopted here guarantees that identifier names,
-numeric literals, and string content are suppressed before any minimap is
-transmitted or stored externally. A preliminary experiment confirmed that this
-suppression has minimal impact on predictive performance, which means the utility
-of the analysis is preserved while the business-sensitive lexical layer remains
-local.
+The character-level anonymization adopted here suppresses identifier names,
+numeric literals, and string content before any minimap is transmitted or
+stored externally. The informal evidence discussed in
+Chapter~\ref{chapter:preliminary-results} suggests that this suppression costs
+little predictive performance; Activity A2 will quantify the trade-off.
 
 The Author prediction objective is a methodological probe, not a surveillance
 tool. Its purpose is to demonstrate that stylistic patterns---indentation habits,
@@ -280,7 +277,7 @@ Table~\ref{tab:risks} summarizes the main research risks and mitigation actions.
 \textbf{Risk} & \textbf{Impact} & \textbf{Mitigation} \\
 \midrule
 Dataset imbalance dominates results & Inflated accuracy and weak minority-class performance. & Use macro metrics, reweighting, balanced subsets, and per-class analysis. \\
-Anonymization removes too much signal & Models lose predictive power. & Preliminary comparison shows minimal degradation; formal ablation will quantify trade-off curves. \\
+Anonymization removes too much signal & Models lose predictive power. & Informal evidence suggests low risk; the Activity A2 ablation will quantify it. \\
 Stronger suppression needed for certain contexts & Current mapping may not satisfy all IP protection requirements. & Evaluate comment removal, punctuation normalization, and maximum suppression modes in Activity A2. \\
 Models learn boilerplate artifacts & Poor generalization across repositories. & Use XAI, ablations, and repository-disjoint evaluation. \\
 Tool feedback is not useful to developers & Weak practical contribution. & Conduct user-centered evaluation and refine interaction design. \\
@@ -305,18 +302,17 @@ the qualification exam.
 \textbf{Period} & \textbf{Main activities} \\
 \midrule
 July--August 2026 & Incorporate qualification feedback; freeze revised research questions and thesis structure. \\
-September--December 2026 & Refine dataset catalog; run anonymization and imbalance-aware experiments. \\
-January--April 2027 & Evaluate additional architectures, resolutions, and explanation protocols. \\
-May--August 2027 & Design and execute quality or architectural-deviation pilot studies. \\
-September--December 2027 & Extend MinimapSignatures for multi-file analysis and explanation overlays; conduct developer-centered evaluation. \\
-January--March 2028 & Consolidate results, write thesis chapters, and prepare artifact documentation. \\
-April--June 2028 & Revise thesis, submit papers/artifacts, and prepare final defense material. \\
+September--December 2026 & Refine dataset catalog (A1); run the anonymization ablation (A2) and imbalance-aware experiments (A3). \\
+January--April 2027 & Evaluate additional architectures and resolutions (A4); consolidate explanation protocols; begin writing methodology and results chapters. \\
+May--August 2027 & Quality or architectural-deviation pilot (A5); extend MinimapSignatures with multi-file analysis and explanation overlays. \\
+September--October 2027 & Developer-centered evaluation of the tool (A6); continue thesis writing. \\
+November--December 2027 & Consolidate results, finish the thesis text, prepare artifacts and defense material. \\
 \bottomrule
 \end{tabular}
 \fautor
 \end{table}
 
-The schedule is intentionally conservative. It assumes that the core
-representation and preliminary studies are already available, but that the final
-thesis still requires stronger evaluation, broader tasks, and tool-centered
-evidence.
+The schedule is compact because the core representation, the datasets, and the
+preliminary studies already exist. The remaining effort concentrates on
+controlled evaluation, tool extension, and writing, and it fits the eighteen
+months available until the expected conclusion at the end of 2027.

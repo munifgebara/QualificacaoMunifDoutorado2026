@@ -297,33 +297,43 @@ anonymization, HTTP communication, backend inference, and IDE feedback. This is
 an important first step, but it is not yet a user study. Future work must
 evaluate usefulness, trust, cognitive effort, and impact on development tasks.
 
-\section{Application Domains Identified in the Mapping}
+\section{Granularities of Information in Visual Code Analysis}
 
-The systematic mapping reveals that source code minimaps have expanded well
-beyond their historical role as IDE navigation widgets. The surveyed studies show
-a strong concentration of minimap applications across three principal domains:
+Across the surveyed studies, visual representations of code are used to answer
+questions at three granularities: what kind of artifact a file is, which
+codebase or component family it belongs to, and which stylistic conventions it
+follows. Work on visual file classification and structural stereotypes
+addresses the first granularity; work on architectural similarity and
+repository conventions addresses the second; stylometric and
+authorship-oriented analyses address the third.
 
-\begin{description}
-    \item[Aesthetic and Structural Categorization.] Identifying functional
-    stereotypes and geometric structural rhythms within multi-language
-    repositories. Minimap classifiers can distinguish file roles based on visual
-    patterns of indentation, delimiter density, and block geometry without
-    exposing lexical content.
+The three prediction objectives adopted in this work (Type, Project, and
+Author) were chosen to probe these granularities with a single representation.
+The objectives are not themselves findings of the mapping; they operationalize,
+over minimap images, the kinds of questions that the surveyed studies ask over
+other representations of source code.
 
-    \item[Author and Provenance Attribution.] Utilizing stylistic visual
-    fingerprinting, such as individual indentation habits and spacing
-    patterns, to map code authorship without exposing raw lexical tokens. This
-    objective is treated as a research proxy for style and convention analysis.
+\section{Confidentiality and Code Representations}
 
-    \item[Project and Ecosystem Clustering.] Discerning architectural similarities
-    and matching files to specific project families or software components based
-    on layout regularities and visual conventions unique to each codebase.
-\end{description}
+One dimension of the mapping deserves separate attention because it anchors the
+central motivation of this proposal. The mapping did not identify studies that
+design a code representation primarily to suppress proprietary lexical content
+while remaining useful as input for machine learning. Related concerns exist in
+adjacent areas, but with different goals. Code obfuscation transforms programs
+to hinder reverse engineering, protecting the shipped artifact rather than
+producing an analyzable research representation. Secret-scanning tools remove
+credentials from repositories but leave identifiers, literals, and comments
+intact. Privacy-preserving machine learning, such as federated learning,
+protects training data at the protocol level rather than at the representation
+level. None of these lines produces a compact, language-light representation in
+which identifiers, literals, and comments are suppressed by construction.
 
-These domains confirm that minimap representations encode information at
-multiple granularities: file type, project identity, and contributor style.
-They also motivate the three prediction objectives (Type, Project, Author)
-adopted in this work.
+To the best of the current mapping, therefore, the claim that anonymized
+minimaps enable analysis of codebases that cannot be shared in raw form is not
+directly addressed by prior work. This absence strengthens the originality of
+the proposal, but it also means the claim must be supported by evidence
+produced within this work, in particular the anonymization ablation planned in
+Chapter~\ref{chapter:research-plan}.
 
 \section{Synthesis of Gaps}
 
@@ -391,32 +401,27 @@ explainability, and tool support.
 
 \section{Open Problems Derived from the Literature}
 
-The literature also reveals open problems that the thesis must address. Three of
-these gaps recur consistently across the surveyed studies and can be named
-precisely:
+The literature also reveals open problems that the thesis must address. Three
+gaps recur across the surveyed studies:
 
-\paragraph{Tooling Detachment.}
-Visual source code machine learning pipelines remain almost entirely
-disconnected from real-time developer workflows. There is a lack of automated
-plugin infrastructures capable of capturing, anonymizing, and transmitting active
-editing sequences directly from live modern IDEs. Offline accuracy metrics do not
-capture the operational friction of live software engineering, where code
-structures are constantly incomplete or undergoing syntax updates.
+\paragraph{Detachment from developer tooling.}
+Visual pipelines for source code machine learning remain largely disconnected
+from real-time developer workflows. Few studies provide plugin infrastructure
+able to capture, anonymize, and transmit code from a live IDE session, and
+offline accuracy metrics say little about the friction of live software
+engineering, where files are often incomplete or in the middle of an edit.
 
-\paragraph{Absence of User-Centered Evaluation.}
-Empirical evidence regarding usability, cognitive load, developer trust in AI
-recommendations, and practitioner interaction paradigms is exceptionally scarce.
-Almost no studies measure how real developers interact with visual AI feedback.
-The community cannot yet assess whether minimap-based tools are useful,
-interpretable, or trustworthy from a practitioner perspective.
+\paragraph{Lack of user-centered evaluation.}
+Evidence about usability, cognitive load, and developer trust in visual AI
+feedback is scarce. Few studies observe real developers interacting with such
+tools, so it is not yet possible to say whether minimap-based feedback is
+useful, interpretable, or trustworthy in practice.
 
-\paragraph{The Single-File Scale Barrier.}
-Current prototypes operate almost exclusively on isolated, single-file
-representations at a fixed visual scale. Mechanisms supporting multi-file
-modules, project-level collection analysis, adaptive multi-scale architectures,
-and user-driven model retraining are virtually absent in the literature. This
-limit prevents minimap analysis from addressing tasks that inherently span
-multiple files or directory trees.
+\paragraph{The single-file scale barrier.}
+Current prototypes operate on isolated, single-file representations at a fixed
+visual scale. Support for multi-file modules, project-level analysis, adaptive
+multi-scale inputs, and user-driven retraining is rare in the surveyed work.
+This restricts minimap analysis to tasks that fit within one file.
 
 Beyond these three structural gaps, the thesis must also address:
 
@@ -426,10 +431,10 @@ Beyond these three structural gaps, the thesis must also address:
     must identify which tasks are appropriate for minimaps and which require
     complementary representations.
 
-    \item \textit{Privacy and leakage}: anonymization reduces exposure but is not
-    a formal privacy guarantee. Generated files, framework templates, or
-    distinctive repository conventions may remain identifiable. Stronger
-    anonymization modes must be evaluated.
+    \item \textit{Confidentiality and leakage}: anonymization removes lexical
+    content but is not a formal guarantee. Generated files, framework templates,
+    or distinctive repository conventions may remain identifiable. Stronger
+    suppression modes must be evaluated.
 
     \item \textit{Generalization}: strong performance inside one corpus does not
     guarantee transfer to other ecosystems. Repository-aware splits, ablations,
