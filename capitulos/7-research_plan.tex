@@ -53,8 +53,15 @@ filtering decisions.
 
 This activity is necessary because the current dataset is large but imbalanced.
 Head classes dominate some objectives, and Author labels may contain bots,
-organizations, or aliases. Better curation will make later experiments more
-trustworthy.
+organizations, or aliases. Bots are pervasive in popular open-source projects:
+about a quarter of popular GitHub repositories use them \cite{wessel2018power},
+so bot-authored files are likely present in a corpus selected by popularity.
+Planned curation heuristics include matching author names against known bot
+naming patterns (such as the \texttt{[bot]} suffix), merging aliases by
+normalized name and e-mail, and flagging accounts with anomalous commit volume
+for manual inspection. The proportion of bot-attributed files will be reported,
+and Author experiments will be run with and without these accounts. Better
+curation will make later experiments more trustworthy.
 
 \subsection{A2: Anonymization Evaluation}
 
@@ -75,10 +82,18 @@ several suppression levels:
     preserving only blank lines and indentation).
 \end{itemize}
 
-Each level will be evaluated on the same splits used in Study 2, reporting
-accuracy, macro-F1, and per-class behavior. The goal is to produce a
-performance-vs-suppression trade-off curve and to characterize which suppression
-level is appropriate for contexts where intellectual property protection is the
+To avoid post hoc rationalization, the ablation design is declared in this
+proposal, before execution. All suppression levels will share identical
+repository-aware splits, seeds, architecture, and training budget, so that the
+anonymization level is the only manipulated factor. The primary metric is
+macro-F1 per objective; accuracy and per-class recall are secondary. The
+declared expectation, based on the informal comparison, is that the baseline
+anonymization costs at most two percentage points of macro-F1 relative to the
+non-anonymized rendering. A larger drop will be reported as a negative result
+and will trigger a revision of the confidentiality claims made in this
+proposal. Results for all levels will be reported regardless of outcome, and
+the goal remains a performance-versus-suppression trade-off curve indicating
+which level is appropriate when intellectual property protection is the
 primary concern.
 
 \subsection{A3: Imbalance-Aware Modeling}
@@ -263,6 +278,29 @@ The MinimapSignatures backend already implements local anonymization in the IDE
 plugins: the minimap is generated client-side and only the image is sent to the
 inference endpoint, not the source text. This design reflects the principle that
 intellectual property protection begins at the data-collection step.
+
+\section{Open Science Practices}
+
+The remaining doctoral work adopts open science practices explicitly. Several
+artifacts are already public: the large-scale dataset is archived on Zenodo
+with a versioned DOI (10.5281/zenodo.16929672); the training pipelines, the
+backend, and the IDE plugins are available in public repositories; and the
+multitask training repository includes a model card describing the model's
+inputs, outputs, intended use, and limitations.
+
+Four practices are planned for the remaining period. First, the systematic
+mapping protocol, including search strings, screening decisions, and reviewer
+assignments, will be packaged as a citable artifact. Second, experimental
+designs will be declared before execution, as done for the anonymization
+ablation in Activity A2, so that confirmatory analyses can be distinguished
+from exploratory ones. Third, each experiment will ship a replication package
+with configurations, seeds, scripts, and environment specifications. Fourth,
+datasets and models will be documented with structured metadata (data cards
+and model cards), so that reuse does not depend on contacting the author.
+
+These practices also serve the confidentiality argument: a claim that
+anonymized minimaps preserve utility is only as strong as the ability of
+independent researchers to verify it.
 
 \section{Risks and Mitigation}
 

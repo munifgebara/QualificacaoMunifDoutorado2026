@@ -63,6 +63,21 @@ Author. This architecture is distinct from the ResNet-18 and EfficientNet-B0
 models evaluated in Study 2; those were used for independent single-task
 classification in the large-scale offline experiment.
 
+The training pipeline for this model is public in the
+\texttt{minimap-signatures-trainer} repository. It splits the catalog at file
+level into 70\% training, 15\% validation, and 15\% test partitions,
+stratified over combined author, project, and type labels with a fixed seed,
+and trains with early stopping. During training, the dataset feeds the model
+only the image tensor and the numeric labels; path and file-name metadata are
+used exclusively for post hoc analysis, never as model input. The pipeline
+produces macro, micro, and weighted F1 summaries, per-task classification
+reports, and confusion matrices, and the repository includes a model card
+describing the model's inputs, outputs, intended use, and limitations. These
+evaluation outputs have not yet been consolidated into reported results: the
+deployed model should currently be considered functionally validated but not
+empirically characterized, and reporting its metrics under the same standards
+as Study 2 is part of the planned work.
+
 The response contract currently includes four prediction targets: Type, Project,
 Author, and quality. The first three are produced by the trained model, returning
 the top-three ranked class-confidence pairs per target. The fourth target
@@ -217,6 +232,13 @@ the existing project conventions. A minimap-based tool could flag unusual
 artifacts for additional inspection. The output should be framed carefully: the
 tool should not say that a file is wrong, but that it is visually unusual
 relative to a learned distribution. This makes the tool a prioritization aid.
+
+Evidence from the bot literature reinforces this design concern: automated
+feedback on pull requests can be perceived as noise and can even reduce
+communication among developers \cite{wessel2021dontdisturb,wessel2022quality}.
+A minimap-based review aid must therefore be conservative by default: silent
+when nothing unusual is detected, explicit about its confidence when it does
+flag a file, and available on demand rather than injected into every review.
 
 \subsection{Onboarding and Repository Exploration}
 

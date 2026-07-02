@@ -228,6 +228,19 @@ configurations: trained from scratch on the minimap corpus, and initialized
 from ImageNet pretrained weights followed by fine-tuning
 \cite{he2016resnet,tan2019efficientnet}.
 
+The data protocol deserves explicit disclosure. Before splitting, classes with
+fewer than 100 samples were excluded and classes were capped at 5,000 samples,
+which limits extreme imbalance but also means that the effective number of
+classes seen by the models can be smaller than the catalog totals. The data
+were then split at file level into 70\% training, 15\% validation, and 15\%
+test partitions, stratified by class label and controlled by a fixed random
+seed. The split is not repository-disjoint: files from the same project can
+appear in different partitions. For the Project objective this is unavoidable,
+since each project is itself a class, but for Type and Author it means the
+reported results are within-corpus validation; repository-disjoint evaluation
+is part of the planned work. No data augmentation was applied: images are
+converted to tensors and normalized with mean and standard deviation of 0.5.
+
 The rationale for transfer learning is pragmatic. Although source code minimaps
 are structurally different from natural images, pretrained convolutional filters
 may still provide useful low-level edge and texture detectors. Results indicate
@@ -267,12 +280,19 @@ suggesting that repository conventions and contributor style patterns are
 partially encoded in the visual layout of source files even after lexical
 content is suppressed.
 
-These accuracy values must be read together with imbalance-aware metrics.
-Large head classes may dominate global accuracy while minority classes remain
-poorly classified. Macro-F1 scores, per-class recall, and confusion matrices
-are therefore essential for interpreting these results honestly. Improving
-minority-class behavior is one of the central open tasks for the remaining
-doctoral work.
+The contrast between near-perfect ROC-AUC and accuracies of 86--87\% deserves
+an explicit explanation. With roughly one hundred classes evaluated
+one-vs-rest, each per-class ROC curve is dominated by easy negatives: a model
+can rank most negatives below the positives, and thus reach very high AUC,
+while still confusing similar classes at decision time. Accuracy, in contrast,
+requires the correct class to win among all labels. High AUC therefore signals
+good per-class separability, not reliable final decisions. These values must
+also be read together with imbalance-aware metrics, since large head classes
+can dominate global accuracy while minority classes remain poorly classified.
+The training pipeline produces per-class classification reports and confusion
+matrices for each objective; consolidating macro-F1 and per-class recall into
+the results tables is part of the planned evaluation work, and improving
+minority-class behavior remains one of the central open tasks.
 
 \section{Explainability Findings}
 

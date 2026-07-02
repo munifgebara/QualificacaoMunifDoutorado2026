@@ -35,11 +35,15 @@ construction, explainability, and tool support.
 \section{Repository Selection and File Discovery}
 
 The repository-selection strategy depends on the research objective. For the
-large-scale study, repositories were selected to cover multiple programming
-languages and project conventions. The resulting corpus contains 100 open-source
-projects across 10 languages \cite{gebara2025ciarp}. For future quality-related
-studies, the selection must be refined to include repositories with known
-quality indicators, code-smell labels, architectural roles, or defect history.
+large-scale study, the criterion was popularity per language: for each of the
+ten target programming languages, the ten most popular open-source repositories
+were selected, totaling 100 projects \cite{gebara2025ciarp}. This criterion
+favors mature, widely used codebases with established conventions, which makes
+the corpus representative of mainstream practice but biases it against small,
+young, or niche projects; this bias is acknowledged in the external-validity
+discussion. For future quality-related studies, the selection must be refined
+to include repositories with known quality indicators, code-smell labels,
+architectural roles, or defect history.
 
 File discovery starts with recursive traversal of each repository. The traversal
 records the relative path, file extension, size, and repository identifier. It
