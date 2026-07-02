@@ -67,8 +67,8 @@ However, this comparison was not formally documented. Activity A2 will produce
 a rigorous anonymization study by comparing several suppression levels:
 
 \begin{itemize}
-    \item baseline (current character-to-pixel mapping: letters→canonical,
-    digits→canonical, others→raw ASCII);
+    \item baseline (the current character-to-pixel mapping: letters and digits
+    replaced by canonical values, other characters kept as raw ASCII);
     \item no anonymization (raw character codes, including identifiers and literals);
     \item comment removal (strip comment regions before rendering);
     \item punctuation normalization (map all operators and delimiters to a single
