@@ -192,12 +192,13 @@ attention mechanism of ViTs aligns naturally with spatial regions of a minimap
 such as indentation bands, delimiter zones, and block boundaries, making them a
 candidate architecture for future experiments.
 
-In this work, the large-scale study (Study 2) evaluated ResNet-18
-and EfficientNet-B0. The MinimapSignatures backend uses a custom
+In this work, the large-scale study (Study 2) evaluated ResNet-18 and
+EfficientNet-B0; Vision Transformer configurations (ViT-B/16) were also
+exercised in early experimentation runs, but they were not part of the
+consolidated evaluation. The MinimapSignatures backend uses a custom
 MultiTaskMinimapCNN with a shared convolutional backbone and independent
-classification heads per target. Transformer-based and hybrid architectures
-remain a direction for future model comparison rather than a current
-contribution.
+classification heads per target. A systematic comparison including
+transformer-based and hybrid architectures remains planned work.
 
 The minimap approach shares this premise but emphasizes a different set of
 research concerns. First, minimaps are designed to be compact and editor-like,

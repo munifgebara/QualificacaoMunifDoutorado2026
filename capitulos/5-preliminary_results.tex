@@ -226,7 +226,10 @@ macro-F1 and weighted-F1 used to interpret class imbalance. The evaluated
 architectures are ResNet-18 and EfficientNet-B0, tested in two
 configurations: trained from scratch on the minimap corpus, and initialized
 from ImageNet pretrained weights followed by fine-tuning
-\cite{he2016resnet,tan2019efficientnet}.
+\cite{he2016resnet,tan2019efficientnet}. Vision Transformer configurations
+(ViT-B/16) were also exercised during early experimentation, but the
+consolidated evaluation focused on the two convolutional backbones; a
+systematic transformer comparison is deferred to the research plan.
 
 The data protocol deserves explicit disclosure. Before splitting, classes with
 fewer than 100 samples were excluded and classes were capped at 5,000 samples,
