@@ -32,15 +32,29 @@ multiple ecosystems and harder to integrate into lightweight tooling.
 
 This qualification project investigates a complementary path: representing
 source code as visual signatures. In particular, it studies \textit{source code
-minimaps}, compact image-like representations generated from source files. A
-minimap preserves spatial and structural cues such as indentation, line density,
-punctuation, block delimiters, and layout regularities, while lexical content can
-be anonymized. This idea is inspired by the minimap widgets that developers
-already know from modern editors, but the purpose is different. In this research,
-the minimap is not primarily a user-interface element for manual navigation. It
-is a machine-readable visual abstraction that can be processed with texture
-descriptors, computer vision models, deep learning architectures, and
-explainable artificial intelligence techniques.
+minimaps}, compact image-like representations generated from source files.
+
+The proposal rests on two representational commitments. The first is a change
+of dimensionality. Source code is stored and almost always analyzed as a
+one-dimensional sequence: parsers, token-based models, and sequence models all
+consume code as a linear stream of characters or tokens. Developers, however,
+do not read code as a stream. They read it as a two-dimensional page, in which
+indentation forms contours, blocks have shapes, blank lines create rhythm, and
+the distribution of line lengths gives each file a silhouette. The minimap
+makes this two-dimensional structure the primary signal: each character becomes
+a pixel and each line a row, so the layout that a sequence model treats as
+incidental whitespace becomes geometry that a vision model can exploit
+directly, while lexical content can be anonymized.
+
+The second commitment concerns the consumer of the visualization. The idea is
+inspired by the minimap widgets that developers already know from modern
+editors, and software visualization has historically produced images for human
+inspection. In this research, the minimap is not a user-interface element for
+manual navigation: it is a machine-readable visual abstraction, produced to be
+processed by texture descriptors, computer vision models, deep learning
+architectures, and explainable artificial intelligence techniques. The human
+remains the consumer of the resulting analysis, but the image itself is made
+for the model.
 
 The motivation for this representation is twofold. First, software artifacts
 exhibit visual regularities. A Java entity, a test class, a JSON configuration, a
@@ -116,8 +130,12 @@ such as CodePanorama \cite{etter2022codepanorama} have shown the relevance of
 zoomed-out representations.
 
 Despite these advances, four gaps remain relevant for this work.
-First, many visual tools are primarily designed for human inspection rather than
-for systematic machine learning over large corpora. Second, many learning-based
+First, the two research communities approach the visual dimension of code from
+opposite sides and leave a space between them: visual tools are primarily
+designed for human inspection rather than for systematic machine learning over
+large corpora, while machine learning representations consume code as linear
+sequences, trees, or graphs and do not treat the two-dimensional layout of the
+source page as a first-class signal. Second, many learning-based
 representations depend on language-specific preprocessing or retain lexical
 content---identifiers, constants, comments---that exposes business logic and
 intellectual property, limiting applicability in industrial settings. Third,
@@ -138,9 +156,11 @@ AI, and integrates the resulting analysis into IDE-based tooling.
 The central hypothesis of this work is:
 
 \begin{quote}
-Anonymized source code minimaps preserve enough structural and visual
-information to support scalable and language-agnostic software analysis, while
-reducing dependence on language-specific parsers and expert-defined rules.
+Anonymized source code minimaps, understood as two-dimensional projections of
+source files intended for machine consumption, preserve enough structural and
+visual information to support scalable and language-agnostic software analysis,
+while reducing dependence on language-specific parsers and expert-defined
+rules.
 \end{quote}
 
 The hypothesis has three important boundaries. First, it does not claim that
@@ -246,7 +266,7 @@ their current status.
 \toprule
 \textbf{Contribution area} & \textbf{Description} & \textbf{Status} \\
 \midrule
-Representation & Source code minimaps as compact visual signatures of software artifacts. & Validated (two studies) \\
+Representation & Source code minimaps: compact two-dimensional visual signatures produced for model consumption. & Validated (two studies) \\
 Anonymization & Character-to-pixel mapping that suppresses lexical content while preserving layout signals. & Validated; ablation study planned \\
 Datasets & 685,906-image corpus from 100 projects across 10 languages; archived on Zenodo. & Available \\
 Modeling & LBP + shallow classifiers (Study 1); ResNet-18 and EfficientNet-B0 (Study 2); custom multitask CNN (Stage 3). & Validated \\

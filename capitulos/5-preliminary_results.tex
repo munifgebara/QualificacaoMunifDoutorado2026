@@ -386,7 +386,11 @@ minimaps preserve discriminative structural cues. In the first study, the
 success of Random Forest over LBP histograms indicates that texture-level
 information is meaningful. In the second study, the strong Type classification
 results indicate that fixed-size minimaps preserve enough information to
-distinguish many artifact categories across a much larger corpus.
+distinguish many artifact categories across a much larger corpus. Together,
+these results support the representational premise of the work: the
+two-dimensional layout of source files carries a signal that survives both
+compression to 128 by 128 pixels and lexical suppression, and that would not be
+directly visible to models consuming code as a one-dimensional sequence.
 
 However, RQ1 is not fully answered. The current evidence is strongest for the
 datasets already used. Future work must evaluate additional repositories,

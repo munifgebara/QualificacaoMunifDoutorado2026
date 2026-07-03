@@ -75,9 +75,13 @@ The minimap representation proposed in this project is not intended to replace
 these approaches. Instead, it provides a complementary abstraction. A minimap is
 less semantically explicit than an abstract syntax tree or graph, but it is
 easier to generate for heterogeneous file types, including configuration files,
-markup, scripts, and generated artifacts. It can also be anonymized in a way that
-removes identifiers and literal values while retaining layout and structural
-symbols.
+markup, scripts, and generated artifacts. It also differs in dimensionality:
+tokens and raw text are one-dimensional sequences, and trees and graphs are
+relational structures without spatial layout, so the image is the only
+representation in Table~\ref{tab:foundations-representations} that preserves
+the two-dimensional page geometry of the artifact. Finally, it can be
+anonymized in a way that removes identifiers and literal values while retaining
+layout and structural symbols.
 
 \section{Software Visualization}
 
@@ -110,7 +114,9 @@ the visual artifact. Traditional visualizations are usually designed for human
 interpretation. Source code minimaps, in this project, are designed primarily as
 machine-readable visual signatures. Humans may inspect them, and explainability
 methods may expose salient regions, but the core pipeline treats minimaps as
-inputs for computational models.
+inputs for computational models. In short, the literature above produces
+visualization for humans; this work develops visualization for machines, and
+the human returns to the loop at the level of predictions and explanations.
 
 \section{Source Code as Visual Data}
 
@@ -123,6 +129,23 @@ Binary Patterns can be effective texture descriptors for music classification
 for music classification using spectrograms \cite{costa2017cnn}. These studies
 are methodologically relevant because they show how a domain that is not
 originally visual can become amenable to visual pattern recognition.
+
+There is, however, a difference between audio and source code that favors the
+visual route even more directly. A spectrogram is a computed transform: its
+two-dimensional structure is derived from a signal that has no visual layout of
+its own. Source code already has one. A source file is stored as a
+one-dimensional character stream, but it is written, indented, and formatted to
+be displayed as a two-dimensional page, and its authors deliberately maintain
+that layout. Sequence-based models discard this second dimension: for a token
+model, eight spaces of indentation are a repeated whitespace token, and the
+vertical alignment between consecutive lines is invisible. Rendering the file
+as an image restores the two dimensions the developer actually produced. The
+line index becomes the vertical axis, the column index becomes the horizontal
+axis, and properties that are implicit in the sequence (indentation depth,
+block shape, alignment, blank-line rhythm, line-length distribution) become
+explicit geometry. Convolutional architectures are built around exactly this
+kind of two-dimensional locality, which makes them a natural model class for
+the representation.
 
 Source code can be treated in a similar way. A code file contains characters,
 lines, indentation, punctuation, comments, delimiters, blocks, and repeated

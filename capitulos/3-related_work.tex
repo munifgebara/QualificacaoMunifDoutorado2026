@@ -166,7 +166,11 @@ they remain within a textual or token-based modeling tradition.
 
 The minimap proposal differs in its first representation layer. Instead of
 parsing source code into language-aware structures, it transforms files into
-images. This loses explicit semantics, but it gains uniformity across many file
+images. Two things change with this move. Dimensionality: token- and
+sequence-based models consume code as a one-dimensional stream, whereas the
+minimap preserves the two-dimensional layout of lines and columns, in which
+indentation, alignment, and block shape are directly visible. And generality:
+explicit semantics are lost, but uniformity is gained across many file
 types. The proposal should therefore be understood as complementary to
 token-based, tree-based, and graph-based methods. A practical pipeline may use
 minimaps to quickly classify and prioritize artifacts, then apply deeper static
@@ -383,9 +387,10 @@ signature should be compact, reproducible, and discriminative.
 
 Second, compared with token, tree, graph, and transformer-based code models,
 minimap-based analysis changes the first abstraction layer. Instead of
-constructing a language-aware representation, it renders source artifacts into a
-visual space. This makes the representation weaker semantically but broader
-operationally. It can include code, markup, configuration, scripts, templates,
+constructing a language-aware representation from the one-dimensional character
+stream, it renders source artifacts into a two-dimensional visual space,
+keeping the page layout that linear token streams flatten away. This makes the
+representation weaker semantically but broader operationally. It can include code, markup, configuration, scripts, templates,
 and generated artifacts under the same rendering procedure. This is particularly
 useful for repositories whose maintenance problems span many kinds of files.
 

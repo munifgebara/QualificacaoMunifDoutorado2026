@@ -7,6 +7,16 @@ large, and difficult to understand at scale, while many analysis approaches
 depend on language-specific processing, expert-defined rules, or representations
 that preserve sensitive lexical content.
 
+Three representational commitments distinguish the proposal. First, it treats
+source code as a two-dimensional artifact: instead of consuming the stored
+one-dimensional character stream, it renders the page layout that developers
+actually write, turning indentation, block shape, and line rhythm into
+geometry. Second, it inverts the usual audience of software visualization: the
+minimap is produced for a model to read, not for a human to inspect, and the
+human re-enters the loop at the level of predictions and explanations. Third,
+it anonymizes by construction, suppressing the lexical layer that carries
+business-sensitive content before anything leaves the developer's environment.
+
 The proposed approach transforms source files into compact, anonymized minimap
 images by mapping each character to a grayscale intensity value. The
 anonymization suppresses identifiers, numeric literals, and string content (the
