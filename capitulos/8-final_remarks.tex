@@ -7,39 +7,27 @@ large, and difficult to understand at scale, while many analysis approaches
 depend on language-specific processing, expert-defined rules, or representations
 that preserve sensitive lexical content.
 
-Three representational commitments distinguish the proposal. First, it treats
-source code as a two-dimensional artifact: instead of consuming the stored
-one-dimensional character stream, it renders the page layout that developers
-actually write, turning indentation, block shape, and line rhythm into
-geometry. Second, it inverts the usual audience of software visualization: the
-minimap is produced for a model to read, not for a human to inspect, and the
-human re-enters the loop at the level of predictions and explanations. Third,
-it anonymizes by construction, suppressing the lexical layer that carries
-business-sensitive content before anything leaves the developer's environment.
-
-The proposed approach transforms source files into compact, anonymized minimap
-images by mapping each character to a grayscale intensity value. The
-anonymization suppresses identifiers, numeric literals, and string content (the
-lexical layer that carries intellectual property such as proprietary formulas
-and business constants) while preserving structural signals: indentation,
-punctuation density, operator placement, and block organization. Informal
-evidence discussed in Chapter~\ref{chapter:preliminary-results} suggests that
-this suppression costs little predictive performance, so the analysis retains
-its utility while the business-sensitive layer stays local.
+The approach rests on the commitments stated in
+Chapter~\ref{chapter:introduction}: each source file is rendered as a
+two-dimensional image whose geometry comes from the layout developers actually
+write; the image is produced for a model to read, not for a human to inspect;
+and the lexical layer that carries business-sensitive content is suppressed
+before anything leaves the developer's environment. Informal evidence discussed
+in Chapter~\ref{chapter:preliminary-results} suggests that this suppression
+costs little predictive performance, although the controlled ablation that will
+quantify this cost is still pending.
 
 The resulting images can be analyzed with handcrafted texture descriptors, deep
-learning models, and explainable AI methods. The approach is not intended to
-replace traditional static analysis, parsers, or software visualization. Rather,
-it offers a complementary representation that supports classification,
-prioritization, interpretation, and developer-facing feedback in contexts where
-sending raw source code to external services is not acceptable.
+learning models, and explainable AI methods. The approach does not replace
+static analysis, parsers, or software visualization; it complements them in
+contexts where sending raw source code to external services is not acceptable.
 
 \section{Current Evidence}
 
 The research has already produced preliminary evidence. The first empirical
 study showed that Local Binary Patterns and traditional classifiers can detect
 software features from source code minimaps, with Random Forest reaching
-approximately 93\% performance in the evaluated setting. The second study scaled
+approximately 93\% F1-score in the evaluated setting. The second study scaled
 the representation to 685,906 minimaps from 100 open-source projects across 10
 programming languages and evaluated deep models for Type, Project, and Author
 objectives. The tool-support line, MinimapSignatures, demonstrated that minimap
@@ -54,25 +42,20 @@ explainability, generalization, and developer-centered evaluation.
 \section{Expected Thesis Contribution}
 
 The expected thesis contribution is a coherent methodology and artifact set for
-visual source code analysis with minimaps. This includes a representation, an
-anonymization strategy, dataset-generation procedures, empirical evaluation,
-explainability protocols, and IDE-integrated tooling. Scientifically, the thesis
-aims to position source code minimaps as a reproducible bridge between software
+visual source code analysis with minimaps: a representation, an anonymization
+strategy, dataset-generation procedures, empirical evaluation, explainability
+protocols, and IDE-integrated tooling. Scientifically, the thesis aims to
+position source code minimaps as a reproducible bridge between software
 visualization and machine learning for code. Practically, it aims to provide
-tools and datasets that can be reused for future research on software
+tools and datasets that can be reused in future research on software
 comprehension, quality assessment, architectural deviation, and code-review
 support.
 
-\section{Closing Statement}
-
-The qualification stage shows that the project has moved beyond an initial idea:
-it already includes empirical studies, a large dataset, explainability results,
-and working tool prototypes. The remaining doctoral work will refine the
-evidence, expand the task set, evaluate practical usefulness, and consolidate
-the approach into a thesis. If successful, this work will contribute a language-light and visually grounded
-way of analyzing software artifacts: compact, reproducible, interpretable, and
-applicable in contexts where lexical exposure to external systems is a concern.
-By showing that structural information alone supports a family of software
-analysis tasks, it offers both a practical tool for confidentiality-aware
-analysis and a scientific argument that layout can stand in for lexical content
-in this class of problems.
+The qualification stage shows that the project has moved beyond an initial
+idea: it already includes empirical studies, a large dataset, explainability
+results, and working tool prototypes. The remaining doctoral work will refine
+the evidence, expand the task set, evaluate practical usefulness, and
+consolidate the approach into a thesis. By showing that structural information
+alone supports a family of software analysis tasks, the thesis will offer both
+a practical option for confidentiality-aware analysis and a scientific argument
+that layout can stand in for lexical content in this class of problems.

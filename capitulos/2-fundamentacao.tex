@@ -7,7 +7,7 @@ over source artifacts, and tool-supported feedback inside development
 environments. These activities are closely related to program comprehension:
 before a developer can modify, review, test, or refactor a system, the developer
 must form a working understanding of what its artifacts are, how they are
-organized, and what roles they play.
+organized, and what roles they play \cite{vonmayrhauser1995comprehension}.
 
 Program comprehension is difficult because source code is not only text. It is
 also structure, convention, history, style, architecture, dependency, and domain
@@ -19,9 +19,9 @@ without requiring a full semantic interpretation at the first step.
 
 Traditional program-comprehension support includes code navigation,
 cross-reference search, syntax highlighting, dependency views, metrics,
-architectural diagrams, and static-analysis warnings. These mechanisms are
-essential, but they tend to operate either at the textual level or through
-language-aware abstractions. A minimap-based approach adds another layer: it
+architectural diagrams, and static-analysis warnings
+\cite{storey2006comprehension}. These mechanisms are essential, but they tend
+to operate either at the textual level or through language-aware abstractions. A minimap-based approach adds another layer: it
 represents a source artifact as an image-like signature that can be inspected by
 models and, in some cases, by humans. It does not aim to answer every semantic
 question about a file. Instead, it supports a preliminary form of recognition:
@@ -114,9 +114,9 @@ the visual artifact. Traditional visualizations are usually designed for human
 interpretation. Source code minimaps, in this project, are designed primarily as
 machine-readable visual signatures. Humans may inspect them, and explainability
 methods may expose salient regions, but the core pipeline treats minimaps as
-inputs for computational models. In short, the literature above produces
-visualization for humans; this work develops visualization for machines, and
-the human returns to the loop at the level of predictions and explanations.
+inputs for computational models. The literature above produces visualization
+for humans; this work develops visualization for machines, and the human
+returns to the loop at the level of predictions and explanations.
 
 \section{Source Code as Visual Data}
 
@@ -171,7 +171,7 @@ relevant when an image is characterized by repeated local patterns rather than
 by objects with clear semantic boundaries. Local Binary Patterns (LBP) are a
 well-known texture descriptor that compares each pixel with its neighborhood and
 encodes local intensity relations as binary patterns
-\cite{maenpaa2005texture,martins2013database}.
+\cite{ojala2002lbp,maenpaa2005texture,martins2013database}.
 
 In a minimap, the discriminative signal may not be an object such as a face,
 vehicle, or organ. It may instead be a pattern of indentation, delimiter density,
@@ -195,10 +195,12 @@ computer vision, convolutional neural networks such as ResNet
 \cite{he2016resnet} and EfficientNet \cite{tan2019efficientnet} have become
 standard backbones for image classification and feature extraction. Vision
 Transformers and hybrid architectures further expanded the range of possible
-models by adapting attention mechanisms to image patches \cite{vaswani2017attention}.
+models by adapting attention mechanisms \cite{vaswani2017attention} to image
+patches \cite{dosovitskiy2021vit}.
 
 Transfer learning is particularly useful when a model pretrained on a large
-dataset can be adapted to a smaller or more specialized dataset. Although
+dataset, such as ImageNet \cite{deng2009imagenet}, can be adapted to a smaller
+or more specialized dataset. Although
 natural-image pretraining is not designed for source code minimaps, pretrained
 filters may still provide useful low-level visual features such as edges,
 textures, contrast patterns, and spatial hierarchies. The large-scale minimap
@@ -269,17 +271,18 @@ require different interaction designs. A single-file command may be enough for
 quick inspection, while project-level analysis may require dashboards, grouping,
 filtering, and explanation overlays.
 
-Developer feedback should also be calibrated. A tool should avoid presenting a
-prediction as an unquestionable fact. Instead, it should communicate that a file
-visually resembles a class, that the confidence is limited, or that the model
-focused on particular regions. This is where explainability and interface design
-meet. Attribution maps, confidence scores, and textual summaries can help
-developers decide whether to trust, ignore, or investigate a prediction.
+Developer feedback should also be calibrated. Poorly framed automated feedback
+can be perceived as noise and even reduce communication among developers
+\cite{wessel2021dontdisturb}, so a tool should avoid presenting a prediction as
+an unquestionable fact. Instead, it should communicate that a file visually
+resembles a class, that the confidence is limited, or that the model focused on
+particular regions. This is where explainability and interface design meet:
+attribution maps, confidence scores, and textual summaries can help developers
+decide whether to trust, ignore, or investigate a prediction.
 
-The MinimapSignatures prototype is therefore not only an implementation detail.
-It is part of the research strategy. It allows the project to study how minimap
-analysis can be delivered in IDEs and which forms of feedback are plausible for
-future evaluation.
+The MinimapSignatures prototype is therefore part of the research strategy: it
+allows the project to study how minimap analysis can be delivered in IDEs and
+which forms of feedback are plausible for future evaluation.
 
 \section{Explainable Artificial Intelligence}
 
@@ -313,13 +316,12 @@ A key barrier to applying external analysis tools on industrial codebases is
 that source code often encodes \textit{strategic business information}: formulas
 embedded in arithmetic expressions, magic constants that encode pricing or
 margin logic, variable and function names that reveal domain concepts, and
-comments that describe business rules. Consider a hypothetical expression such
-as \texttt{(Math.sin(x) + Math.cos(y)) * 23.45}: even without knowing the
-context, a reader who sees the identifier \texttt{profitMargin} and the constant
-\texttt{23.45} together can infer something about the company's internal
-calculations. Sending such code to an external service, even for legitimate
-analysis, exposes intellectual property that the organization may not wish to
-share.
+comments that describe business rules. Consider a hypothetical assignment such
+as \texttt{profitMargin = grossRevenue * 0.2345}: even without knowing the
+context, a reader who sees the identifier and the constant together can infer
+something about the company's internal calculations. Sending such code to an
+external service, even for legitimate analysis, exposes intellectual property
+that the organization may not wish to share.
 
 The character-level anonymization strategy adopted in this project addresses
 this concern directly. By mapping all letters to one of two canonical values

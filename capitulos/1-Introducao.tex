@@ -109,11 +109,11 @@ many analysis approaches precisely in the contexts where they would be most
 valuable.
 
 The project therefore asks whether a visual representation of source files can
-serve as an intermediate abstraction: simple enough to be generated across many
-languages and file types, compact enough to support large datasets, structured
-enough to retain discriminative signals, and capable of suppressing lexical
-content so that business-sensitive information never leaves the local environment.
-Source code minimaps are proposed as this abstraction.
+serve as an intermediate abstraction: simple enough to generate across many
+languages and file types, compact enough to support large datasets, and able to
+retain discriminative signals while suppressing the lexical content, so that
+business-sensitive information never leaves the local environment. Source code
+minimaps are proposed as this abstraction.
 
 \section{Research Gap}
 
@@ -201,14 +201,6 @@ The project is organized around five research questions:
     IDE workflows for developer-facing feedback?
 \end{description}
 
-These questions connect representation, empirical evaluation, interpretation,
-intellectual property protection, and tool support. RQ1 and RQ2 address the
-feasibility and modeling capacity of minimaps. RQ3 addresses transparency and
-model interpretability. RQ4 addresses the practical need to suppress business-
-sensitive lexical content while preserving structural discriminability. RQ5
-addresses the transition from offline experiments to software-engineering
-practice.
-
 \section{Objectives}
 
 The general objective of this work is to define, evaluate, and
@@ -266,10 +258,10 @@ their current status.
 \toprule
 \textbf{Contribution area} & \textbf{Description} & \textbf{Status} \\
 \midrule
-Representation & Source code minimaps: compact two-dimensional visual signatures produced for model consumption. & Validated (two studies) \\
-Anonymization & Character-to-pixel mapping that suppresses lexical content while preserving layout signals. & Validated; ablation study planned \\
+Representation & Source code minimaps: compact two-dimensional visual signatures produced for model consumption. & Supported by two studies \\
+Anonymization & Character-to-pixel mapping that suppresses lexical content while preserving layout signals. & Preliminary (informal); ablation planned \\
 Datasets & 685,906-image corpus from 100 projects across 10 languages; archived on Zenodo. & Available \\
-Modeling & LBP + shallow classifiers (Study 1); ResNet-18 and EfficientNet-B0 (Study 2); custom multitask CNN (Stage 3). & Validated \\
+Modeling & LBP + shallow classifiers (Study 1); ResNet-18 and EfficientNet-B0 (Study 2); custom multitask CNN (Stage 3). & Evaluated in two studies \\
 Explainability & Integrated Gradients attribution maps for Type, Project, and Author objectives. & Initial results \\
 Tool support & VS Code and IntelliJ IDEA plugins connected to a FastAPI/PyTorch backend; functional prototype. & Prototype validated \\
 Quality tasks & Extension toward code smells, quality indicators, and architectural deviations. & Planned \\
@@ -297,32 +289,25 @@ reasonable first step for IDE integration. A developer can trigger a command on
 the active editor and receive immediate feedback without submitting an entire
 repository.
 
-The project also assumes that visual structure is meaningful even when lexical
-content is suppressed. This assumption is plausible because software artifacts
-are not random text. Formatting conventions, indentation, block delimiters,
-annotation placement, repeated declarations, template regions, and generated
-sections produce visual patterns. Nevertheless, the assumption must be tested
-empirically. If minimaps only worked when lexical content was preserved, the
-privacy and generality motivation would be weak. For this reason, anonymization
-is treated as part of the representation, not as an optional post-processing
-step.
-
-Another assumption is that a language-light first representation is useful even
-when language-specific analysis remains necessary for deeper tasks. A minimap
-may identify that a file visually resembles a test class, but it cannot prove
-that the tests assert meaningful behavior. It may show that a source artifact
-deviates from common project patterns, but it cannot alone determine whether the
-deviation is a defect or an intentional design choice. The intended use is
-therefore decision support: minimaps can help prioritize, classify, cluster, and
-explain artifacts, while human judgment and complementary tools remain central.
+The project also rests on assumptions that mirror the hypothesis boundaries
+stated earlier. Visual structure is assumed to be meaningful even when lexical
+content is suppressed: software artifacts are not random text, and formatting
+conventions, indentation, block delimiters, annotation placement, and generated
+sections produce visual patterns. This assumption must be tested empirically,
+which is why anonymization is treated as part of the representation rather than
+as an optional post-processing step. Likewise, minimaps are assumed to be
+useful as a first, language-light representation even though deeper tasks still
+require language-specific analysis: a minimap may indicate that a file
+resembles a test class, but it cannot prove that the tests assert meaningful
+behavior. The intended use is decision support, with human judgment and
+complementary tools remaining central.
 
 Finally, the project assumes that practical adoption depends on tool support.
-An offline dataset and model can demonstrate scientific feasibility, but a
-software-engineering technique becomes more meaningful when it can be connected
-to actual workflows. MinimapSignatures is included in the scope of the doctorate
-for this reason. It provides a path from representation learning to developer
-interaction, and it creates a platform for future studies about usefulness,
-trust, and explanation design.
+An offline dataset and model demonstrate feasibility, but a
+software-engineering technique becomes more meaningful when connected to actual
+workflows. MinimapSignatures is included in the scope of the doctorate for this
+reason: it provides a path from representation to developer interaction and a
+platform for future studies about usefulness, trust, and explanation design.
 
 \section{Document Organization}
 

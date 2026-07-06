@@ -1,16 +1,9 @@
 \section{Literature Mapping Strategy}
 
-The related-work analysis in this qualification document is guided by a curated
-collection of reference material in which the selected papers are organized
-into thematic groups, together with article classifications, keyword matrices,
-and automatically generated group descriptions. These automatic groupings were
-produced from an article-by-controlled-expression matrix weighted with TF-IDF
-and clustered with AGNES. Therefore, they are useful as a navigation
-instrument, but they are not treated as final scientific interpretation.
-
-The search strategy was structured around four logical blocks executed across
-five major digital libraries: IEEE Xplore, ACM Digital Library, Scopus,
-SpringerLink, and Google Scholar.
+The related-work analysis is based on a structured literature mapping. The
+search strategy combined four logical blocks executed across five major digital
+libraries: IEEE Xplore, ACM Digital Library, Scopus, SpringerLink, and Google
+Scholar.
 
 \begin{description}
     \item[Block A (Source Code):] \texttt{"source code" OR "software code" OR "program code"}
@@ -20,80 +13,33 @@ SpringerLink, and Google Scholar.
 \end{description}
 
 For queries targeting visual paradigms, the blocks were combined as
-\textit{(A) AND (B) AND (C) AND (D)}. To cover broader analysis methodologies,
-Block D was omitted in complementary search runs.
+\textit{(A) AND (B) AND (C) AND (D)}; complementary runs omitted Block D to
+cover broader analysis methodologies.
 
 Reference management relied on Zotero for automated metadata harvesting. Study
 selection and blinded screening were managed through the Rayyan platform and
-performed by two reviewers: the author and an undergraduate research student
+performed by two reviewers, the author and an undergraduate research student
 (Jamily G. S. Souza), with conflicting assessments resolved by discussion.
-The filtering followed three progressive stages: (i)~title and abstract
-screening produced an initial set of 270 candidates; (ii)~a keyword-based
-refinement guided by a control group of 7 seminal baseline papers, from which 39
-structural index terms were extracted, narrowed the pool to 155 articles;
-(iii)~negative filtering eliminated secondary studies and out-of-scope formats
-(survey, review, mapping study, tutorial, editorial, poster, and works centered
-on security or UX), reducing the active set to 96 articles. Full-text inspection
-with iterative peer validation then produced the final corpus of 56 selected
-studies.
+Title and abstract screening produced an initial set of 270 candidates.
+Because the combined queries returned many works that mention visualization
+only incidentally, a second filter compared candidate keywords against 39
+structural index terms extracted from a control group of 7 baseline papers
+central to the topic, narrowing the pool to 155 articles. Negative filtering
+then eliminated secondary studies and out-of-scope formats (survey, review,
+mapping study, tutorial, editorial, poster, and works centered on security or
+UX), reducing the active set to 96 articles, and full-text inspection with
+iterative peer validation produced the final corpus of 56 selected studies.
 
-The literature was organized around seven analytical dimensions:
-
-\begin{enumerate}
-    \item the software-engineering problem addressed by each work;
-    \item the representation used for source code or software artifacts;
-    \item the degree of language dependence;
-    \item the learning or visualization method adopted;
-    \item the dataset or empirical basis;
-    \item the evaluation strategy;
-    \item the limitations that motivate the minimap-based proposal.
-\end{enumerate}
-
-This organization is intentionally problem-oriented rather than chronological.
-The goal is not only to list existing tools or models, but to identify where
-source code minimaps can contribute. The following sections synthesize the main
-families of work.
-
-\section{Interpretation of the Article Groups}
-
-The article groups provide an initial map of the literature. The largest
-group concentrates on software visualization, source code analysis, static
-analysis, software quality, maintenance, and evolution. This group is important
-because it establishes the software-engineering context in which minimaps should
-be positioned. It includes works that visualize dependencies, architecture,
-tests, source-code relations, microservice boundaries, fault localization, and
-quality indicators. These works show that visual and structural abstractions are
-useful, but they usually remain tied to specific analysis goals or human-facing
-views.
-
-A smaller but central group is directly related to minimaps, Local Binary
-Patterns, feature detection, and visual signatures. This group contains the
-initial minimap study and therefore functions as the seed of the doctoral
-proposal. Its role in the literature review is not only to cite previous work
-by the candidate, but to identify what remains open after that first study:
-larger datasets, deep models, explainability, stronger anonymization analysis,
-and tool integration.
-
-Another group emphasizes computer vision, Vision Transformers, ResNet,
-Transformer-based models, and source-code representations such as CV4Code. This
-group helps connect minimap analysis to modern visual learning. It also
-supports the methodological move from handcrafted texture descriptors to
-end-to-end learning. The relevance of this group is not that source code
-minimaps are natural images, but that computer vision methods can process
-spatial patterns and learn hierarchical representations.
-
-The final group contains works related to large language models, conversational
-data analysis, human-AI interaction, code verification, and visual programming.
-This group is more peripheral to the current qualification proposal, but it is
-useful for future positioning. As software-engineering tools increasingly adopt
-AI assistants, minimap-based analysis may become one component of a multimodal
-toolchain that combines visual, textual, structural, and conversational feedback.
-
-This interpretation of the groups leads to a practical decision for the thesis:
-the related-work chapter should not be organized by the automatic group numbers.
-Instead, it should translate those groups into conceptual families. The families
-used in this chapter are software visualization, machine learning for code,
-visual code representations, software quality, explainability, and tool support.
+This chapter does not discuss all 56 studies individually. The corpus was
+first clustered into thematic groups, using a TF-IDF-weighted
+article-by-term matrix and agglomerative clustering, as a navigation aid; the
+groups were then translated into the conceptual families that organize the
+following sections: software visualization, machine learning representations
+for code, visual code representations, software quality, explainability, and
+tool support. The sections below discuss the most representative works of each
+family, selected for their proximity to the minimap proposal. The full corpus,
+the search strings, and the screening decisions will be packaged as a citable
+artifact, as described in Chapter~\ref{chapter:research-plan}.
 
 \section{Software Visualization and Visual Code Inspection}
 
@@ -214,14 +160,16 @@ Fifth, it integrates the representation into IDE plugins through
 MinimapSignatures.
 
 The methodological inspiration also comes from domains beyond software
-engineering. In music classification, spectrograms transform audio signals into
-visual representations that can be analyzed by texture descriptors and neural
-models \cite{costa2011music,costa2012music,costa2017cnn}. Similar strategies
-have been used for sound-image classification in other domains
-\cite{nanni2018bird,pereira2019representation}. These works suggest that a
-domain need not be inherently visual to benefit from visual machine learning.
-The key requirement is that the visual transformation preserves task-relevant
-patterns.
+engineering, where non-visual signals are rendered as images for visual
+learning: spectrograms have supported music genre classification with both
+texture descriptors and neural models
+\cite{costa2011music,costa2012music,costa2017cnn}, and similar sound-image
+strategies appear in other domains
+\cite{nanni2018bird,pereira2019representation}. A domain need not be inherently
+visual to benefit from visual machine learning, as long as the transformation
+preserves task-relevant patterns; Chapter~\ref{chapter:foundations} argues that
+this route is even more direct for source code, which already has a
+two-dimensional layout of its own.
 
 For source code minimaps, the relevant patterns are not semantic objects but
 layout regularities, symbol distributions, indentation structures, and repeated
@@ -321,7 +269,7 @@ other representations of source code.
 
 \section{Confidentiality and Code Representations}
 
-One dimension of the mapping deserves separate attention because it anchors the
+One dimension of the mapping is treated separately because it anchors the
 central motivation of this proposal. The mapping did not identify studies that
 design a code representation primarily to suppress proprietary lexical content
 while remaining useful as input for machine learning. Related concerns exist in

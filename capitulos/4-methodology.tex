@@ -2,11 +2,10 @@
 
 The proposed methodology transforms source files into source code minimaps and
 uses these minimaps as visual signatures for software analysis. The method is
-organized as a pipeline with seven stages:
+organized as a pipeline with six stages:
 
 \begin{enumerate}
-    \item repository selection and file discovery;
-    \item filtering of source and auxiliary artifacts;
+    \item repository selection, file discovery, and filtering;
     \item anonymization of lexical content;
     \item minimap rendering;
     \item catalog construction;
@@ -116,14 +115,15 @@ procedure in abstract form.
 \caption{Source code minimap generation}
 \label{alg:minimap-generation}
 \begin{algorithmic}[1]
-\Require Repository path $R$, file filters $F$, anonymization function $A$, target size $S$
+\Require Repository path $R$, file filters $F$, character-to-pixel mapping $M_A$ (Table~\ref{tab:anonymization}), target size $S$
 \Ensure Minimap image set $M$ and metadata catalog $C$
 \State $M \gets \emptyset$; $C \gets \emptyset$
 \ForAll{file $f$ discovered recursively in $R$}
     \If{$f$ satisfies filters $F$}
         \State $content \gets$ read textual content from $f$
-        \State $content' \gets A(content)$
-        \State $image \gets$ render characters of $content'$ as pixel intensities
+        \ForAll{line index $i$ and column index $j$ with character $c_{ij}$ in $content$}
+            \State $image[i,j] \gets M_A(c_{ij})$ \Comment{anonymization and rendering in a single pass}
+        \EndFor
         \If{fixed-size mode is enabled}
             \State $image \gets$ resize or pad $image$ to target size $S$
         \EndIf
@@ -140,13 +140,9 @@ procedure in abstract form.
 
 Anonymization is central to the project because it enables analysis of
 industrial and proprietary codebases without exposing business-sensitive
-information. A source file may embed strategic knowledge in identifiers
-(\texttt{calculateMargin}, \texttt{profitRate}), in numeric constants
-(\texttt{23.45}, \texttt{0.031}), or in comments describing business rules.
-Sending such a file to an external analysis service, even in a research
-context, can disclose intellectual property that organizations are not willing
-to share. The minimap approach addresses this by suppressing the lexical layer
-before the representation is transmitted or stored externally.
+information; the intellectual-property argument behind this requirement is
+developed in Chapter~\ref{chapter:foundations}. This section describes the
+mechanism adopted in the current implementation.
 
 The initial anonymization strategy maps broad character classes to canonical
 values. Letters and digits are replaced by representative values, while
@@ -233,8 +229,8 @@ Anonymization mode & Transformation applied before rendering. \\
 The catalog enables traceability between the original repository, the generated
 image, and the learning objective. It also supports later filtering. For
 example, a researcher may create a balanced Type subset, exclude bot authors,
-select only Java projects, or design repository-disjoint splits. This makes the
-catalog as important as the image files themselves.
+select only Java projects, or design repository-disjoint splits. Without these
+fields, the image files alone cannot be audited or reused.
 
 \section{Dataset Splitting and Leakage Control}
 
@@ -461,29 +457,21 @@ extend the corpus to new tasks.
 
 \section{Implementation Considerations}
 
-The implementation of the methodology must address several engineering details.
-Text files may use different encodings, line endings, and character sets.
-Repositories may contain very large files, binary files with misleading
-extensions, or generated artifacts. Rendering must be deterministic so that the
-same file and anonymization mode produce the same minimap. Catalog generation
-must also be deterministic so that image identifiers can be reproduced.
+The implementation must address engineering details that directly affect
+reproducibility. Text files vary in encoding, line endings, and character sets;
+repositories contain very large files, binaries with misleading extensions, and
+generated artifacts. Rendering and catalog generation must be deterministic, so
+that the same file and anonymization mode always produce the same minimap and
+identifier, and the pipeline should log failures explicitly instead of silently
+skipping problematic files. At the scale of 100 repositories and hundreds of
+thousands of images, incremental generation, caching, and parallel processing
+become necessary.
 
-Performance is another concern. A large repository may contain thousands of
-files, and a corpus with 100 repositories can generate hundreds of thousands of
-images. The pipeline should support incremental generation, caching, and
-parallel processing when possible. It should also log failures explicitly
-instead of silently skipping problematic files.
-
-For IDE integration, implementation constraints are different. A plugin must
-generate a minimap quickly enough that the developer does not experience the
-operation as disruptive. It must avoid sending raw source code when the
-anonymized minimap is sufficient. It must handle unsaved buffers, temporary
-files, and different editor encodings. These practical details are part of the
-method because they determine whether minimap analysis can move from offline
-experiments to developer workflows.
-
-Finally, versioning is essential. A model trained with one anonymization
-function and rendering procedure may not be compatible with minimaps generated
-by another version of the tool. Therefore, each minimap and model should record
-the rendering version, anonymization mode, target size, model version, and label
-mapping. Without this metadata, predictions become difficult to audit.
+IDE integration imposes different constraints: a plugin must generate the
+minimap quickly enough not to disrupt the developer, avoid sending raw source
+code, and handle unsaved buffers, temporary files, and editor encodings.
+Versioning ties both contexts together. A model trained with one anonymization
+function and rendering procedure is not necessarily compatible with minimaps
+generated by another version of the tool, so each minimap and model must record
+the rendering version, anonymization mode, target size, model version, and
+label mapping. Without this metadata, predictions become difficult to audit.

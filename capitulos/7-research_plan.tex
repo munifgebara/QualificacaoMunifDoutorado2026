@@ -7,6 +7,24 @@ second is a large-scale study with 685,906 minimaps from 100 open-source
 projects and 10 programming languages \cite{gebara2025ciarp}. The third is the
 MinimapSignatures tool ecosystem, which validates the feasibility of bringing
 minimap analysis into IDE workflows \cite{gebara2026minimapsignatures}.
+Table~\ref{tab:publications} summarizes this production and its editorial
+status.
+
+\begin{table}[ht]
+\centering
+\caption{Scientific production associated with this doctoral research.}
+\label{tab:publications}
+\begin{tabular}{p{0.40\textwidth}p{0.20\textwidth}p{0.11\textwidth}p{0.13\textwidth}}
+\toprule
+\textbf{Paper} & \textbf{Venue} & \textbf{Role} & \textbf{Status} \\
+\midrule
+Software Feature Detection Using Source Code Minimaps as Visual Signatures \cite{gebara2025iwssip} & IWSSIP 2025 (IEEE) & Main author & Published \\
+Source Code Minimaps at Scale: Feature-Oriented Analysis of 100 Projects \cite{gebara2025ciarp} & CIARP 2025 & Main author & To appear \\
+MinimapSignatures: A Multi-IDE Ecosystem for Analysis of Visual Source Code Signatures \cite{gebara2026minimapsignatures} & --- & Main author & In preparation \\
+\bottomrule
+\end{tabular}
+\fautor
+\end{table}
 
 These outputs establish a solid foundation, but the thesis is not complete. The
 remaining work must deepen the methodology, broaden the task set, strengthen
@@ -34,10 +52,10 @@ a single isolated experiment. The main deliverables are:
     \item the final thesis text and associated reproducibility package.
 \end{enumerate}
 
-These deliverables are designed to make the thesis coherent. The dataset and
-methodology support the models. The models support the explanations. The
-explanations support tool feedback. The tool feedback motivates developer
-evaluation. Each part therefore contributes to the same research arc.
+The deliverables are interdependent rather than isolated results: the dataset
+and methodology feed the models, the models feed the explanation protocols, and
+the explanations become the tool feedback that the developer-centered
+evaluation will assess.
 
 \section{Remaining Research Activities}
 
@@ -147,23 +165,24 @@ file-level prediction alone.
 
 \section{Planned Experiments}
 
-Table~\ref{tab:planned-experiments} summarizes planned experiments and their
-expected outcomes.
+Table~\ref{tab:planned-experiments} summarizes the planned experiments, the
+activity each one belongs to, and its expected outcome; the experimental
+details are given in the activity descriptions above.
 
 \begin{table}[ht]
 \centering
 \caption{Planned experiments for the doctoral thesis.}
 \label{tab:planned-experiments}
-\begin{tabular}{p{0.22\textwidth}p{0.35\textwidth}p{0.28\textwidth}}
+\begin{tabular}{p{0.26\textwidth}p{0.10\textwidth}p{0.46\textwidth}}
 \toprule
-\textbf{Experiment} & \textbf{Description} & \textbf{Expected output} \\
+\textbf{Experiment} & \textbf{Activity} & \textbf{Expected output} \\
 \midrule
-Anonymization ablation & Compare several anonymization modes and comment-removal strategies. & Trade-off curves between performance and information suppression. \\
-Imbalance-aware learning & Evaluate class weights, balanced sampling, focal loss, and calibration. & Improved macro-F1 and minority-class analysis. \\
-Resolution analysis & Compare 128 by 128, larger fixed sizes, and patch-based inputs. & Evidence about information loss and scalability. \\
-Model comparison & Evaluate additional CNN backbones, transformer-based variants (resuming the early ViT-B/16 runs), and the multitask architecture under identical repository-aware splits. & Stronger benchmark of architecture choices. \\
-Quality target pilot & Use labeled or proxy quality indicators for minimap-based classification. & Evidence about feasibility for quality-related analysis. \\
-Tool study & Evaluate MinimapSignatures with developers or realistic inspection tasks. & Feedback on usefulness, trust, and workflow integration. \\
+Anonymization ablation & A2 & Trade-off curves between performance and information suppression. \\
+Imbalance-aware learning & A3 & Improved macro-F1 and minority-class analysis. \\
+Resolution analysis & A4 & Evidence about information loss and scalability. \\
+Model comparison (additional CNN backbones, transformer variants, multitask architecture) & A4 & Stronger benchmark of architecture choices under identical repository-aware splits. \\
+Quality target pilot & A5 & Evidence about feasibility for quality-related analysis. \\
+Tool study with developers & A6 & Feedback on usefulness, trust, and workflow integration. \\
 \bottomrule
 \end{tabular}
 \fautor
@@ -283,8 +302,9 @@ intellectual property protection begins at the data-collection step.
 
 The remaining doctoral work adopts open science practices explicitly. Several
 artifacts are already public: the large-scale dataset is archived on Zenodo
-with a versioned DOI (10.5281/zenodo.16929672); the training pipelines, the
-backend, and the IDE plugins are available in public repositories; and the
+under a versioned DOI (Chapter~\ref{chapter:tool-support}); the training
+pipelines, the backend, and the IDE plugins are available in public
+repositories; and the
 multitask training repository includes a model card describing the model's
 inputs, outputs, intended use, and limitations.
 
@@ -353,4 +373,5 @@ November--December 2027 & Consolidate results, finish the thesis text, prepare a
 The schedule is compact because the core representation, the datasets, and the
 preliminary studies already exist. The remaining effort concentrates on
 controlled evaluation, tool extension, and writing, and it fits the eighteen
-months available until the expected conclusion at the end of 2027.
+months available until the expected conclusion at the end of 2027, within the
+program deadline for the doctoral defense.

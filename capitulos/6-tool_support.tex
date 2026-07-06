@@ -50,9 +50,9 @@ plugin.
 The backend is implemented in Python using FastAPI and PyTorch. Its main
 endpoint receives a JSON payload containing a project identifier, an artifact
 hash, and a base64-encoded 128 by 128 grayscale PNG representing the minimap.
-The backend decodes the image, applies the training normalization
-(\((x - 0.5) / 0.5\)), performs a single forward pass through the multitask
-model, and returns structured prediction groups.
+The backend decodes the image, applies the same normalization used during
+training, performs a single forward pass through the multitask model, and
+returns structured prediction groups.
 
 The model deployed in the backend is a custom \textit{MultiTaskMinimapCNN},
 designed specifically for simultaneous multi-target inference. It consists of a
@@ -84,7 +84,10 @@ the top-three ranked class-confidence pairs per target. The fourth target
 (quality) is included in the contract as a placeholder and currently returns
 mock data; no model has been trained for quality classification at this stage.
 This slot is reserved to maintain API contract compatibility when a quality model
-becomes available.
+becomes available. Both plugins must present this target explicitly as a
+placeholder, since returning mock values without a clear mark could mislead
+users; making that labeling unambiguous in the interfaces is part of the
+planned work.
 
 In practice, Type is the most immediately useful target, and Project can
 support repository-convention analysis. Author labels are noisier because they
@@ -167,7 +170,7 @@ Additional metadata & Optional fields for model version, preprocessing mode, or 
 \fautor
 \end{table}
 
-The shared contract confirms that minimap-based analysis is not tied to a single
+The shared contract shows that minimap-based analysis is not tied to a single
 IDE. Additional clients can be implemented by generating the same minimap format
 and sending the same request structure.
 
@@ -196,6 +199,7 @@ IntelliJ IDEA plugin generates and submits minimaps (up to 128 lines) & Validate
 IntelliJ IDEA plugin displays Markdown results in split editor & Validated \\
 Shared client--server contract works across both IDEs & Validated \\
 Capture beyond 128 lines (IntelliJ) & Planned \\
+Empirical characterization of the deployed model & Planned \\
 Explanation maps returned by backend & Planned \\
 Multi-file and project-level analysis & Planned \\
 Quality classification model & Planned \\
@@ -213,48 +217,30 @@ research pipeline can be executed from real IDEs.
 
 \section{Usage Scenarios}
 
-MinimapSignatures can support several usage scenarios. The current prototype
-implements only part of them, but they guide future development and evaluation.
+MinimapSignatures was designed with four usage scenarios in mind, of which the
+current prototype implements only the first. In single-file inspection, a
+developer opens a file, triggers the analysis, and receives the predicted Type,
+optional Project or style-related predictions, and confidence scores; this is
+useful when inspecting an unfamiliar file or when a reviewer wants to compare a
+file against expected roles. In code review, the tool could flag files that
+visually differ from the project's conventions, framed as a prioritization aid
+rather than a judgment: the tool does not say that a file is wrong, only that
+it is visually unusual relative to a learned distribution. Evidence from the
+bot literature reinforces this framing, since automated feedback on pull
+requests can be perceived as noise and can even reduce communication among
+developers \cite{wessel2021dontdisturb,wessel2022quality}. A minimap-based
+review aid must therefore be conservative by default: silent when nothing
+unusual is detected, explicit about its confidence when it does flag a file,
+and available on demand rather than injected into every review.
 
-\subsection{Single-File Inspection}
-
-In the simplest scenario, a developer opens a file and triggers minimap analysis.
-The tool returns the predicted Type, optional Project or style-related
-predictions, confidence scores, and later an explanation overlay. This scenario
-is useful when a developer inspects an unfamiliar file and wants a quick
-classification or when a reviewer wants to compare a file against expected
-roles.
-
-\subsection{Code Review Support}
-
-During code review, a pull request may introduce files that visually differ from
-the existing project conventions. A minimap-based tool could flag unusual
-artifacts for additional inspection. The output should be framed carefully: the
-tool should not say that a file is wrong, but that it is visually unusual
-relative to a learned distribution. This makes the tool a prioritization aid.
-
-Evidence from the bot literature reinforces this design concern: automated
-feedback on pull requests can be perceived as noise and can even reduce
-communication among developers \cite{wessel2021dontdisturb,wessel2022quality}.
-A minimap-based review aid must therefore be conservative by default: silent
-when nothing unusual is detected, explicit about its confidence when it does
-flag a file, and available on demand rather than injected into every review.
-
-\subsection{Onboarding and Repository Exploration}
-
-A new developer entering a project often needs to understand file roles and
-project organization. A project-level version of MinimapSignatures could render
-minimaps for selected folders, group similar artifacts, and summarize dominant
-file patterns. Such a view would complement textual navigation and dependency
-analysis.
-
-\subsection{Project-Specific Model Adaptation}
-
-Organizations may have conventions that differ from open-source datasets. A
-future version of the tool could allow teams to generate a private minimap
-catalog and train or fine-tune project-specific models. This would make the
-analysis more relevant to local architecture, naming patterns, and quality
-expectations, while still avoiding transmission of raw source code.
+The remaining scenarios concern project-level use. During onboarding, a
+project-level version of the tool could render minimaps for selected folders,
+group similar artifacts, and summarize dominant file patterns, complementing
+textual navigation and dependency analysis. Organizations whose conventions
+differ from open-source datasets could also generate a private minimap catalog
+and train or fine-tune project-specific models, keeping the analysis relevant
+to local architecture and quality expectations while still avoiding
+transmission of raw source code.
 
 \section{Artifact Availability and Repositories}
 
@@ -267,7 +253,7 @@ following repositories:
     the multitask CNN (MultiTaskMinimapCNN), including data loading, training
     loop, evaluation scripts, confusion matrices, and classification reports;
     \item \texttt{back-end-pytorch}: FastAPI inference service that loads the
-    trained \texttt{best\_model.pt} checkpoint and exposes the analysis endpoint;
+    trained model checkpoint and exposes the analysis endpoint;
     \item \texttt{intellij-plugin}: IntelliJ IDEA client (Java/Kotlin) for
     minimap generation and result display;
     \item \texttt{vscode-plugin}: Visual Studio Code extension (TypeScript) for

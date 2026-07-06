@@ -48,7 +48,7 @@ with neural image models. This distinction is important because variable-size
 minimaps preserve more original layout information, while fixed-size minimaps
 simplify modeling.
 
-\section{Study 1 Dataset and Classes}
+\subsection{Dataset and Classes}
 
 The initial dataset was generated from real software projects and organized into
 classes representing file types and Java-related stereotypes. Examples include
@@ -59,9 +59,10 @@ only a few instances and others containing thousands.
 
 For the first controlled evaluation, the study selected classes with sufficient
 support and limited the number of samples per class to reduce imbalance. The
-resulting setting focused on seven representative classes. This design provided
-a balanced enough scenario to test whether the representation itself contained
-useful visual signals.
+resulting setting focused on seven representative classes, including Java
+entities, Java implementation classes, JSP pages, JavaScript, JSON, and SVG
+files. This design provided a balanced enough scenario to test whether the
+representation itself contained useful visual signals.
 
 Figure~\ref{fig:lbp-histograms} presents average LBP histograms for selected
 classes. The figure shows that some classes produce clearly different texture
@@ -76,7 +77,7 @@ distinguish.
     \fautor
 \end{figure}
 
-\section{Study 1 Results}
+\subsection{Results}
 
 Table~\ref{tab:study1-results} summarizes the main performance results reported
 for the three traditional classifiers. The values should be interpreted as
@@ -123,7 +124,7 @@ similarities.
     \fautor
 \end{figure}
 
-\section{Lessons from Study 1}
+\subsection{Lessons from Study 1}
 
 The first study produced four lessons that guide the rest of the doctorate.
 First, source code minimaps can support classification without relying on
@@ -179,7 +180,7 @@ Project and Author classes.
     \fautor
 \end{figure}
 
-\section{Study 2 Dataset Summary}
+\subsection{Dataset Summary}
 
 Table~\ref{tab:study2-dataset} summarizes the main dataset statistics. The
 numbers show that the corpus is large enough to train deep models, but also
@@ -217,7 +218,7 @@ last-committer or author labels as recorded by the dataset-generation process.
 Because this objective may conflate humans, bots, and organizational accounts,
 it is interpreted cautiously.
 
-\section{Study 2 Training Protocol}
+\subsection{Training Protocol}
 
 The large-scale study evaluates convolutional backbones under a unified
 protocol. Inputs are fixed-size 128 by 128 grayscale minimaps. Models are
@@ -231,7 +232,7 @@ from ImageNet pretrained weights followed by fine-tuning
 consolidated evaluation focused on the two convolutional backbones; a
 systematic transformer comparison is deferred to the research plan.
 
-The data protocol deserves explicit disclosure. Before splitting, classes with
+Three details of the data protocol matter for interpreting the results. Before splitting, classes with
 fewer than 100 samples were excluded and classes were capped at 5,000 samples,
 which limits extreme imbalance but also means that the effective number of
 classes seen by the models can be smaller than the catalog totals. The data
@@ -251,11 +252,14 @@ that ImageNet pretraining provides consistent but modest benefits across the
 three objectives, with EfficientNet-B0 pretrained reaching the strongest
 reported validation accuracy in this study \cite{gebara2025ciarp}.
 
-\section{Study 2 Results}
+\subsection{Results}
 
 Table~\ref{tab:study2-results} presents the main validation results emphasized
 in the large-scale study. EfficientNet-B0 with ImageNet pretraining reached the
-best reported validation accuracies among the evaluated configurations.
+best reported validation accuracies among the evaluated configurations. The
+ROC-AUC values are reported as lower bounds, following the original study, and
+the accuracies refer to the validation partition; consolidating the held-out
+test results is part of the evaluation work described below.
 
 \begin{table}[ht]
 \centering
@@ -283,8 +287,8 @@ suggesting that repository conventions and contributor style patterns are
 partially encoded in the visual layout of source files even after lexical
 content is suppressed.
 
-The contrast between near-perfect ROC-AUC and accuracies of 86--87\% deserves
-an explicit explanation. With roughly one hundred classes evaluated
+The contrast between near-perfect ROC-AUC and accuracies of 86--87\% needs
+explanation. With roughly one hundred classes evaluated
 one-vs-rest, each per-class ROC curve is dominated by easy negatives: a model
 can rank most negatives below the positives, and thus reach very high AUC,
 while still confusing similar classes at decision time. Accuracy, in contrast,
@@ -292,12 +296,14 @@ requires the correct class to win among all labels. High AUC therefore signals
 good per-class separability, not reliable final decisions. These values must
 also be read together with imbalance-aware metrics, since large head classes
 can dominate global accuracy while minority classes remain poorly classified.
-The training pipeline produces per-class classification reports and confusion
-matrices for each objective; consolidating macro-F1 and per-class recall into
-the results tables is part of the planned evaluation work, and improving
-minority-class behavior remains one of the central open tasks.
+The training pipeline already produces per-class classification reports and
+confusion matrices for each objective; these outputs exist but have not yet
+been consolidated into the tables above. Reporting macro-F1, per-class recall,
+and held-out test results alongside the validation accuracies is a priority
+for the next revision of these results, and improving minority-class behavior
+remains one of the central open tasks.
 
-\section{Explainability Findings}
+\subsection{Explainability Findings}
 
 The large-scale study uses Integrated Gradients to interpret model predictions.
 Figure~\ref{fig:xai} presents attribution maps for the three objectives. The
@@ -336,9 +342,9 @@ backend, and displays ranked predictions for the Type, Project, and Author
 targets. A fourth response target (quality) is a placeholder and currently
 returns mock data; no model has been trained for it.
 
-This result changes the research trajectory. The thesis is not limited to a
-dataset and model comparison; it also investigates how minimap analysis can
-become usable infrastructure for software-engineering workflows. No user study
+With this line of work, the thesis is no longer limited to a dataset-and-model
+comparison; it also investigates how minimap analysis can become usable
+infrastructure for software-engineering workflows. No user study
 has been conducted yet, so the evaluation remains functional and
 integration-oriented. The architecture, the deployed multitask model, the
 current capture limits, and the validation status are detailed in
@@ -440,17 +446,15 @@ and block organization, rather than in identifier names or literal values. The
 model does not appear to need lexical content to distinguish file types,
 project origins, or authorship styles.
 
-Second, it supports the industrial motivation of the approach. If anonymization
-preserves utility while suppressing identifiers, numeric constants, and string
-literals, an organization can submit anonymized minimaps to an external
-analysis service while the business logic embedded in the lexical layer stays
-local.
+Second, it supports the industrial motivation developed in
+Chapter~\ref{chapter:foundations}: if anonymization preserves utility, an
+organization can submit anonymized minimaps to an external analysis service
+while the business logic embedded in the lexical layer stays local.
 
-The Author objective has a specific role in this argument. Style remains
-identifiable after full lexical suppression, which provides evidence that the
-model operates on structural patterns such as indentation habits, spacing
-conventions, and operator placement. If author identification depended on
-lexical content, anonymization would have eliminated it.
+The Author objective matters here. Style remains identifiable after full
+lexical suppression, which is direct evidence that the model operates on
+structural patterns; if author identification depended on lexical content,
+anonymization would have eliminated it.
 
 A formal ablation study is still required. The thesis should repeat the
 comparison under documented conditions, cover multiple suppression levels,
