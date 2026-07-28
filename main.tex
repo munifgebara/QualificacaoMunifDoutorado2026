@@ -20,6 +20,26 @@
 \usepackage{algpseudocode}
 
 % ------------------------------------------------------------------------
+% Correcao de alinhamento
+% ------------------------------------------------------------------------
+% A macro \inserefolhaaprovacao (packages/icmc.cls, l. 1079) emite \centering
+% no corpo da macro, fora de qualquer grupo ou ambiente. Como ela e chamada
+% dentro do \AtBeginDocument da classe, o \centering nunca e desfeito e vaza
+% para todo o texto que vem depois: dedicatoria, resumos e os capitulos.
+%
+% O hook abaixo e declarado depois do da classe e, portanto, executa depois
+% dele, restaurando a justificacao. Nao altera a classe.
+\makeatletter
+\AtBeginDocument{%
+    \let\\\@normalcr
+    \leftskip\z@
+    \rightskip\z@
+    \parfillskip\@flushglue
+    \setlength{\parindent}{1.3cm}%
+}
+\makeatother
+
+% ------------------------------------------------------------------------
 % Cover and title-page metadata
 % ------------------------------------------------------------------------
 
