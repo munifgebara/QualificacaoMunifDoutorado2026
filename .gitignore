@@ -20,3 +20,7 @@ main.pdf
 *.out
 *.toc
 *.synctex.gz
+
+# Python
+__pycache__/
+*.pyc

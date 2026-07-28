@@ -1,3 +1,15 @@
+This chapter reports the empirical work already completed. Three studies are
+described in sequence. The first two are ordered from the most controlled to the
+most demanding setting: a small, balanced experiment with handcrafted texture
+descriptors, and a large-scale experiment with deep convolutional models over
+hundreds of thousands of minimaps. The third isolates a single question that the
+proposal depends on, whether anonymization costs predictive performance, and
+answers it with a paired design and an explicit statistical statement. The
+chapter then consolidates what the studies jointly support, maps that evidence
+back to the research questions, and is explicit about the limitations that
+prevent the current results from being read as final. These limitations are what the research plan of
+Chapter~\ref{chapter:research-plan} is designed to resolve.
+
 \section{Role of Preliminary Studies}
 
 This chapter consolidates the empirical evidence already produced during the
@@ -9,11 +21,15 @@ minimaps with Local Binary Patterns and traditional machine learning
 of minimaps and evaluates deep learning models with explainability
 \cite{gebara2025ciarp}.
 
-Together, these studies support three claims. First, source code minimaps encode
+A third study then isolates the anonymization question with a paired design.
+
+Together, these studies support four claims. First, source code minimaps encode
 discriminative information about software artifacts. Second, both handcrafted
 texture descriptors and learned visual representations can exploit this
 information. Third, explainability methods can reveal which visual regions
-models use when making predictions.
+models use when making predictions. Fourth, suppressing lexical content does not
+cost predictive performance in the setting where this has been measured, even
+though it removes more than half of the information carried by each pixel.
 
 \section{Study 1: Feature Detection with Texture Descriptors}
 
@@ -41,6 +57,37 @@ texture descriptor.
     \fadaptada{martins2013database}
 \end{figure}
 
+The operator works as follows \cite{ojala2002lbp}. Each pixel of the image is
+taken in turn as the center of a neighborhood, and its intensity is used as a
+local threshold. Every neighbor is compared with the center and replaced by a
+single bit: one if the neighbor is greater than or equal to the center, zero
+otherwise. In the example of Figure~\ref{fig:lbp}, the center value 4 converts
+the surrounding intensities into the bits shown in the middle grid. Reading
+these bits in a fixed circular order produces a binary word, here 11010011,
+whose decimal value 211 becomes the code assigned to that pixel. Two parameters
+control the operator: the number of sampled neighbors and the radius of the
+circle on which they lie, which together determine the spatial scale of the
+pattern being described.
+
+Applying this procedure to every pixel yields a code image, and the descriptor
+of the minimap is the histogram of those codes. The histogram is what makes the
+representation useful here: it discards where each pattern occurred and retains
+only how often each local configuration appears, so two files with the same
+layout conventions produce similar descriptors even when their content differs.
+The study used eight sampling points on a radius of two pixels and the
+non-rotation-invariant uniform variant of the operator, which keeps every
+uniform pattern, i.e., every code with at most two bit transitions in the
+circular word, as an individual bin and collapses the remaining codes into a
+single bin. This yields a descriptor of 59 bins per minimap, normalized to sum
+to one so that images of different sizes remain comparable.
+
+Two properties explain why this operator is a reasonable first choice for
+minimaps. It is invariant to monotonic changes in overall intensity, because
+only comparisons between neighbors matter, and it responds to exactly the kind
+of structure a minimap encodes: indentation steps, line endings, and dense
+punctuation regions all appear as recurring local intensity transitions rather
+than as objects with semantic boundaries.
+
 The study generated two dataset variants. The first used variable-size minimaps,
 where image dimensions reflected source file dimensions. The second used
 fixed-size minimaps, especially 128 by 128 pixels, to support later comparison
@@ -50,65 +97,123 @@ simplify modeling.
 
 \subsection{Dataset and Classes}
 
-The initial dataset was generated from real software projects and organized into
-classes representing file types and Java-related stereotypes. Examples include
-Java entities, repositories, services, unit tests, JavaScript files, JSON files,
-SVG files, XML files, properties files, shell scripts, and SQL files. The
-complete raw class distribution was imbalanced, with some classes containing
-only a few instances and others containing thousands.
+The initial dataset was generated from two large private software projects, made
+available under a confidentiality agreement: an enterprise resource planning
+system from a company in the industrial sector, and a system developed by the
+Brazilian federal government. Their size and heterogeneity made them a realistic
+basis for the study, and the anonymization step was what made their use possible
+at all. Processing them produced 42,820 minimap images, organized into 28
+classes representing file types and Java-related stereotypes, including Java
+entities, repositories, services, unit tests, JavaScript files, JSON files, SVG
+files, XML files, properties files, shell scripts, and SQL files. The complete
+raw class distribution was imbalanced, with some classes containing only a few
+instances and others containing thousands.
 
-For the first controlled evaluation, the study selected classes with sufficient
-support and limited the number of samples per class to reduce imbalance. The
-resulting setting focused on seven representative classes, including Java
-entities, Java implementation classes, JSP pages, JavaScript, JSON, and SVG
-files. This design provided a balanced enough scenario to test whether the
-representation itself contained useful visual signals.
+One implementation detail of the generation step matters for the descriptor. An
+eight-pixel dead zone was added around every image in both dataset variants, so
+that the LBP operator can be evaluated on pixels near the original borders
+without discarding them.
 
-Figure~\ref{fig:lbp-histograms} presents average LBP histograms for selected
-classes. The figure shows that some classes produce clearly different texture
-profiles, while others are more similar and therefore more difficult to
-distinguish.
+For the first controlled evaluation, the study kept only classes with more than
+1,000 examples and drew exactly 1,000 random samples from each, which yields a
+balanced setting. This produced seven classes: JSON, SVG, JavaScript, JSP, and
+the Java stereotypes Entity, UnitTest, and ServiceImplementation. The design
+provided a controlled scenario in which to test whether the representation
+itself contained useful visual signals.
+
+The published article does not report the partitioning scheme, so the protocol
+described here was recovered from the accompanying artifact repository and
+should be read as a reconstruction. Classes are capped as described above and
+the resulting descriptor matrix is split once into 80\% training and 20\% test
+partitions under a fixed random seed. Hyperparameters for each classifier are
+selected by grid search with five-fold cross-validation over the training
+partition only, and the test partition is used exclusively for the reported
+figures. Two limitations of this protocol should be stated explicitly. The split
+is not stratified by class label, so balance in the test partition follows from
+the sampling cap rather than from the splitting procedure itself; and because a
+single split is used, the reported values carry no variance estimate. Recording
+the protocol explicitly and repeating the evaluation over multiple seeds is part
+of the planned work described in Chapter~\ref{chapter:research-plan}.
+
+Figure~\ref{fig:lbp-histograms} presents average LBP histograms for six
+representative classes, computed over 1{,}000 minimaps per class. The figure is
+split into two panels because the descriptor has a strongly skewed shape. Two
+codes dominate every class: the code produced by a flat neighborhood and the
+catch-all bin for non-uniform patterns. Together they account for between 91\%
+and 99\% of the mass, which is expected, since a minimap is mostly empty
+background. The upper panel shows the complete descriptor on a logarithmic
+scale so that this dominance is visible; the lower panel restricts the view to
+the remaining codes on a linear scale, where the classes actually separate.
 
 \begin{figure}[ht]
     \centering
-    \caption{Average LBP histograms for selected minimap classes.}
+    \caption{Average LBP histograms for six minimap classes. Upper panel:
+    complete descriptor, logarithmic scale. Lower panel: codes 0--56, linear
+    scale.}
     \label{fig:lbp-histograms}
     \includegraphics[width=0.92\textwidth]{figuras/lbp-histograms.png}
     \fautor
 \end{figure}
 
+Read this way, the figure carries a more precise message than a claim of visual
+similarity. The discriminative structure occupies a small fraction of the
+descriptor, from 0.4\% of the mass for SVG files to 7.5\% for JSP pages, and it
+is concentrated in a few codes that correspond to horizontal and vertical
+intensity transitions, i.e., to line endings and indentation steps. The classes
+separate mostly by how much of that structure they contain and in which
+proportion. SVG files are an instructive case: their minimaps are almost
+entirely flat, so their descriptor is nearly degenerate, yet this very emptiness
+makes them trivially separable from every other class. Java entity and Java
+implementation files, in contrast, produce nearly superposed profiles, which
+anticipates the confusion observed between them in the results below.
+
 \subsection{Results}
 
 Table~\ref{tab:study1-results} summarizes the main performance results reported
-for the three traditional classifiers. The values should be interpreted as
-preliminary evidence because the dataset was still limited when compared with
-the later large-scale corpus.
+for the three traditional classifiers. The published study reports a single
+figure of merit, overall accuracy on the test partition, and the table therefore
+reports that quantity alone.\footnote{Earlier versions of this table presented
+the same value under three separate headings for precision, recall, and
+F1-score. That presentation was misleading: no per-class or averaged
+precision-recall figures were computed for this experiment. Producing them, from
+the per-class classification reports that the pipeline already generates, is
+part of the consolidation work described in
+Chapter~\ref{chapter:research-plan}.} The values should be interpreted as
+preliminary evidence, both because the dataset was limited when compared with
+the later large-scale corpus and because accuracy alone says nothing about how
+the errors are distributed across classes.
 
 \begin{table}[ht]
 \centering
 \caption{Summary of preliminary results with LBP features.}
 \label{tab:study1-results}
-\begin{tabular}{p{0.28\textwidth}ccc}
+\begin{tabular}{p{0.34\textwidth}c}
 \toprule
-\textbf{Classifier and dataset} & \textbf{Precision} & \textbf{Recall} & \textbf{F1-score} \\
+\textbf{Classifier and dataset} & \textbf{Accuracy} \\
 \midrule
-KNN, variable-size minimaps & 0.79 & 0.79 & 0.79 \\
-KNN, fixed-size minimaps & 0.78 & 0.78 & 0.78 \\
-Random Forest, variable-size minimaps & 0.93 & 0.93 & 0.93 \\
-Random Forest, fixed-size minimaps & 0.93 & 0.93 & 0.93 \\
-SVM, variable-size minimaps & 0.89 & 0.89 & 0.89 \\
-SVM, fixed-size minimaps & 0.88 & 0.88 & 0.88 \\
+KNN, variable-size minimaps & 0.79 \\
+KNN, fixed-size minimaps & 0.78 \\
+Random Forest, variable-size minimaps & 0.93 \\
+Random Forest, fixed-size minimaps & 0.93 \\
+SVM, variable-size minimaps & 0.89 \\
+SVM, fixed-size minimaps & 0.88 \\
 \bottomrule
 \end{tabular}
 \fautor
 \end{table}
 
 Random Forest achieved the best overall results, reaching approximately 93\%
-F1-score in both fixed-size and variable-size settings. This result is
+accuracy in both fixed-size and variable-size settings. This result is
 important because it indicates that minimap texture contains discriminative
 signals even before using deep learning. SVM also performed strongly, while KNN
 was less effective, suggesting that the feature space benefits from models that
-can learn more complex decision boundaries or ensemble combinations.
+can learn more complex decision boundaries or ensemble combinations. Across all
+three classifiers the variable-size minimaps are equal or marginally superior to
+the fixed-size ones, by at most one percentage point, which is consistent with
+the fact that resizing to 128 by 128 pixels discards layout information. The
+margin is small enough that fixed-size minimaps remain the sensible choice for
+the convolutional experiments that follow, where a uniform input size is
+required.
 
 Figure~\ref{fig:confusion-rf} shows the confusion matrices for Random Forest in
 the fixed-size and variable-size settings. The matrices indicate strong
@@ -139,6 +244,7 @@ features in a limited setting, the next question is whether they scale to more
 projects, languages, classes, and learning objectives.
 
 \section{Study 2: Large-Scale Deep Learning}
+\label{sec:study2}
 
 The second study expanded the evaluation to a large-scale corpus of source code
 minimaps \cite{gebara2025ciarp}. The dataset contains 685,906 minimap images
@@ -281,8 +387,8 @@ Author  & 0.8705 & $\geq$0.99 & $\geq$0.99 \\
 The Type objective achieved the highest validation accuracy, which is
 consistent with the research hypothesis: file roles often produce visually
 distinctive structures that remain separable after character anonymization.
-Project and Author classification are harder multi-class problems---with 99 and
-97 labels respectively---yet the model still reached substantial accuracy,
+Project and Author classification are harder multi-class problems, with 99 and
+97 labels respectively, yet the model still reached substantial accuracy,
 suggesting that repository conventions and contributor style patterns are
 partially encoded in the visual layout of source files even after lexical
 content is suppressed.
@@ -305,7 +411,45 @@ remains one of the central open tasks.
 
 \subsection{Explainability Findings}
 
-The large-scale study uses Integrated Gradients to interpret model predictions.
+The large-scale study uses Integrated Gradients \cite{integratedgradients2017}
+to interpret model predictions. The method assigns to each input pixel the
+integral of the model gradient along a straight path from a reference baseline
+to the actual image, which distributes the difference in model output between
+the two endpoints across the input pixels.
+
+Three properties motivated this choice over the alternatives. First, the method
+is defined by axioms rather than by architecture: it satisfies sensitivity,
+meaning a pixel that changes the prediction receives non-zero attribution, and
+implementation invariance, meaning functionally equivalent networks receive
+identical attributions. Second, and decisively for this application, it produces
+attributions at pixel resolution. Class activation methods such as Grad-CAM
+\cite{selvaraju2017gradcam} operate on the last convolutional feature map, which
+for a 128 by 128 input is reduced to a grid of a few cells; the visual evidence
+of interest here, i.e., indentation steps, line endings, and delimiter columns,
+is finer than that grid and would be blurred away. Third, the method is
+gradient-based and therefore architecture-agnostic, which keeps the same
+protocol usable when the evaluation is extended to transformer backbones, unlike
+Grad-CAM, which presupposes a convolutional feature map. Perturbation-based
+alternatives such as LIME and SHAP were not adopted because they require many
+forward passes per explanation, which is impractical at the scale of this
+corpus, and because their surrogate sampling is poorly defined for images whose
+information is carried by thin, spatially structured strokes.
+
+The protocol is the following. Attributions are computed with the Captum
+implementation using 32 integration steps and a zero-valued baseline in the
+normalized input space; since inputs are normalized with mean and standard
+deviation of 0.5, this baseline corresponds to a uniform mid-gray image rather
+than a black one. Attribution is always taken with respect to the class
+predicted by the model, not the ground-truth label, so that the maps explain the
+decision actually made. For each objective, eight validation images per class
+are drawn under a fixed seed; the per-pixel attributions are reduced by absolute
+value, summed across channels, min-max normalized per image, and then averaged
+within each class and across all classes to yield the summaries reported here.
+Two limitations follow directly from this design and should be kept in mind when
+reading the maps: eight images per class is a small sample for a visual
+argument, and the choice of baseline is known to influence attribution
+magnitudes, so a baseline sensitivity check remains to be done.
+
 Figure~\ref{fig:xai} presents attribution maps for the three objectives. The
 figure suggests that models rely on different visual evidence depending on the
 task.
@@ -330,6 +474,133 @@ heavily on boilerplate, it may not generalize to repositories with different
 templates. If an Author classifier learns bot-generated patterns, it may not
 represent human style. Therefore, explainability is used not only to support the
 method but also to expose its risks.
+
+\section{Study 3: Paired Anonymization Ablation}
+\label{sec:study3-anonymization}
+
+Anonymization is what allows the approach to be applied to code that cannot
+leave an organization, so the claim that it preserves predictive utility carries
+a large share of the proposal. Until recently that claim rested on a single
+uncontrolled comparison. This section reports a controlled experiment designed
+to replace it. It is a first instalment of Activity A2 rather than its
+completion; the remaining scope is stated at the end of the section and in
+Chapter~\ref{chapter:research-plan}.
+
+\subsection{Design}
+
+The experiment exploits a property of the method that makes an unusually clean
+comparison possible. Anonymization is a deterministic per-character map applied
+at rendering time: it changes pixel intensities and leaves geometry untouched.
+The same source file can therefore be rendered twice, producing two images with
+identical dimensions, identical layout and identical label, differing only in
+the intensity alphabet. Both renderings are produced in a single pass, so the
+two datasets are paired instance by instance. This pairing is what licenses
+paired statistical tests, which are considerably more sensitive than comparing
+two independent runs.
+
+The corpus is a large private enterprise system, a more recent version of one of
+the projects used in the first study. Files were selected by extension, and only
+textual source formats were read. Classes were defined by naming convention:
+first by the suffix of the class name, and, when no suffix matched, by the
+package the file belongs to. Keeping only classes with at least 300 examples and
+capping each at 1,000 gives twelve classes and 10,927 paired minimaps, of which
+10,923 pairs were usable. Descriptors are the same 59-bin LBP histograms used in
+the first study.
+
+Two questions are asked separately, because they are not the same question. The
+first is whether any difference is detectable, and is answered by a paired
+$t$-test over the cross-validation folds and by McNemar's test over paired
+per-instance predictions \cite{mcnemar1947note}. The second is whether the
+difference is small enough to be irrelevant, and is answered by two one-sided
+tests of equivalence against a margin fixed before the experiment was run
+\cite{schuirmann1987comparison}. The distinction matters: a non-significant
+difference does not establish equivalence, since it may reflect nothing more
+than lack of power. The equivalence margin was set at two percentage points of
+accuracy. Both representations are evaluated on exactly the same splits of a
+ten-times repeated five-fold stratified cross-validation, and the $t$-test uses
+the correction of Nadeau and Bengio \cite{nadeau2003inference}, because folds of
+a repeated cross-validation share training data and the uncorrected test is
+anti-conservative.
+
+\subsection{Results}
+
+Table~\ref{tab:a2-anonymization} reports the outcome over fifty folds.
+
+\begin{table}[ht]
+\centering
+\caption{Paired anonymization ablation with Random Forest over LBP descriptors,
+twelve classes and 10,923 paired minimaps, ten times five-fold stratified
+cross-validation. The difference is the accuracy lost by anonymizing.}
+\label{tab:a2-anonymization}
+\begin{tabular}{lc}
+\toprule
+\textbf{Measure} & \textbf{Value} \\
+\midrule
+Accuracy, original rendering & 0.8015 $\pm$ 0.0069 \\
+Accuracy, anonymized rendering & 0.8076 $\pm$ 0.0063 \\
+Difference (original $-$ anonymized) & $-$0.0060 \\
+95\% confidence interval & [$-$0.0123, $+$0.0003] \\
+Difference test (corrected paired $t$) & $p = 0.060$ \\
+Equivalence within $\pm$0.02 (TOST) & $p = 2.4 \times 10^{-5}$ \\
+\bottomrule
+\end{tabular}
+\fautor
+\end{table}
+
+Anonymization did not cost accuracy. The point estimate favours the anonymized
+representation by 0.6 percentage points, and the confidence interval places the
+largest loss compatible with the data at 0.0003, that is, at essentially zero.
+The equivalence test rejects the hypothesis of a difference larger than the
+declared margin with a wide safety factor.
+
+The two tests should be read together rather than in isolation. The difference
+test alone would support only the weak statement that no difference was
+detected, at $p = 0.060$. The equivalence test supports the stronger and more
+useful statement that the difference is bounded below the margin. McNemar's test
+does find a detectable difference in six of the ten repetitions, and its
+direction is consistent: across all repetitions, 5,239 instances were classified
+correctly only by the anonymized representation against 4,580 only by the
+original one. The honest reading is therefore not that the two representations
+are indistinguishable, but that the difference between them is small and, in
+this setting, slightly favourable to anonymization.
+
+A plausible explanation is that anonymization acts as a filter rather than only
+as a loss. Collapsing letters and digits onto three intensities removes lexical
+variation that a texture descriptor cannot exploit anyway, leaving the
+structural skeleton more salient. The measurement in the next subsection
+supports this reading.
+
+\subsection{What the Transformation Destroys}
+
+The effect of anonymization on the representation can be quantified directly,
+without training anything, because the map is deterministic. Measured over 12.3
+million characters of the same corpus, the alphabet contracts from 152 to 37
+distinct intensities and the entropy per pixel falls from 5.444 to 2.358 bits, a
+reduction of 56.7\%. Only 25.9\% of characters survive unchanged, and those are
+exactly the symbol classes: punctuation, delimiters and operators. The reduction
+is uneven across file types, from 62.6\% for Java sources down to 48.0\% for SVG
+files.
+
+Placing the two measurements side by side gives the central result of this
+section: more than half of the information carried by each pixel is discarded,
+and predictive accuracy does not fall. This is direct evidence for the claim on
+which the proposal rests, namely that the discriminative signal in a minimap is
+structural rather than lexical. It also explains why the surviving 25.9\% is
+sufficient, since punctuation and indentation are precisely what encode block
+structure and layout.
+
+\subsection{Scope of This Result}
+
+Two boundaries must be respected when reading it. The evidence covers one
+software system, so it establishes that anonymization can be cost-free, not that
+it always is. And it covers one descriptor and one classifier family: Local
+Binary Patterns describe local intensity relations, and may be constitutionally
+blind to precisely the information that anonymization removes. A convolutional
+model, which learns its own filters, could exploit lexical intensity differences
+that LBP ignores, so this result does not transfer automatically to the
+large-scale study of Section~\ref{sec:study2}. Extending the same protocol to
+open-source corpora, to deep models, and to the Project and Author objectives is
+the remainder of Activity A2.
 
 \section{Artifact and Tool Results}
 
@@ -363,7 +634,7 @@ how it supports the research questions.
 \toprule
 \textbf{Evidence} & \textbf{Main finding} & \textbf{Related RQs} \\
 \midrule
-LBP study & Minimap texture supports software-feature classification with Random Forest near 93\% F1. & RQ1, RQ2 \\
+LBP study & Minimap texture supports software-feature classification with Random Forest near 93\% accuracy. & RQ1, RQ2 \\
 Fixed-size comparison & 128 by 128 minimaps remain competitive with variable-size minimaps. & RQ1, RQ2 \\
 Large-scale dataset & Minimap learning scales to 685,906 images from 100 projects and 10 languages. & RQ1 \\
 Deep learning results & EfficientNet-B0 pretrained reaches strong validation results for Type, Project, and Author. & RQ1, RQ2 \\
@@ -433,12 +704,19 @@ that remove or mask salient regions.
 
 \subsection{RQ4: Anonymization}
 
-A comparison between anonymized and non-anonymized minimap representations was
-carried out informally while the approach was being developed. Predictive
-performance stayed close to the non-anonymized baseline across the evaluated
-objectives. The comparison was not documented under controlled conditions, so
-it is reported here as preliminary evidence rather than as a result, but it
-matters for two reasons.
+The paired ablation of Section~\ref{sec:study3-anonymization} answers this
+question directly for one system. Over twelve classes and 10,923 paired
+minimaps, anonymization did not reduce accuracy: the difference was $-0.0060$ in
+favour of the anonymized representation, with a 95\% confidence interval whose
+upper bound is 0.0003, and equivalence within two percentage points holds at
+$p = 2.4 \times 10^{-5}$. The result is reinforced by the measurement of the
+transformation itself, which discards 56.7\% of the entropy per pixel while
+leaving accuracy intact. An earlier comparison made during the first study
+pointed in the same direction, with average F1-score falling from 0.83 to 0.82
+for an SVM over ten classes \cite{gebara2025iwssip}, though that figure came
+from a single uncontrolled run.
+
+This evidence matters for two reasons.
 
 First, it indicates that the discriminative signal resides in structural
 features such as indentation patterns, operator density, punctuation layout,

@@ -1,3 +1,13 @@
+This chapter defines the methodology proposed for the thesis. It follows a
+source file through the entire pipeline: how repositories and files are
+selected, how a file becomes a minimap image, how anonymization suppresses
+lexical content while preserving layout, how the resulting images are cataloged
+and split without leaking information between partitions, and how models are
+trained, evaluated, and interpreted. The chapter also records the design
+decisions that remain open and the constraints imposed by the current
+implementation, since these determine what the preliminary studies of
+Chapter~\ref{chapter:preliminary-results} could and could not measure.
+
 \section{Overview}
 
 The proposed methodology transforms source files into source code minimaps and
@@ -184,10 +194,11 @@ All other printable characters (spaces, punctuation, symbols, operators) & remai
 \fautor
 \end{table}
 
-An informal comparison conducted during development suggested that predictive
-performance changes little when anonymization is applied. This observation and
-its implications are discussed in Chapter~\ref{chapter:preliminary-results},
-and a documented ablation is planned as Activity A2.
+A paired ablation reported in Chapter~\ref{chapter:preliminary-results} found no
+loss of accuracy from anonymization in the setting where it was measured, even
+though the transformation removes more than half of the entropy per pixel.
+Extending that ablation to further corpora, to deep models, and to graded
+suppression levels is Activity A2.
 
 The strategy is deliberately limited in its privacy claims. It removes the
 lexical layer that carries direct business information, but it does not

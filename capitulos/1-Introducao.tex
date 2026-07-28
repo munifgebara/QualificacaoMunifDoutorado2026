@@ -1,3 +1,12 @@
+This chapter introduces the research. It describes the setting that motivates
+the work, namely the difficulty of analyzing large and heterogeneous codebases
+whose content often cannot be shared with external analysis services, and it
+states the problem that follows from this setting. It then delimits the gap left
+by existing code representations, formulates the hypothesis that source code
+minimaps retain enough structural information to support analysis after lexical
+anonymization, and derives the research questions, objectives, and expected
+contributions that organize the remainder of the document.
+
 \section{Context and Motivation}
 
 Software systems are now built as large, heterogeneous, and continuously
@@ -69,7 +78,7 @@ analysis is applied.
 The project has already produced preliminary evidence in this direction. An
 initial study used source code minimaps, Local Binary Patterns, and traditional
 classifiers to detect software features, with Random Forest reaching an
-F1-score near 93\% in the evaluated setting \cite{gebara2025iwssip}. A second study
+accuracy near 93\% in the evaluated setting \cite{gebara2025iwssip}. A second study
 scaled the approach to 685,906 minimap images extracted from 100 open-source
 projects across 10 programming languages, using deep learning models and
 Integrated Gradients for interpretation \cite{gebara2025ciarp}. A tool-support
@@ -91,8 +100,8 @@ Software projects contain rich structural and stylistic signals that are useful
 for classification, comprehension, quality assessment, and tool support, but
 many existing representations either require language-specific processing or
 retain lexical content that exposes business logic, proprietary constants, and
-strategic domain knowledge---making external analysis impractical for industrial
-codebases.
+strategic domain knowledge, which makes external analysis impractical for
+industrial codebases.
 \end{quote}
 
 Traditional static analysis is effective when the target language, framework,
@@ -100,7 +109,7 @@ and rule set are known, but such tools typically require parsers, language-speci
 rules, and expert configuration. Software visualization approaches expose
 structures to human analysts but are not designed as machine-readable
 representations for large-scale classification. Machine learning representations
-for code---tokens, abstract syntax trees, graphs, pretrained language models---are
+for code (tokens, abstract syntax trees, graphs, pretrained language models) are
 powerful but retain lexical content. Sending a raw source file to an external
 service exposes identifier names, numeric constants, formulas, and comments
 that may encode business rules, which is often enough for an industrial
@@ -137,8 +146,8 @@ large corpora, while machine learning representations consume code as linear
 sequences, trees, or graphs and do not treat the two-dimensional layout of the
 source page as a first-class signal. Second, many learning-based
 representations depend on language-specific preprocessing or retain lexical
-content---identifiers, constants, comments---that exposes business logic and
-intellectual property, limiting applicability in industrial settings. Third,
+content, i.e., identifiers, constants and comments, that exposes business logic
+and intellectual property, limiting applicability in industrial settings. Third,
 there is still limited empirical evidence about how much structural information
 compact minimap images preserve across many projects, languages, and prediction
 objectives, and whether anonymization can suppress sensitive lexical content

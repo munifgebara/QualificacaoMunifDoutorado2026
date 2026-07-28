@@ -1,3 +1,13 @@
+This chapter turns the evidence gathered so far into a plan for the remainder of
+the doctorate. It begins by stating what has already been produced and what is
+therefore no longer at risk, and derives from that the deliverables the thesis
+must still provide. The planned activities, experiments, and evaluation criteria
+follow, each connected to the gaps identified in the previous chapters. The
+chapter then addresses the conditions under which the work must be carried out,
+namely the threats to the validity of the results, the responsible use of author
+prediction, the open science commitments, the project risks, and the schedule
+that fits the remaining time before the defense.
+
 \section{Current Status}
 
 At the qualification stage, this work has already produced three
@@ -6,7 +16,11 @@ Local Binary Patterns, and traditional classifiers \cite{gebara2025iwssip}. The
 second is a large-scale study with 685,906 minimaps from 100 open-source
 projects and 10 programming languages \cite{gebara2025ciarp}. The third is the
 MinimapSignatures tool ecosystem, which validates the feasibility of bringing
-minimap analysis into IDE workflows \cite{gebara2026minimapsignatures}.
+minimap analysis into IDE workflows \cite{gebara2026minimapsignatures}. To these
+is added an unpublished result produced for this document: the paired
+anonymization ablation of Section~\ref{sec:study3-anonymization}, which places
+the confidentiality claim of the proposal on measured rather than anecdotal
+ground.
 Table~\ref{tab:publications} summarizes this production and its editorial
 status.
 
@@ -20,11 +34,29 @@ status.
 \midrule
 Software Feature Detection Using Source Code Minimaps as Visual Signatures \cite{gebara2025iwssip} & IWSSIP 2025 (IEEE) & Main author & Published \\
 Source Code Minimaps at Scale: Feature-Oriented Analysis of 100 Projects \cite{gebara2025ciarp} & CIARP 2025 & Main author & To appear \\
-MinimapSignatures: A Multi-IDE Ecosystem for Analysis of Visual Source Code Signatures \cite{gebara2026minimapsignatures} & --- & Main author & In preparation \\
+MinimapSignatures: A Multi-IDE Ecosystem for Analysis of Visual Source Code Signatures \cite{gebara2026minimapsignatures} & SBES-Tools 2026 (CBSoft) & Main author & Accepted \\
+\midrule
+Explainability of visual code representations (working title) & VISAPP 2027 & Main author & Planned \\
+Consolidated study on confidentiality-preserving visual code analysis (working title) & Empirical Software Engineering & Main author & Planned \\
 \bottomrule
 \end{tabular}
 \fautor
 \end{table}
+
+The last two rows are targets rather than results. VISAPP 2027 is the venue
+chosen for the explainability work developed during the research internship
+abroad described in Section~\ref{sec:internship}: it is a computer vision
+conference whose scope covers representation learning and texture analysis,
+which matches the framing of this research, and its schedule aligns with the
+internship, with a regular paper deadline in September 2026 and the conference
+held in February 2027. The journal target is \emph{Empirical Software
+Engineering}, chosen because the final contribution is an empirical study of a
+software engineering problem rather than a purely methodological result, and
+because the venue expects the kind of controlled evaluation and reproducibility
+package that this work plans to deliver. The submission is planned for the
+second half of 2027, once repository-disjoint evaluation and the anonymization
+ablation are complete, so that the article reports consolidated rather than
+preliminary evidence.
 
 These outputs establish a solid foundation, but the thesis is not complete. The
 remaining work must deepen the methodology, broaden the task set, strengthen
@@ -83,11 +115,29 @@ curation will make later experiments more trustworthy.
 
 \subsection{A2: Anonymization Evaluation}
 
-As reported in Chapter~\ref{chapter:preliminary-results}, an informal comparison
-between anonymized and non-anonymized minimaps suggested that anonymization
-costs little predictive performance. That comparison was not documented under
-controlled conditions, so Activity A2 will produce a rigorous study comparing
-several suppression levels:
+The first instalment of this activity is already complete and is reported in
+Section~\ref{sec:study3-anonymization}. A paired ablation over twelve classes
+and 10,923 minimaps of an industrial system found no accuracy cost for
+anonymization, with equivalence within two percentage points established at
+$p = 2.4 \times 10^{-5}$, while the transformation itself removes 56.7\% of the
+entropy per pixel. That experiment retires the uncontrolled comparison on which
+the confidentiality argument previously rested, and its instruments, paired
+generation, repeated cross-validation on shared splits, McNemar's test and an
+equivalence test against a pre-declared margin, are reused unchanged in what
+follows.
+
+Three boundaries of that result define the remaining work. It covers a single
+software system, so the ablation must be repeated on the open-source corpus,
+where the dataset can also be published for external replication. It covers a
+single descriptor and classifier: Local Binary Patterns may be insensitive to
+exactly what anonymization removes, so the comparison must be repeated with the
+convolutional backbones of the large-scale study, which learn their own filters.
+And it covers only the Type objective, so Project and Author must be evaluated
+as well, the latter being the objective most likely to depend on suppressed
+content.
+
+Beyond replicating the two-level comparison in these settings, Activity A2 will
+extend it into a graded study over several suppression levels:
 
 \begin{itemize}
     \item baseline (the current character-to-pixel mapping: letters and digits
@@ -104,12 +154,13 @@ To avoid post hoc rationalization, the ablation design is declared in this
 proposal, before execution. All suppression levels will share identical
 repository-aware splits, seeds, architecture, and training budget, so that the
 anonymization level is the only manipulated factor. The primary metric is
-macro-F1 per objective; accuracy and per-class recall are secondary. The
-declared expectation, based on the informal comparison, is that the baseline
-anonymization costs at most two percentage points of macro-F1 relative to the
-non-anonymized rendering. A larger drop will be reported as a negative result
-and will trigger a revision of the confidentiality claims made in this
-proposal. Results for all levels will be reported regardless of outcome, and
+macro-F1 per objective; accuracy and per-class recall are secondary. Every
+comparison against the non-anonymized rendering will be reported with both a
+difference test and an equivalence test, since a non-significant difference on
+its own would establish nothing. The equivalence margin remains two percentage
+points, the value used and declared in the completed instalment. A drop beyond
+that margin will be reported as a negative result and will trigger a revision of
+the confidentiality claims made in this proposal. Results for all levels will be reported regardless of outcome, and
 the goal remains a performance-versus-suppression trade-off curve indicating
 which level is appropriate when intellectual property protection is the
 primary concern.
@@ -274,8 +325,9 @@ Chapter~\ref{chapter:preliminary-results} suggests that this suppression costs
 little predictive performance; Activity A2 will quantify the trade-off.
 
 The Author prediction objective is a methodological probe, not a surveillance
-tool. Its purpose is to demonstrate that stylistic patterns---indentation habits,
-spacing conventions, operator placement---survive anonymization. This is evidence
+tool. Its purpose is to demonstrate that stylistic patterns, e.g., indentation
+habits, spacing conventions and operator placement, survive anonymization. This
+is evidence
 that the model operates on structure rather than on lexical content. Author
 prediction is not proposed as a deployment target in personnel monitoring,
 performance evaluation, or attribution of responsibility. Any use of this
@@ -345,6 +397,48 @@ Quality labels are noisy & Invalid quality-related conclusions. & Use multiple l
 \fautor
 \end{table}
 
+\section{Research Internship Abroad}
+\label{sec:internship}
+
+Part of the remaining work will be carried out abroad. The internship is funded
+under the CAPES doctoral sandwich programme (PDSE) and will be hosted by the
+Escuela T\'ecnica Superior de Ingenier\'ia Inform\'atica of the Universidad Rey
+Juan Carlos, in Madrid, Spain, under the supervision of Prof. Dr. \'Angel
+S\'anchez Calle, from October 2026 to February 2027. The project registered for
+the internship, \emph{Explainable Artificial Intelligence applied to Code
+Visualization}, is a direct continuation of the work reported in this document.
+
+The host group is GAVAB, the high-performance research group on algorithms
+applied to computer vision and biometrics of the Universidad Rey Juan Carlos.
+The choice is not incidental. GAVAB's central line of work is the automatic
+analysis of handwritten document images, which is the same class of problem
+addressed here: extracting discriminative structure from images whose content is
+thin, spatially organized strokes rather than objects with semantic boundaries.
+The texture descriptors, attribution methods, and evaluation practices developed
+in that setting transfer directly to minimaps.
+
+The internship concentrates the activities for which this expertise is most
+useful. Three of the planned
+activities are scheduled for this period. The dataset is to be extended beyond
+the currently selected open-source projects towards a broader and more
+heterogeneous corpus, covering more languages, domains, and development
+practices, and enriched with additional metadata such as architectural roles and
+project evolution information, which corresponds to activity A1. The evaluation
+of learning models is to be broadened to vision transformers and hybrid
+architectures, together with the imbalance-aware strategies of activity A3, such
+as focal loss, augmentation, and reweighting, which addresses activity A4.
+Finally, the attribution protocols are to be consolidated, adapting
+gradient-based methods to highlight the visual cues that support model
+decisions.
+
+Two practical consequences follow for the schedule. The paper submitted to
+VISAPP 2027 is prepared immediately before departure and presented during the
+internship, since the conference takes place in February 2027, within the
+internship period. And the writing of the methodology and results chapters is
+deliberately placed after the return, so that the internship period is spent on
+experimental work that depends on the host group rather than on text that can be
+written anywhere.
+
 \section{Tentative Timeline}
 
 Table~\ref{tab:timeline} presents a tentative schedule after the qualification
@@ -359,10 +453,11 @@ the qualification exam.
 \toprule
 \textbf{Period} & \textbf{Main activities} \\
 \midrule
-July--August 2026 & Incorporate qualification feedback; freeze revised research questions and thesis structure. \\
-September--December 2026 & Refine dataset catalog (A1); run the anonymization ablation (A2) and imbalance-aware experiments (A3). \\
-January--April 2027 & Evaluate additional architectures and resolutions (A4); consolidate explanation protocols; begin writing methodology and results chapters. \\
-May--August 2027 & Quality or architectural-deviation pilot (A5); extend MinimapSignatures with multi-file analysis and explanation overlays. \\
+July--August 2026 & Incorporate qualification feedback; freeze revised research questions and thesis structure; replicate the anonymization ablation (A2) on the open-source corpus. \\
+September 2026 & Refine dataset catalog (A1); prepare and submit the VISAPP 2027 paper; organize the internship. \\
+October 2026 -- February 2027 & \textbf{Research internship abroad (PDSE), Universidad Rey Juan Carlos.} Dataset extension (A1); imbalance-aware experiments (A3); additional architectures, including vision transformers (A4); consolidation of the explanation protocols. Presentation at VISAPP 2027 in February. \\
+March--May 2027 & Repository-disjoint evaluation; consolidate held-out test results and per-class metrics; begin writing the methodology and results chapters. \\
+June--August 2027 & Quality or architectural-deviation pilot (A5); extend MinimapSignatures with multi-file analysis and explanation overlays; write and submit the journal article to \emph{Empirical Software Engineering}. \\
 September--October 2027 & Developer-centered evaluation of the tool (A6); continue thesis writing. \\
 November--December 2027 & Consolidate results, finish the thesis text, prepare artifacts and defense material. \\
 \bottomrule
@@ -374,4 +469,11 @@ The schedule is compact because the core representation, the datasets, and the
 preliminary studies already exist. The remaining effort concentrates on
 controlled evaluation, tool extension, and writing, and it fits the eighteen
 months available until the expected conclusion at the end of 2027, within the
-program deadline for the doctoral defense.
+program deadline for the doctoral defense. The five months abroad are the main
+constraint on this schedule rather than an interruption of it: the activities
+allocated to that period are experimental and benefit from the host group, while
+the writing-intensive phases are placed before departure and after return. The
+replication of the anonymization ablation was moved ahead of the internship
+precisely so that its results are available when the extended architectures are
+evaluated abroad, where the same comparison is repeated with convolutional and
+transformer backbones.

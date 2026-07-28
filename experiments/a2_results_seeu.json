@@ -1,0 +1,78 @@
+{
+  "n_classes": 12,
+  "n_samples": 10923,
+  "margin": 0.02,
+  "results": [
+    {
+      "classifier": "rf",
+      "accuracy_plain_mean": 0.8015199872591177,
+      "accuracy_plain_std": 0.0069382734994096985,
+      "accuracy_anon_mean": 0.8075528998080486,
+      "accuracy_anon_std": 0.006268455249920966,
+      "mean_difference": -0.006032912548930851,
+      "ci95": [
+        -0.012322170898590855,
+        0.0002563458007291521
+      ],
+      "corrected_t": -1.9276663466612214,
+      "p_difference": 0.05970341220010477,
+      "equivalence_margin": 0.02,
+      "p_tost": 2.3715221190677207e-05,
+      "equivalent_within_margin": true,
+      "mcnemar_per_repeat": [
+        {
+          "b_plain_only": 472,
+          "c_anon_only": 547,
+          "p": 0.020440273274329356
+        },
+        {
+          "b_plain_only": 474,
+          "c_anon_only": 512,
+          "p": 0.23866903856409294
+        },
+        {
+          "b_plain_only": 454,
+          "c_anon_only": 509,
+          "p": 0.0818369519006448
+        },
+        {
+          "b_plain_only": 498,
+          "c_anon_only": 511,
+          "p": 0.7055961645190767
+        },
+        {
+          "b_plain_only": 442,
+          "c_anon_only": 519,
+          "p": 0.014221756300800872
+        },
+        {
+          "b_plain_only": 477,
+          "c_anon_only": 531,
+          "p": 0.09504940534933845
+        },
+        {
+          "b_plain_only": 435,
+          "c_anon_only": 525,
+          "p": 0.004072862221719327
+        },
+        {
+          "b_plain_only": 426,
+          "c_anon_only": 524,
+          "p": 0.0016490105363543735
+        },
+        {
+          "b_plain_only": 447,
+          "c_anon_only": 528,
+          "p": 0.010405619868873605
+        },
+        {
+          "b_plain_only": 455,
+          "c_anon_only": 533,
+          "p": 0.014297673676033027
+        }
+      ],
+      "mcnemar_median_p": 0.017368973475181192,
+      "n_folds": 50
+    }
+  ]
+}
