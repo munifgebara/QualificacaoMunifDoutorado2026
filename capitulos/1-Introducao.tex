@@ -110,7 +110,7 @@ rules, and expert configuration. Software visualization approaches expose
 structures to human analysts but are not designed as machine-readable
 representations for large-scale classification. Machine learning representations
 for code (tokens, abstract syntax trees, graphs, pretrained language models) are
-powerful but retain lexical content. Sending a raw source file to an external
+effective but retain lexical content. Sending a raw source file to an external
 service exposes identifier names, numeric constants, formulas, and comments
 that may encode business rules, which is often enough for an industrial
 organization to rule the tool out. This limits the practical applicability of
@@ -293,7 +293,7 @@ analysis.
 This scope has practical advantages. File-level artifacts are the units that
 developers often inspect during maintenance and review. They are also convenient
 for dataset generation because repositories can be traversed automatically and
-each file can be rendered independently. Moreover, file-level analysis is a
+each file can be rendered independently. File-level analysis is also a
 reasonable first step for IDE integration. A developer can trigger a command on
 the active editor and receive immediate feedback without submitting an entire
 repository.

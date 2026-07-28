@@ -7,8 +7,8 @@ proposal depends on, whether anonymization costs predictive performance, and
 answers it with a paired design and an explicit statistical statement. The
 chapter then consolidates what the studies jointly support, maps that evidence
 back to the research questions, and is explicit about the limitations that
-prevent the current results from being read as final. These limitations are what the research plan of
-Chapter~\ref{chapter:research-plan} is designed to resolve.
+prevent the current results from being read as final. The research plan of
+Chapter~\ref{chapter:research-plan} is built to resolve them.
 
 \section{Role of Preliminary Studies}
 
@@ -19,9 +19,8 @@ on concrete artifacts. Two studies are central. The first evaluates source code
 minimaps with Local Binary Patterns and traditional machine learning
 \cite{gebara2025iwssip}. The second scales the approach to hundreds of thousands
 of minimaps and evaluates deep learning models with explainability
-\cite{gebara2025ciarp}.
-
-A third study then isolates the anonymization question with a paired design.
+\cite{gebara2025ciarp}. A third study isolates the anonymization question with a
+paired design.
 
 Together, these studies support four claims. First, source code minimaps encode
 discriminative information about software artifacts. Second, both handcrafted
@@ -70,9 +69,9 @@ circle on which they lie, which together determine the spatial scale of the
 pattern being described.
 
 Applying this procedure to every pixel yields a code image, and the descriptor
-of the minimap is the histogram of those codes. The histogram is what makes the
-representation useful here: it discards where each pattern occurred and retains
-only how often each local configuration appears, so two files with the same
+of the minimap is the histogram of those codes. Taking the histogram is the step
+that makes the representation useful: it discards where each pattern occurred
+and retains only how often each local configuration appears, so two files with the same
 layout conventions produce similar descriptors even when their content differs.
 The study used eight sampling points on a radius of two pixels and the
 non-rotation-invariant uniform variant of the operator, which keeps every
@@ -101,15 +100,15 @@ The initial dataset was generated from two large private software projects, made
 available under a confidentiality agreement: an enterprise resource planning
 system from a company in the industrial sector, and a system developed by the
 Brazilian federal government. Their size and heterogeneity made them a realistic
-basis for the study, and the anonymization step was what made their use possible
-at all. Processing them produced 42,820 minimap images, organized into 28
+basis for the study, and they could only be used because anonymization removed
+the lexical layer. Processing them produced 42,820 minimap images, organized into 28
 classes representing file types and Java-related stereotypes, including Java
 entities, repositories, services, unit tests, JavaScript files, JSON files, SVG
 files, XML files, properties files, shell scripts, and SQL files. The complete
 raw class distribution was imbalanced, with some classes containing only a few
 instances and others containing thousands.
 
-One implementation detail of the generation step matters for the descriptor. An
+One implementation detail of the generation step affects the descriptor. An
 eight-pixel dead zone was added around every image in both dataset variants, so
 that the LBP operator can be evaluated on pixels near the original borders
 without discarding them.
@@ -472,15 +471,15 @@ that stylistic signals are distributed and harder to localize.
 These findings are valuable but also cautionary. If a Project classifier relies
 heavily on boilerplate, it may not generalize to repositories with different
 templates. If an Author classifier learns bot-generated patterns, it may not
-represent human style. Therefore, explainability is used not only to support the
-method but also to expose its risks.
+represent human style. Explainability therefore serves as a check on the method,
+not only as a defence of it.
 
 \section{Study 3: Paired Anonymization Ablation}
 \label{sec:study3-anonymization}
 
-Anonymization is what allows the approach to be applied to code that cannot
-leave an organization, so the claim that it preserves predictive utility carries
-a large share of the proposal. Until recently that claim rested on a single
+Because anonymization strips the lexical layer, the approach can be applied to
+code that cannot leave an organization; the claim that it preserves predictive
+utility therefore carries a large share of the proposal. Until recently that claim rested on a single
 uncontrolled comparison. This section reports a controlled experiment designed
 to replace it. It is a first instalment of Activity A2 rather than its
 completion; the remaining scope is stated at the end of the section and in
@@ -488,15 +487,15 @@ Chapter~\ref{chapter:research-plan}.
 
 \subsection{Design}
 
-The experiment exploits a property of the method that makes an unusually clean
-comparison possible. Anonymization is a deterministic per-character map applied
+The experiment relies on a property of the method that makes the comparison
+unusually direct. Anonymization is a deterministic per-character map applied
 at rendering time: it changes pixel intensities and leaves geometry untouched.
 The same source file can therefore be rendered twice, producing two images with
 identical dimensions, identical layout and identical label, differing only in
 the intensity alphabet. Both renderings are produced in a single pass, so the
-two datasets are paired instance by instance. This pairing is what licenses
-paired statistical tests, which are considerably more sensitive than comparing
-two independent runs.
+two datasets are paired instance by instance. The pairing licenses paired
+statistical tests, which are more sensitive than comparing two independent
+runs.
 
 The corpus is a large private enterprise system, a more recent version of one of
 the projects used in the first study. Files were selected by extension, and only
@@ -507,7 +506,7 @@ capping each at 1,000 gives twelve classes and 10,927 paired minimaps, of which
 10,923 pairs were usable. Descriptors are the same 59-bin LBP histograms used in
 the first study.
 
-Two questions are asked separately, because they are not the same question. The
+The evaluation separates two questions that are routinely treated as one. The
 first is whether any difference is detectable, and is answered by a paired
 $t$-test over the cross-validation folds and by McNemar's test over paired
 per-instance predictions \cite{mcnemar1947note}. The second is whether the
@@ -551,7 +550,7 @@ Anonymization did not cost accuracy. The point estimate favours the anonymized
 representation by 0.6 percentage points, and the confidence interval places the
 largest loss compatible with the data at 0.0003, that is, at essentially zero.
 The equivalence test rejects the hypothesis of a difference larger than the
-declared margin with a wide safety factor.
+declared margin.
 
 The two tests should be read together rather than in isolation. The difference
 test alone would support only the weak statement that no difference was
@@ -560,9 +559,9 @@ useful statement that the difference is bounded below the margin. McNemar's test
 does find a detectable difference in six of the ten repetitions, and its
 direction is consistent: across all repetitions, 5,239 instances were classified
 correctly only by the anonymized representation against 4,580 only by the
-original one. The honest reading is therefore not that the two representations
-are indistinguishable, but that the difference between them is small and, in
-this setting, slightly favourable to anonymization.
+original one. The result is therefore not that the two representations are
+indistinguishable, but that the difference between them is small and, in this
+setting, slightly favourable to anonymization.
 
 A plausible explanation is that anonymization acts as a filter rather than only
 as a loss. Collapsing letters and digits onto three intensities removes lexical
@@ -570,7 +569,7 @@ variation that a texture descriptor cannot exploit anyway, leaving the
 structural skeleton more salient. The measurement in the next subsection
 supports this reading.
 
-\subsection{What the Transformation Destroys}
+\subsection{What the Transformation Removes}
 
 The effect of anonymization on the representation can be quantified directly,
 without training anything, because the map is deterministic. Measured over 12.3
@@ -581,13 +580,12 @@ exactly the symbol classes: punctuation, delimiters and operators. The reduction
 is uneven across file types, from 62.6\% for Java sources down to 48.0\% for SVG
 files.
 
-Placing the two measurements side by side gives the central result of this
-section: more than half of the information carried by each pixel is discarded,
-and predictive accuracy does not fall. This is direct evidence for the claim on
-which the proposal rests, namely that the discriminative signal in a minimap is
-structural rather than lexical. It also explains why the surviving 25.9\% is
-sufficient, since punctuation and indentation are precisely what encode block
-structure and layout.
+Read together, the two measurements say something that neither says alone: more
+than half of the information carried by each pixel is discarded, and predictive
+accuracy does not fall. That combination is evidence for the claim on which the
+proposal rests, namely that the discriminative signal in a minimap is structural
+rather than lexical. It also explains why the surviving 25.9\% is sufficient,
+since block structure and layout are carried by punctuation and indentation.
 
 \subsection{Scope of This Result}
 
@@ -695,7 +693,7 @@ suggest that models use structural bands, boilerplate regions, and diffuse style
 patterns depending on the objective. This supports the claim that predictions
 are not arbitrary, but it also reveals risks. If a model depends too strongly on
 headers or generated sections, then its performance may reflect dataset
-artifacts rather than robust software structure.
+artifacts rather than genuine software structure.
 
 Future work must make this analysis more systematic. Instead of inspecting only
 representative examples, the thesis should aggregate attribution statistics,
@@ -785,8 +783,9 @@ remain to be explored.
 
 The preliminary results shape the final thesis in a concrete way. The thesis
 does not need to prove from scratch that minimaps contain information; the early
-studies already support that claim. Instead, the thesis must explain how robust,
-general, interpretable, and useful that information is.
+studies already support that claim. Instead, the thesis must characterize that
+information: how far it generalizes, how it can be interpreted, and what it is
+useful for.
 
 This shifts the emphasis from simple feasibility to disciplined evaluation. The
 next experiments should ask harder questions: whether the representation

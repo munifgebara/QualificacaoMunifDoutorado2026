@@ -31,8 +31,9 @@ without requiring a full semantic interpretation at the first step.
 Traditional program-comprehension support includes code navigation,
 cross-reference search, syntax highlighting, dependency views, metrics,
 architectural diagrams, and static-analysis warnings
-\cite{storey2006comprehension}. These mechanisms are essential, but they tend
-to operate either at the textual level or through language-aware abstractions. A minimap-based approach adds another layer: it
+\cite{storey2006comprehension}. These mechanisms are well established, but they
+tend to operate either at the textual level or through language-aware
+abstractions. A minimap-based approach adds another layer: it
 represents a source artifact as an image-like signature that can be inspected by
 models and, in some cases, by humans. It does not aim to answer every semantic
 question about a file. Instead, it supports a preliminary form of recognition:
@@ -111,7 +112,7 @@ and dependency graphs \cite{novais2013sourceminer}. SArF Map visualizes software
 architecture from feature and layer viewpoints, using map metaphors to help
 analysts inspect implicit structures \cite{kobayashi2013sarf}.
 
-More recent work extends this landscape. FineCodeAnalyzer provides
+More recent work extends this line. FineCodeAnalyzer provides
 multi-perspective source code analysis through fine-grained interactive
 visualization \cite{qayum2022finecodeanalyzer}. SFLVis supports visual analysis
 for software fault localization \cite{sun2024sflvis}. Code-smell detection and
@@ -302,7 +303,7 @@ behavior more transparent to humans. XAI is important when models are used in
 high-stakes or interpretive contexts, but it is also useful in research settings:
 it helps verify whether a model is learning plausible evidence or exploiting
 spurious artifacts. Surveys such as \citeonline{adadi2018xai} discuss the
-broader XAI landscape, including model-specific and model-agnostic methods.
+broader XAI literature, including model-specific and model-agnostic methods.
 
 In this project, XAI is used to interpret convolutional models trained on
 minimap images in the large-scale study. Integrated Gradients is especially
