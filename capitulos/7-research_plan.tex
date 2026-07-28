@@ -115,7 +115,7 @@ curation will make later experiments more trustworthy.
 
 \subsection{A2: Anonymization Evaluation}
 
-The first instalment of this activity is already complete and is reported in
+The first installment of this activity is already complete and is reported in
 Section~\ref{sec:study3-anonymization}. A paired ablation over twelve classes
 and 10,923 minimaps of an industrial system found no accuracy cost for
 anonymization, with equivalence within two percentage points established at
@@ -158,7 +158,7 @@ macro-F1 per objective; accuracy and per-class recall are secondary. Every
 comparison against the non-anonymized rendering will be reported with both a
 difference test and an equivalence test, since a non-significant difference on
 its own would establish nothing. The equivalence margin remains two percentage
-points, the value used and declared in the completed instalment. A drop beyond
+points, the value used and declared in the completed installment. A drop beyond
 that margin will be reported as a negative result and will trigger a revision of
 the confidentiality claims made in this proposal. Results for all levels will be reported regardless of outcome, and
 the goal remains a performance-versus-suppression trade-off curve indicating
@@ -320,9 +320,10 @@ exposing this information to external services or collaborators.
 
 The character-level anonymization adopted here suppresses identifier names,
 numeric literals, and string content before any minimap is transmitted or
-stored externally. The informal evidence discussed in
-Chapter~\ref{chapter:preliminary-results} suggests that this suppression costs
-little predictive performance; Activity A2 will quantify the trade-off.
+stored externally. The paired ablation reported in
+Chapter~\ref{chapter:preliminary-results} found no accuracy cost for this
+suppression in the setting where it was measured; Activity A2 extends the
+measurement to further corpora and models.
 
 The Author prediction objective is a methodological probe, not a surveillance
 tool. Its purpose is to demonstrate that stylistic patterns, e.g., indentation
@@ -387,7 +388,7 @@ Table~\ref{tab:risks} summarizes the main research risks and mitigation actions.
 \textbf{Risk} & \textbf{Impact} & \textbf{Mitigation} \\
 \midrule
 Dataset imbalance dominates results & Inflated accuracy and weak minority-class performance. & Use macro metrics, reweighting, balanced subsets, and per-class analysis. \\
-Anonymization removes too much signal & Models lose predictive power. & Informal evidence suggests low risk; the Activity A2 ablation will quantify it. \\
+Anonymization removes too much signal & Models lose predictive power. & Measured at no accuracy cost on one system; Activity A2 tests whether this holds for other corpora and models. \\
 Stronger suppression needed for certain contexts & Current mapping may not satisfy all intellectual-property protection requirements. & Evaluate comment removal, punctuation normalization, and maximum suppression modes in Activity A2. \\
 Models learn boilerplate artifacts & Poor generalization across repositories. & Use XAI, ablations, and repository-disjoint evaluation. \\
 Tool feedback is not useful to developers & Weak practical contribution. & Conduct user-centered evaluation and refine interaction design. \\
