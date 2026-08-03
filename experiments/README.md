@@ -41,7 +41,7 @@ cross-validation share training data and the naive t-test is anti-conservative.
 ```bash
 # 1. paired dataset (both renderings, one pass)
 python a2_generate.py --src /path/to/100repos --out /path/to/dataset_a2 \
-                      --min-per-class 200 --max-per-class 1000
+                      --min-per-class 300 --max-per-class 1000
 
 # 2. paired evaluation with statistics
 python a2_experiment.py --data /path/to/dataset_a2 \
@@ -53,6 +53,22 @@ python a2_entropy.py --src /path/to/100repos --per-class
 
 Outputs: `a2_results.json`, `a2_results_table.tex` (drops straight into the
 document), and the per-fold accuracies for both representations.
+
+## Reported run
+
+The run reported in the qualification document (Chapter 5, Study 3) used a
+private corpus that cannot be redistributed; `--no-source-paths` keeps its file
+paths out of the generated catalog. The exact configuration was:
+
+```bash
+python a2_generate.py --src <private-corpus> --out dataset_a2 \
+                      --min-per-class 300 --max-per-class 1000 --no-source-paths
+python a2_experiment.py --data dataset_a2 \
+                        --repeats 10 --folds 5 --margin 0.02 --classifiers rf
+```
+
+This yields the 12 classes and 10,923 usable pairs of `a2_results.json`, the
+file committed here.
 
 Add `--variable-size` to `a2_generate.py` to reproduce the variable-size variant
 instead of 128×128.

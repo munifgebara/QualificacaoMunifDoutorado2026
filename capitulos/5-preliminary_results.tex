@@ -1,14 +1,14 @@
-This chapter reports the empirical work already completed. Three studies are
-described in sequence. The first two are ordered from the most controlled to the
-most demanding setting: a small, balanced experiment with handcrafted texture
-descriptors, and a large-scale experiment with deep convolutional models over
-hundreds of thousands of minimaps. The third isolates a single question that the
-proposal depends on, whether anonymization costs predictive performance, and
-answers it with a paired design and an explicit statistical statement. The
-chapter then consolidates what the studies jointly support, maps that evidence
-back to the research questions, and is explicit about the limitations that
-prevent the current results from being read as final. The research plan of
-Chapter~\ref{chapter:research-plan} is built to resolve them.
+Three studies make up the empirical work completed so far, and they are
+reported here in sequence. The first two are ordered from the most controlled to
+the most demanding setting: a small, balanced experiment with handcrafted
+texture descriptors, and a large-scale experiment with deep convolutional models
+over hundreds of thousands of minimaps. The third isolates a single question
+that the proposal depends on, whether anonymization costs predictive
+performance, and answers it with a paired design and an explicit statistical
+statement. The chapter then consolidates what the studies jointly support, maps
+that evidence back to the research questions, and is explicit about the
+limitations that prevent the current results from being read as final. The
+research plan of Chapter~\ref{chapter:research-plan} is built to resolve them.
 
 \section{Role of Preliminary Studies}
 
@@ -134,8 +134,10 @@ single split is used, the reported values carry no variance estimate. Recording
 the protocol explicitly and repeating the evaluation over multiple seeds is part
 of the planned work described in Chapter~\ref{chapter:research-plan}.
 
-Figure~\ref{fig:lbp-histograms} presents average LBP histograms for six
-representative classes, computed over 1{,}000 minimaps per class. The figure is
+Figure~\ref{fig:lbp-histograms} presents average LBP histograms for six of the
+seven classes, computed over 1{,}000 minimaps per class; the seventh (the
+UnitTest stereotype) is omitted only to keep the six overlaid curves
+distinguishable. The figure is
 split into two panels because the descriptor has a strongly skewed shape. Two
 codes dominate every class: the code produced by a flat neighborhood and the
 catch-all bin for non-uniform patterns. Together they account for between 91\%
@@ -417,7 +419,8 @@ to the actual image, which distributes the difference in model output between
 the two endpoints across the input pixels.
 
 Three properties motivated this choice over the alternatives. First, the method
-is defined by axioms rather than by architecture: it satisfies sensitivity,
+is defined by axioms, independently of any particular architecture: it
+satisfies sensitivity,
 meaning a pixel that changes the prediction receives non-zero attribution, and
 implementation invariance, meaning functionally equivalent networks receive
 identical attributions. Second, and decisively for this application, it produces
@@ -481,8 +484,8 @@ Because anonymization strips the lexical layer, the approach can be applied to
 code that cannot leave an organization; the claim that it preserves predictive
 utility therefore carries a large share of the proposal. Until recently that claim rested on a single
 uncontrolled comparison. This section reports a controlled experiment designed
-to replace it. It is a first installment of Activity A2 rather than its
-completion; the remaining scope is stated at the end of the section and in
+to replace it. It is a first installment of Activity A2, not its completion;
+the remaining scope is stated at the end of the section and in
 Chapter~\ref{chapter:research-plan}.
 
 \subsection{Design}
@@ -552,7 +555,7 @@ largest loss compatible with the data at 0.0003, that is, at essentially zero.
 The equivalence test rejects the hypothesis of a difference larger than the
 declared margin.
 
-The two tests should be read together rather than in isolation. The difference
+Neither test should be read in isolation. The difference
 test alone would support only the weak statement that no difference was
 detected, at $p = 0.060$. The equivalence test supports the stronger and more
 useful statement that the difference is bounded below the margin. McNemar's test
@@ -563,10 +566,10 @@ original one. The result is therefore not that the two representations are
 indistinguishable, but that the difference between them is small and, in this
 setting, slightly favorable to anonymization.
 
-A plausible explanation is that anonymization acts as a filter rather than only
-as a loss. Collapsing letters and digits onto three intensities removes lexical
-variation that a texture descriptor cannot exploit anyway, leaving the
-structural skeleton more salient. The measurement in the next subsection
+A plausible explanation is that anonymization does not only discard
+information; it also filters. Collapsing letters and digits onto three
+intensities removes lexical variation that a texture descriptor cannot exploit
+anyway, leaving the structural skeleton more salient. The measurement in the next subsection
 supports this reading.
 
 \subsection{What the Transformation Removes}
@@ -637,6 +640,7 @@ Fixed-size comparison & 128 by 128 minimaps remain competitive with variable-siz
 Large-scale dataset & Minimap learning scales to 685,906 images from 100 projects and 10 languages. & RQ1 \\
 Deep learning results & EfficientNet-B0 pretrained reaches strong validation results for Type, Project, and Author. & RQ1, RQ2 \\
 Integrated Gradients & Different objectives rely on different visual regions and patterns. & RQ3 \\
+Paired ablation (Study 3) & Anonymization has no accuracy cost (equivalence within two points, $p = 2.4 \times 10^{-5}$) while discarding 56.7\% of per-pixel entropy. & RQ4 \\
 MinimapSignatures & IDE plugins and backend validate an end-to-end tool workflow. & RQ5 \\
 \bottomrule
 \end{tabular}
@@ -711,8 +715,10 @@ $p = 2.4 \times 10^{-5}$. The result is reinforced by the measurement of the
 transformation itself, which discards 56.7\% of the entropy per pixel while
 leaving accuracy intact. An earlier comparison made during the first study
 pointed in the same direction, with average F1-score falling from 0.83 to 0.82
-for an SVM over ten classes \cite{gebara2025iwssip}, though that figure came
-from a single uncontrolled run.
+for an SVM in a ten-class configuration of the same corpus, a wider class
+selection than the balanced seven-class setting reported above
+\cite{gebara2025iwssip}, though that figure came from a single uncontrolled
+run.
 
 This evidence matters for two reasons.
 
