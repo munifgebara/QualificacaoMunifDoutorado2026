@@ -96,7 +96,7 @@ simplify modeling.
 
 \subsection{Dataset and Classes}
 
-The initial dataset was generated from two large private software projects, made
+The initial dataset was generated from two large proprietary systems, made
 available under a confidentiality agreement: an enterprise resource planning
 system from a company in the industrial sector, and a system developed by the
 Brazilian federal government. Their size and heterogeneity made them a realistic
@@ -173,13 +173,11 @@ anticipates the confusion observed between them in the results below.
 Table~\ref{tab:study1-results} summarizes the main performance results reported
 for the three traditional classifiers. The published study reports a single
 figure of merit, overall accuracy on the test partition, and the table therefore
-reports that quantity alone.\footnote{Earlier versions of this table presented
-the same value under three separate headings for precision, recall, and
-F1-score. That presentation was misleading: no per-class or averaged
-precision-recall figures were computed for this experiment. Producing them, from
-the per-class classification reports that the pipeline already generates, is
-part of the consolidation work described in
-Chapter~\ref{chapter:research-plan}.} The values should be interpreted as
+reports that quantity alone.\footnote{No per-class or averaged precision-recall
+figures were computed for this experiment; overall accuracy is the only figure
+of merit available for it. Producing them, from the per-class classification
+reports that the pipeline already generates, is part of the consolidation work
+described in Chapter~\ref{chapter:research-plan}.} The values should be interpreted as
 preliminary evidence, both because the dataset was limited when compared with
 the later large-scale corpus and because accuracy alone says nothing about how
 the errors are distributed across classes.
@@ -500,8 +498,8 @@ two datasets are paired instance by instance. The pairing licenses paired
 statistical tests, which are more sensitive than comparing two independent
 runs.
 
-The corpus is a large private enterprise system, a more recent version of one of
-the projects used in the first study. Files were selected by extension, and only
+The corpus is the government system used in the first study, in a more recent
+version. Files were selected by extension, and only
 textual source formats were read. Classes were defined by naming convention:
 first by the suffix of the class name, and, when no suffix matched, by the
 package the file belongs to. Keeping only classes with at least 300 examples and
