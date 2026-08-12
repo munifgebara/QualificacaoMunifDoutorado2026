@@ -18,6 +18,7 @@
 \usepackage{multirow}
 \usepackage{multicol}
 \usepackage{algpseudocode}
+\usepackage{pdfpages}
 
 % ------------------------------------------------------------------------
 % Correcao de alinhamento
@@ -146,5 +147,25 @@
 \postextual
 
 \bibliography{referencias}
+
+% ------------------------------------------------------------------------
+% Annexes: published and accepted articles produced during the doctorate
+% ------------------------------------------------------------------------
+\begin{anexosenv}
+\partanexos
+
+\chapter{Article published at IWSSIP 2025: Software Feature Detection Using Source Code Minimaps as Visual Signatures}
+\label{anexo:iwssip}
+\includepdf[pages=-]{anexos/anexo-a-iwssip2025.pdf}
+
+\chapter{Article published at CIARP 2025: Source Code Minimaps at Scale: Feature-Oriented Analysis of 100 Projects}
+\label{anexo:ciarp}
+\includepdf[pages=-]{anexos/anexo-b-ciarp2025.pdf}
+
+\chapter{Article accepted at SBES-Tools 2026: MinimapSignatures: A Multi-IDE Ecosystem for Analysis of Visual Source Code Signatures}
+\label{anexo:sbes}
+\includepdf[pages=-]{anexos/anexo-c-sbes2026.pdf}
+
+\end{anexosenv}
 
 \end{document}
