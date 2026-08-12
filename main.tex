@@ -41,6 +41,31 @@
 \makeatother
 
 % ------------------------------------------------------------------------
+% Folha de aprovacao com banca de quatro membros
+% ------------------------------------------------------------------------
+% A classe imprime o segundo membro da UEM e o segundo membro externo apenas
+% quando o tipo de trabalho e "Tese" (packages/icmc.cls, l. 1123 e l. 1134),
+% pois assume banca de tres para os demais tipos. Esta qualificacao tem quatro
+% titulares, entao a folha e emitida com o tipo ajustado dentro de um grupo,
+% depois de fixar a frase de preambulo com o termo real do documento. Fora do
+% grupo nada muda, e a classe permanece intacta.
+\makeatletter
+\let\icmc@folhaaprovacaoorig\inserefolhaaprovacao
+\renewcommand{\inserefolhaaprovacao}{%
+    \begingroup
+        \edef\icmc@tipotrabalhoreal{\imprimirtipotrabalho}%
+        \renewcommand{\imprimirpreambuloaprovacao}{%
+            \icmc@tipotrabalhoreal~apresentada ao Programa de Pós-Graduação em
+            Ciência da Computação do Departamento de Informática, do Centro de
+            Tecnologia da Universidade Estadual de Maringá,
+            \exam~\degree~\imprimirespecialidade.}%
+        \tipotrabalho{Tese}%
+        \icmc@folhaaprovacaoorig
+    \endgroup
+}
+\makeatother
+
+% ------------------------------------------------------------------------
 % Cover and title-page metadata
 % ------------------------------------------------------------------------
 
@@ -62,24 +87,25 @@
 \data{15}{08}{2026}
 \idioma{EN}
 
-% Qualification documents — approval page fields left neutral
-\dataaprovacao{September 15, 2026}
-\localdefesa{Universidade Estadual de Maringá}
+% Examination board and defense data, as approved by the PCC Academic Council
+% (qualification exam scheduled for September 18, 2026, 2:00 p.m.)
+\dataaprovacao{September 18, 2026}
+\localdefesa{Auditório João Ângelo, Universidade Estadual de Maringá}
 
-\bancauemnomeA{}
-\bancaueminstituicaoA{}
-\generoUEMA{M}
+\bancauemnomeA{Valéria Delisandra Feltrim}
+\bancaueminstituicaoA{Universidade Estadual de Maringá (DIN--UEM)}
+\generoUEMA{F}
 
-\bancauemnomeB{}
-\bancaueminstituicaoB{}
+\bancauemnomeB{Lucas de Oliveira Teixeira}
+\bancaueminstituicaoB{Universidade Estadual de Maringá (UEM)}
 \generoUEMB{M}
 
-\bancaexternonomeA{}
-\bancaexternoinstituicaoA{}
+\bancaexternonomeA{Diego Bertolini Gonçalves}
+\bancaexternoinstituicaoA{Universidade Tecnológica Federal do Paraná (UTFPR)}
 \generoExteriorA{M}
 
-\bancaexternonomeB{}
-\bancaexternoinstituicaoB{}
+\bancaexternonomeB{José Valderlei da Silva}
+\bancaexternoinstituicaoB{Centro Universitário de Maringá (UniCesumar)}
 \generoExteriorB{M}
 
 % ------------------------------------------------------------------------
