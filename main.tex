@@ -41,27 +41,80 @@
 \makeatother
 
 % ------------------------------------------------------------------------
-% Folha de aprovacao com banca de quatro membros
+% Folha de aprovacao com a banca completa
 % ------------------------------------------------------------------------
-% A classe imprime o segundo membro da UEM e o segundo membro externo apenas
+% A classe so imprime o segundo membro da UEM e o segundo membro externo
 % quando o tipo de trabalho e "Tese" (packages/icmc.cls, l. 1123 e l. 1134),
 % pois assume banca de tres para os demais tipos. Esta qualificacao tem quatro
-% titulares, entao a folha e emitida com o tipo ajustado dentro de um grupo,
-% depois de fixar a frase de preambulo com o termo real do documento. Fora do
-% grupo nada muda, e a classe permanece intacta.
+% titulares, entao a folha e redefinida aqui com a mesma estrutura e a mesma
+% ordem da classe, apenas listando os quatro. A classe permanece intacta.
 \makeatletter
-\let\icmc@folhaaprovacaoorig\inserefolhaaprovacao
 \renewcommand{\inserefolhaaprovacao}{%
-    \begingroup
-        \edef\icmc@tipotrabalhoreal{\imprimirtipotrabalho}%
-        \renewcommand{\imprimirpreambuloaprovacao}{%
-            \icmc@tipotrabalhoreal~apresentada ao Programa de Pós-Graduação em
-            Ciência da Computação do Departamento de Informática, do Centro de
-            Tecnologia da Universidade Estadual de Maringá,
-            \exam~\degree~\imprimirespecialidade.}%
-        \tipotrabalho{Tese}%
-        \icmc@folhaaprovacaoorig
-    \endgroup
+    \centering
+
+    \textbf{FOLHA DE APROVAÇÃO}\\
+
+    \vspace{8mm}
+
+    \imprimirautor
+
+    \vspace{8mm}
+
+    \textbf{\imprimirtitulo}
+
+    \vspace{4mm}
+
+    \imprimirpreambuloaprovacao
+
+    \vspace{6mm}
+
+    BANCA EXAMINADORA
+
+    \vspace{7mm}
+
+    \ifthenelse{\equal{\imprimirigeneroOR}{M}}{Prof. Dr.}{Profa. Dra.}
+    \imprimirorientador\\
+    \imprimiriesorientador
+
+    \vspace{6mm}
+
+    \ifthenelse{\equal{\imprimirigeneroCOOR}{M}}{Prof. Dr.}{Profa. Dra.}
+    \imprimircoorientador\\
+    \imprimiriescoorientador
+
+    \vspace{6mm}
+
+    \ifthenelse{\equal{\imprimirigeneroUEMA}{M}}{Prof. Dr.}{Profa. Dra.}
+    \imprimirbancauemnomeA\\
+    \imprimirbancaueminstituicaoA
+
+    \vspace{6mm}
+
+    \ifthenelse{\equal{\imprimirigeneroUEMB}{M}}{Prof. Dr.}{Profa. Dra.}
+    \imprimirbancauemnomeB\\
+    \imprimirbancaueminstituicaoB
+
+    \vspace{6mm}
+
+    \ifthenelse{\equal{\imprimirigeneroExteriorA}{M}}{Prof. Dr.}{Profa. Dra.}
+    \imprimirbancaexternonomeA\\
+    \imprimirbancaexternoinstituicaoA
+
+    \vspace{6mm}
+
+    \ifthenelse{\equal{\imprimirigeneroExteriorB}{M}}{Prof. Dr.}{Profa. Dra.}
+    \imprimirbancaexternonomeB\\
+    \imprimirbancaexternoinstituicaoB
+
+    \begin{flushleft}
+    \begin{textblock*}{144mm}(30mm,270mm)
+    Aprovada em: \imprimirdataaprovacao.
+
+    Local da defesa: \imprimirlocaldefesa.
+    \end{textblock*}
+    \end{flushleft}
+
+    \cleardoublepage
 }
 \makeatother
 
